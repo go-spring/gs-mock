@@ -3,12 +3,12 @@
 package testdata
 
 import (
+	"github.com/go-spring/mock"
+	"github.com/go-spring/mock/mockgen/testdata/inner"
+
 	"context"
 	"net/http"
 	"reflect"
-
-	"github.com/go-spring/mock"
-	"github.com/go-spring/mock/mockgen/testdata/inner"
 )
 
 type ServiceMockImpl struct {
