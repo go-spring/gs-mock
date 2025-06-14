@@ -160,11 +160,23 @@ func (ctx *scanContext) mock(name string) bool {
 }
 
 type MockInterface struct {
-	Name       string
-	Type       *ast.InterfaceType
-	TypeParams [][]string
-	File       string
-	Imports    map[string]string
+	Name            string
+	TypeParams      [][]string
+	File            string
+	Imports         map[string]string
+	EmbedInterfaces string
+	Methods         []Method
+}
+
+type Method struct {
+	Name           string
+	ParamList      string
+	ParamNameList  string
+	ResultNameList string
+	ParamTypeList  string
+	ResultTypeList string
+	ParamCount     int
+	ResultCount    int
 }
 
 func scanDir(dir string, ctx scanContext, pkgs map[string]string) []MockInterface {
@@ -237,12 +249,68 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []MockInterf
 					typeParams = append(typeParams, []string{fName, typeText})
 				}
 			}
+
+			var embedInterfaces string
+			for _, method := range t.Methods.List {
+				if len(method.Names) == 0 {
+					embedInterfaces += "\t"
+					typeText, pkgName := getTypeText(method.Type)
+					if pkgName != "" {
+						pkgs[imports[pkgName]] = pkgName
+					}
+					embedInterfaces += typeText
+					embedInterfaces += "\n"
+				}
+			}
+
+			var methods []Method
+			for _, method := range t.Methods.List {
+				if len(method.Names) == 0 {
+					continue
+				}
+				var r Method
+				r.Name = method.Names[0].Name
+				ft := method.Type.(*ast.FuncType)
+				r.ParamCount = len(ft.Params.List)
+				if r.ParamCount > mock.MaxParamCount {
+					panic(fmt.Sprintf("have more than %d parameters", mock.MaxParamCount))
+				}
+				r.ResultCount = len(ft.Results.List)
+				if r.ResultCount > mock.MaxResultCount {
+					panic(fmt.Sprintf("have more than %d results", mock.MaxResultCount))
+				}
+				var (
+					params     []string
+					paramNames []string
+					paramTypes []string
+				)
+				for _, param := range ft.Params.List {
+					typeText, _ := getTypeText(param.Type)
+					paramTypes = append(paramTypes, typeText)
+					paramNames = append(paramNames, param.Names[0].Name)
+					params = append(params, param.Names[0].Name+" "+typeText)
+				}
+				var (
+					resultTypes []string
+				)
+				for _, result := range ft.Results.List {
+					typeText, _ := getTypeText(result.Type)
+					resultTypes = append(resultTypes, typeText)
+				}
+				r.ParamList = strings.Join(params, ", ")
+				r.ParamNameList = strings.Join(paramNames, ", ")
+				r.ParamTypeList = strings.Join(paramTypes, ", ")
+				r.ResultTypeList = strings.Join(resultTypes, ", ")
+				methods = append(methods, r)
+			}
+
 			ret = append(ret, MockInterface{
-				Name:       name,
-				Type:       t,
-				TypeParams: typeParams,
-				File:       file,
-				Imports:    imports,
+				Name:            name,
+				TypeParams:      typeParams,
+				File:            file,
+				Imports:         imports,
+				EmbedInterfaces: embedInterfaces,
+				Methods:         methods,
 			})
 		}
 	}
@@ -264,102 +332,42 @@ func mockInterface(s *bytes.Buffer, mi MockInterface, pkgs map[string]string) {
 		typeTokens += param[0]
 	}
 
-	var embedInterfaces string
-	for _, method := range mi.Type.Methods.List {
-		if len(method.Names) == 0 {
-			embedInterfaces += "\t"
-			typeText, pkgName := getTypeText(method.Type)
-			if pkgName != "" {
-				pkgs[mi.Imports[pkgName]] = pkgName
-			}
-			embedInterfaces += typeText
-			embedInterfaces += "\n"
-		}
-	}
-
 	if len(mi.TypeParams) > 0 {
-		s.WriteString(fmt.Sprintf("\ntype %sMockImpl[%s] struct {\n\t%sr *mock.Manager\n}\n", mi.Name, typeParams, embedInterfaces))
+		s.WriteString(fmt.Sprintf("\ntype %sMockImpl[%s] struct {\n\t%sr *mock.Manager\n}\n", mi.Name, typeParams, mi.EmbedInterfaces))
 		s.WriteString(fmt.Sprintf("\nfunc New%sMockImpl[%s](r *mock.Manager) *%sMockImpl[%s] {", mi.Name, typeParams, mi.Name, typeTokens))
 		s.WriteString(fmt.Sprintf("\n\treturn &%sMockImpl[%s]{r:r}", mi.Name, typeTokens))
 		s.WriteString("\n}\n")
 	} else {
-		s.WriteString(fmt.Sprintf("\ntype %sMockImpl struct {\n\t%sr *mock.Manager\n}\n", mi.Name, embedInterfaces))
+		s.WriteString(fmt.Sprintf("\ntype %sMockImpl struct {\n\t%sr *mock.Manager\n}\n", mi.Name, mi.EmbedInterfaces))
 		s.WriteString(fmt.Sprintf("\nfunc New%sMockImpl(r *mock.Manager) *%sMockImpl {", mi.Name, mi.Name))
 		s.WriteString(fmt.Sprintf("\n\treturn &%sMockImpl{r:r}", mi.Name))
 		s.WriteString("\n}\n")
 	}
 
-	for j, method := range mi.Type.Methods.List {
-		if len(method.Names) == 0 {
-			continue
-		}
+	for j, m := range mi.Methods {
 		if j > 0 {
 			s.WriteString("\n")
 		}
-		methodName := method.Names[0].Name
-		ft := method.Type.(*ast.FuncType)
-		paramCount := len(ft.Params.List)
-		if paramCount > mock.MaxParamCount {
-			panic(fmt.Sprintf("have more than %d parameters", mock.MaxParamCount))
-		}
-		resultCount := len(ft.Results.List)
-		if resultCount > mock.MaxResultCount {
-			panic(fmt.Sprintf("have more than %d results", mock.MaxResultCount))
-		}
 		{
 			if len(mi.TypeParams) > 0 {
-				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl[%s]) %s(", mi.Name, typeTokens, methodName))
+				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl[%s]) %s(", mi.Name, typeTokens, m.Name))
 			} else {
-				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl) %s(", mi.Name, methodName))
+				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl) %s(", mi.Name, m.Name))
 			}
-			for i, param := range ft.Params.List {
-				s.WriteString(param.Names[0].Name)
-				s.WriteString(" ")
-				typeText, pkgName := getTypeText(param.Type)
-				if pkgName != "" {
-					pkgs[mi.Imports[pkgName]] = pkgName
-				}
-				s.WriteString(typeText)
-				if i < len(ft.Params.List)-1 {
-					s.WriteString(", ")
-				}
-			}
+			s.WriteString(mi.Methods[j].ParamList)
 			s.WriteString(") (")
-			for i, result := range ft.Results.List {
-				typeText, pkgName := getTypeText(result.Type)
-				if pkgName != "" {
-					pkgs[mi.Imports[pkgName]] = pkgName
-				}
-				s.WriteString(typeText)
-				if i < len(ft.Results.List)-1 {
-					s.WriteString(", ")
-				}
-			}
+			s.WriteString(mi.Methods[j].ResultTypeList)
 			s.WriteString(") {")
 			if len(mi.TypeParams) > 0 {
 				s.WriteString(fmt.Sprintf("\n\tt := reflect.TypeFor[%sMockImpl[%s]]()", mi.Name, typeTokens))
 			} else {
 				s.WriteString(fmt.Sprintf("\n\tt := reflect.TypeFor[%sMockImpl]()", mi.Name))
 			}
-			s.WriteString(fmt.Sprintf("\n\tif ret, ok := mock.Invoke(impl.r, t, \"%s\", ", methodName))
-			for i, param := range ft.Params.List {
-				s.WriteString(param.Names[0].Name)
-				if i < len(ft.Params.List)-1 {
-					s.WriteString(", ")
-				}
-			}
+			s.WriteString(fmt.Sprintf("\n\tif ret, ok := mock.Invoke(impl.r, t, \"%s\", ", m.Name))
+			s.WriteString(mi.Methods[j].ParamNameList)
 			s.WriteString("); ok {")
-			s.WriteString(fmt.Sprintf("\n\t\treturn mock.Unbox%d[", resultCount))
-			for i, result := range ft.Results.List {
-				typeText, pkgName := getTypeText(result.Type)
-				if pkgName != "" {
-					pkgs[mi.Imports[pkgName]] = pkgName
-				}
-				s.WriteString(typeText)
-				if i < len(ft.Results.List)-1 {
-					s.WriteString(", ")
-				}
-			}
+			s.WriteString(fmt.Sprintf("\n\t\treturn mock.Unbox%d[", m.ResultCount))
+			s.WriteString(mi.Methods[j].ResultTypeList)
 			s.WriteString("](ret)")
 			s.WriteString("\n\t}")
 			s.WriteString("\n\tpanic(\"no mock code matched\")")
@@ -368,61 +376,25 @@ func mockInterface(s *bytes.Buffer, mi MockInterface, pkgs map[string]string) {
 		s.WriteString("\n")
 		{
 			if len(mi.TypeParams) > 0 {
-				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl[%s]) Mock%s(", mi.Name, typeTokens, methodName))
+				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl[%s]) Mock%s(", mi.Name, typeTokens, m.Name))
 			} else {
-				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl) Mock%s(", mi.Name, methodName))
+				s.WriteString(fmt.Sprintf("\nfunc (impl *%sMockImpl) Mock%s(", mi.Name, m.Name))
 			}
-			s.WriteString(fmt.Sprintf(") *mock.Mocker%d%d[", paramCount, resultCount))
-			for i, param := range ft.Params.List {
-				typeText, pkgName := getTypeText(param.Type)
-				if pkgName != "" {
-					pkgs[mi.Imports[pkgName]] = pkgName
-				}
-				s.WriteString(typeText)
-				if i < len(ft.Params.List)-1 {
-					s.WriteString(", ")
-				}
-			}
+			s.WriteString(fmt.Sprintf(") *mock.Mocker%d%d[", m.ParamCount, m.ResultCount))
+			s.WriteString(mi.Methods[j].ParamTypeList)
 			s.WriteString(", ")
-			for i, result := range ft.Results.List {
-				typeText, pkgName := getTypeText(result.Type)
-				if pkgName != "" {
-					pkgs[mi.Imports[pkgName]] = pkgName
-				}
-				s.WriteString(typeText)
-				if i < len(ft.Results.List)-1 {
-					s.WriteString(", ")
-				}
-			}
+			s.WriteString(mi.Methods[j].ResultTypeList)
 			s.WriteString("] {")
 			if len(mi.TypeParams) > 0 {
 				s.WriteString(fmt.Sprintf("\n\tt := reflect.TypeFor[%sMockImpl[%s]]()", mi.Name, typeTokens))
 			} else {
 				s.WriteString(fmt.Sprintf("\n\tt := reflect.TypeFor[%sMockImpl]()", mi.Name))
 			}
-			s.WriteString(fmt.Sprintf("\n\treturn mock.NewMocker%d%d[", paramCount, resultCount))
-			for i, param := range ft.Params.List {
-				typeText, pkgName := getTypeText(param.Type)
-				if pkgName != "" {
-					pkgs[mi.Imports[pkgName]] = pkgName
-				}
-				s.WriteString(typeText)
-				if i < len(ft.Params.List)-1 {
-					s.WriteString(", ")
-				}
-			}
+			s.WriteString(fmt.Sprintf("\n\treturn mock.NewMocker%d%d[", m.ParamCount, m.ResultCount))
+			s.WriteString(mi.Methods[j].ParamTypeList)
 			s.WriteString(", ")
-			for i, result := range ft.Results.List {
-				typeText, pkgName := getTypeText(result.Type)
-				if pkgName != "" {
-					pkgs[mi.Imports[pkgName]] = pkgName
-				}
-				s.WriteString(typeText)
-				if i < len(ft.Results.List)-1 {
-					s.WriteString(", ")
-				}
-			}
-			s.WriteString(fmt.Sprintf("](impl.r, t, \"%s\")", methodName))
+			s.WriteString(mi.Methods[j].ResultTypeList)
+			s.WriteString(fmt.Sprintf("](impl.r, t, \"%s\")", m.Name))
 			s.WriteString("\n}")
 		}
 	}
