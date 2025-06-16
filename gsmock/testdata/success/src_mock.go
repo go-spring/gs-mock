@@ -2,7 +2,7 @@
 // Source: https://github.com/go-spring/mock
 // gsmock -o src_mock.go -i '!ServiceV2'
 
-package testdata
+package success
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"reflect"
 
 	"github.com/go-spring/mock"
-	"github.com/go-spring/mock/gsmock/testdata/inner"
+	"github.com/go-spring/mock/gsmock/testdata/success/inner"
 )
 
 type ServiceMockImpl struct {

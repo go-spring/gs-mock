@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package testdata
+package success
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/go-spring/mock/gsmock/testdata/inner"
+	"github.com/go-spring/mock/gsmock/testdata/success/inner"
 )
 
 type RepositoryV2[T ~int | ~uint, M *http.Request] interface {

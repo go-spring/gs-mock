@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package testdata
+package success
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/go-spring/mock/gsmock/testdata/inner"
+	"github.com/go-spring/mock/gsmock/testdata/success/inner"
 )
 
 //go:generate gsmock -o src_mock.go -i '!ServiceV2'

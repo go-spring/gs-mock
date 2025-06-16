@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package testdata
+package success
 
 import (
 	"context"
 	"testing"
 
 	"github.com/go-spring/mock"
-	"github.com/go-spring/mock/gsmock/testdata/inner"
+	"github.com/go-spring/mock/gsmock/testdata/success/inner"
 	"github.com/go-spring/mock/internal/assert"
 )
 

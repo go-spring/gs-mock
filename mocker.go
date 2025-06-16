@@ -25,6 +25,461 @@ const (
 	MaxResultCount = 5
 )
 
+/******************************** Mocker00 ***********************************/
+
+type Mocker00 struct {
+	fnHandle func() bool
+	fnWhen   func() bool
+	fnReturn func()
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker00) Handle(fn func() bool) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker00) When(fn func() bool) *Mocker00 {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker00) Return(fn func()) {
+	m.fnReturn = fn
+}
+
+// Invoker00 is an Invoker implementation for Mocker00.
+type Invoker00 struct {
+	*Mocker00
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker00) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker00) Handle(params []interface{}) ([]interface{}, bool) {
+	ok := m.fnHandle()
+	return []interface{}{}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker00) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen()
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker00) Return(params []interface{}) []interface{} {
+	m.fnReturn()
+	return []interface{}{}
+}
+
+// NewMocker00 creates a new Mocker00 instance.
+func NewMocker00(r *Manager, typ reflect.Type, method string) *Mocker00 {
+	m := &Mocker00{}
+	i := &Invoker00{Mocker00: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker01 ***********************************/
+
+type Mocker01[R1 any] struct {
+	fnHandle func() (R1, bool)
+	fnWhen   func() bool
+	fnReturn func() R1
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker01[R1]) Handle(fn func() (R1, bool)) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker01[R1]) When(fn func() bool) *Mocker01[R1] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker01[R1]) Return(fn func() R1) {
+	m.fnReturn = fn
+}
+
+// Invoker01 is an Invoker implementation for Mocker01.
+type Invoker01[R1 any] struct {
+	*Mocker01[R1]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker01[R1]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker01[R1]) Handle(params []interface{}) ([]interface{}, bool) {
+	r1, ok := m.fnHandle()
+	return []interface{}{r1}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker01[R1]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen()
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker01[R1]) Return(params []interface{}) []interface{} {
+	r1 := m.fnReturn()
+	return []interface{}{r1}
+}
+
+// NewMocker01 creates a new Mocker01 instance.
+func NewMocker01[R1 any](r *Manager, typ reflect.Type, method string) *Mocker01[R1] {
+	m := &Mocker01[R1]{}
+	i := &Invoker01[R1]{Mocker01: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker02 ***********************************/
+
+type Mocker02[R1, R2 any] struct {
+	fnHandle func() (R1, R2, bool)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2)
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker02[R1, R2]) Handle(fn func() (R1, R2, bool)) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker02[R1, R2]) When(fn func() bool) *Mocker02[R1, R2] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker02[R1, R2]) Return(fn func() (R1, R2)) {
+	m.fnReturn = fn
+}
+
+// Invoker02 is an Invoker implementation for Mocker02.
+type Invoker02[R1, R2 any] struct {
+	*Mocker02[R1, R2]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker02[R1, R2]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker02[R1, R2]) Handle(params []interface{}) ([]interface{}, bool) {
+	r1, r2, ok := m.fnHandle()
+	return []interface{}{r1, r2}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker02[R1, R2]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen()
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker02[R1, R2]) Return(params []interface{}) []interface{} {
+	r1, r2 := m.fnReturn()
+	return []interface{}{r1, r2}
+}
+
+// NewMocker02 creates a new Mocker02 instance.
+func NewMocker02[R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocker02[R1, R2] {
+	m := &Mocker02[R1, R2]{}
+	i := &Invoker02[R1, R2]{Mocker02: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker03 ***********************************/
+
+type Mocker03[R1, R2, R3 any] struct {
+	fnHandle func() (R1, R2, R3, bool)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2, R3)
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker03[R1, R2, R3]) Handle(fn func() (R1, R2, R3, bool)) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker03[R1, R2, R3]) When(fn func() bool) *Mocker03[R1, R2, R3] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker03[R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
+	m.fnReturn = fn
+}
+
+// Invoker03 is an Invoker implementation for Mocker03.
+type Invoker03[R1, R2, R3 any] struct {
+	*Mocker03[R1, R2, R3]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker03[R1, R2, R3]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker03[R1, R2, R3]) Handle(params []interface{}) ([]interface{}, bool) {
+	r1, r2, r3, ok := m.fnHandle()
+	return []interface{}{r1, r2, r3}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker03[R1, R2, R3]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen()
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker03[R1, R2, R3]) Return(params []interface{}) []interface{} {
+	r1, r2, r3 := m.fnReturn()
+	return []interface{}{r1, r2, r3}
+}
+
+// NewMocker03 creates a new Mocker03 instance.
+func NewMocker03[R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *Mocker03[R1, R2, R3] {
+	m := &Mocker03[R1, R2, R3]{}
+	i := &Invoker03[R1, R2, R3]{Mocker03: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker04 ***********************************/
+
+type Mocker04[R1, R2, R3, R4 any] struct {
+	fnHandle func() (R1, R2, R3, R4, bool)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2, R3, R4)
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker04[R1, R2, R3, R4]) Handle(fn func() (R1, R2, R3, R4, bool)) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker04[R1, R2, R3, R4]) When(fn func() bool) *Mocker04[R1, R2, R3, R4] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker04[R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
+	m.fnReturn = fn
+}
+
+// Invoker04 is an Invoker implementation for Mocker04.
+type Invoker04[R1, R2, R3, R4 any] struct {
+	*Mocker04[R1, R2, R3, R4]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker04[R1, R2, R3, R4]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker04[R1, R2, R3, R4]) Handle(params []interface{}) ([]interface{}, bool) {
+	r1, r2, r3, r4, ok := m.fnHandle()
+	return []interface{}{r1, r2, r3, r4}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker04[R1, R2, R3, R4]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen()
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker04[R1, R2, R3, R4]) Return(params []interface{}) []interface{} {
+	r1, r2, r3, r4 := m.fnReturn()
+	return []interface{}{r1, r2, r3, r4}
+}
+
+// NewMocker04 creates a new Mocker04 instance.
+func NewMocker04[R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string) *Mocker04[R1, R2, R3, R4] {
+	m := &Mocker04[R1, R2, R3, R4]{}
+	i := &Invoker04[R1, R2, R3, R4]{Mocker04: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker05 ***********************************/
+
+type Mocker05[R1, R2, R3, R4, R5 any] struct {
+	fnHandle func() (R1, R2, R3, R4, R5, bool)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2, R3, R4, R5)
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker05[R1, R2, R3, R4, R5]) Handle(fn func() (R1, R2, R3, R4, R5, bool)) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker05[R1, R2, R3, R4, R5]) When(fn func() bool) *Mocker05[R1, R2, R3, R4, R5] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker05[R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
+	m.fnReturn = fn
+}
+
+// Invoker05 is an Invoker implementation for Mocker05.
+type Invoker05[R1, R2, R3, R4, R5 any] struct {
+	*Mocker05[R1, R2, R3, R4, R5]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker05[R1, R2, R3, R4, R5]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker05[R1, R2, R3, R4, R5]) Handle(params []interface{}) ([]interface{}, bool) {
+	r1, r2, r3, r4, r5, ok := m.fnHandle()
+	return []interface{}{r1, r2, r3, r4, r5}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker05[R1, R2, R3, R4, R5]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen()
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker05[R1, R2, R3, R4, R5]) Return(params []interface{}) []interface{} {
+	r1, r2, r3, r4, r5 := m.fnReturn()
+	return []interface{}{r1, r2, r3, r4, r5}
+}
+
+// NewMocker05 creates a new Mocker05 instance.
+func NewMocker05[R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker05[R1, R2, R3, R4, R5] {
+	m := &Mocker05[R1, R2, R3, R4, R5]{}
+	i := &Invoker05[R1, R2, R3, R4, R5]{Mocker05: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker10 ***********************************/
+
+type Mocker10[T1 any] struct {
+	fnHandle func(T1) bool
+	fnWhen   func(T1) bool
+	fnReturn func()
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker10[T1]) Handle(fn func(T1) bool) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker10[T1]) When(fn func(T1) bool) *Mocker10[T1] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker10[T1]) Return(fn func()) {
+	m.fnReturn = fn
+}
+
+// Invoker10 is an Invoker implementation for Mocker10.
+type Invoker10[T1 any] struct {
+	*Mocker10[T1]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker10[T1]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker10[T1]) Handle(params []interface{}) ([]interface{}, bool) {
+	ok := m.fnHandle(params[0].(T1))
+	return []interface{}{}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker10[T1]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen(params[0].(T1))
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker10[T1]) Return(params []interface{}) []interface{} {
+	m.fnReturn()
+	return []interface{}{}
+}
+
+// NewMocker10 creates a new Mocker10 instance.
+func NewMocker10[T1 any](r *Manager, typ reflect.Type, method string) *Mocker10[T1] {
+	m := &Mocker10[T1]{}
+	i := &Invoker10[T1]{Mocker10: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
 /******************************** Mocker11 ***********************************/
 
 type Mocker11[T1 any, R1 any] struct {
@@ -346,6 +801,71 @@ func (m *Invoker15[T1, R1, R2, R3, R4, R5]) Return(params []interface{}) []inter
 func NewMocker15[T1 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker15[T1, R1, R2, R3, R4, R5] {
 	m := &Mocker15[T1, R1, R2, R3, R4, R5]{}
 	i := &Invoker15[T1, R1, R2, R3, R4, R5]{Mocker15: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker20 ***********************************/
+
+type Mocker20[T1, T2 any] struct {
+	fnHandle func(T1, T2) bool
+	fnWhen   func(T1, T2) bool
+	fnReturn func()
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker20[T1, T2]) Handle(fn func(T1, T2) bool) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker20[T1, T2]) When(fn func(T1, T2) bool) *Mocker20[T1, T2] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker20[T1, T2]) Return(fn func()) {
+	m.fnReturn = fn
+}
+
+// Invoker20 is an Invoker implementation for Mocker20.
+type Invoker20[T1, T2 any] struct {
+	*Mocker20[T1, T2]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker20[T1, T2]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker20[T1, T2]) Handle(params []interface{}) ([]interface{}, bool) {
+	ok := m.fnHandle(params[0].(T1), params[1].(T2))
+	return []interface{}{}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker20[T1, T2]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen(params[0].(T1), params[1].(T2))
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker20[T1, T2]) Return(params []interface{}) []interface{} {
+	m.fnReturn()
+	return []interface{}{}
+}
+
+// NewMocker20 creates a new Mocker20 instance.
+func NewMocker20[T1, T2 any](r *Manager, typ reflect.Type, method string) *Mocker20[T1, T2] {
+	m := &Mocker20[T1, T2]{}
+	i := &Invoker20[T1, T2]{Mocker20: m}
 	r.AddMocker(typ, method, i)
 	return m
 }
@@ -675,6 +1195,71 @@ func NewMocker25[T1, T2 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Typ
 	return m
 }
 
+/******************************** Mocker30 ***********************************/
+
+type Mocker30[T1, T2, T3 any] struct {
+	fnHandle func(T1, T2, T3) bool
+	fnWhen   func(T1, T2, T3) bool
+	fnReturn func()
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker30[T1, T2, T3]) Handle(fn func(T1, T2, T3) bool) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker30[T1, T2, T3]) When(fn func(T1, T2, T3) bool) *Mocker30[T1, T2, T3] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker30[T1, T2, T3]) Return(fn func()) {
+	m.fnReturn = fn
+}
+
+// Invoker30 is an Invoker implementation for Mocker30.
+type Invoker30[T1, T2, T3 any] struct {
+	*Mocker30[T1, T2, T3]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker30[T1, T2, T3]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker30[T1, T2, T3]) Handle(params []interface{}) ([]interface{}, bool) {
+	ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+	return []interface{}{}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker30[T1, T2, T3]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3))
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker30[T1, T2, T3]) Return(params []interface{}) []interface{} {
+	m.fnReturn()
+	return []interface{}{}
+}
+
+// NewMocker30 creates a new Mocker30 instance.
+func NewMocker30[T1, T2, T3 any](r *Manager, typ reflect.Type, method string) *Mocker30[T1, T2, T3] {
+	m := &Mocker30[T1, T2, T3]{}
+	i := &Invoker30[T1, T2, T3]{Mocker30: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
 /******************************** Mocker31 ***********************************/
 
 type Mocker31[T1, T2, T3 any, R1 any] struct {
@@ -1000,6 +1585,71 @@ func NewMocker35[T1, T2, T3 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect
 	return m
 }
 
+/******************************** Mocker40 ***********************************/
+
+type Mocker40[T1, T2, T3, T4 any] struct {
+	fnHandle func(T1, T2, T3, T4) bool
+	fnWhen   func(T1, T2, T3, T4) bool
+	fnReturn func()
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker40[T1, T2, T3, T4]) Handle(fn func(T1, T2, T3, T4) bool) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker40[T1, T2, T3, T4]) When(fn func(T1, T2, T3, T4) bool) *Mocker40[T1, T2, T3, T4] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker40[T1, T2, T3, T4]) Return(fn func()) {
+	m.fnReturn = fn
+}
+
+// Invoker40 is an Invoker implementation for Mocker40.
+type Invoker40[T1, T2, T3, T4 any] struct {
+	*Mocker40[T1, T2, T3, T4]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker40[T1, T2, T3, T4]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker40[T1, T2, T3, T4]) Handle(params []interface{}) ([]interface{}, bool) {
+	ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return []interface{}{}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker40[T1, T2, T3, T4]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker40[T1, T2, T3, T4]) Return(params []interface{}) []interface{} {
+	m.fnReturn()
+	return []interface{}{}
+}
+
+// NewMocker40 creates a new Mocker40 instance.
+func NewMocker40[T1, T2, T3, T4 any](r *Manager, typ reflect.Type, method string) *Mocker40[T1, T2, T3, T4] {
+	m := &Mocker40[T1, T2, T3, T4]{}
+	i := &Invoker40[T1, T2, T3, T4]{Mocker40: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
 /******************************** Mocker41 ***********************************/
 
 type Mocker41[T1, T2, T3, T4 any, R1 any] struct {
@@ -1321,6 +1971,71 @@ func (m *Invoker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Return(params []interfac
 func NewMocker45[T1, T2, T3, T4 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5] {
 	m := &Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]{}
 	i := &Invoker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]{Mocker45: m}
+	r.AddMocker(typ, method, i)
+	return m
+}
+
+/******************************** Mocker50 ***********************************/
+
+type Mocker50[T1, T2, T3, T4, T5 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5) bool
+	fnWhen   func(T1, T2, T3, T4, T5) bool
+	fnReturn func()
+}
+
+// Handle sets a custom function to handle requests.
+func (m *Mocker50[T1, T2, T3, T4, T5]) Handle(fn func(T1, T2, T3, T4, T5) bool) {
+	m.fnHandle = fn
+}
+
+// When sets a condition function that determines if the mock should apply.
+func (m *Mocker50[T1, T2, T3, T4, T5]) When(fn func(T1, T2, T3, T4, T5) bool) *Mocker50[T1, T2, T3, T4, T5] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that returns predefined values.
+func (m *Mocker50[T1, T2, T3, T4, T5]) Return(fn func()) {
+	m.fnReturn = fn
+}
+
+// Invoker50 is an Invoker implementation for Mocker50.
+type Invoker50[T1, T2, T3, T4, T5 any] struct {
+	*Mocker50[T1, T2, T3, T4, T5]
+}
+
+// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
+func (m *Invoker50[T1, T2, T3, T4, T5]) Mode() Mode {
+	if m.fnHandle != nil {
+		return ModeHandle
+	}
+	return ModeWhenReturn
+}
+
+// Handle executes the custom function if set.
+func (m *Invoker50[T1, T2, T3, T4, T5]) Handle(params []interface{}) ([]interface{}, bool) {
+	ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return []interface{}{}, ok
+}
+
+// When checks if the condition function evaluates to true.
+func (m *Invoker50[T1, T2, T3, T4, T5]) When(params []interface{}) bool {
+	if m.fnWhen == nil {
+		return false
+	}
+	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+}
+
+// Return provides predefined response and error values.
+func (m *Invoker50[T1, T2, T3, T4, T5]) Return(params []interface{}) []interface{} {
+	m.fnReturn()
+	return []interface{}{}
+}
+
+// NewMocker50 creates a new Mocker50 instance.
+func NewMocker50[T1, T2, T3, T4, T5 any](r *Manager, typ reflect.Type, method string) *Mocker50[T1, T2, T3, T4, T5] {
+	m := &Mocker50[T1, T2, T3, T4, T5]{}
+	i := &Invoker50[T1, T2, T3, T4, T5]{Mocker50: m}
 	r.AddMocker(typ, method, i)
 	return m
 }
