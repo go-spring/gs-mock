@@ -18,15 +18,22 @@ package testdata
 
 import (
 	"context"
-	"net/http"
+	"fmt"
 
-	"github.com/go-spring/mock/mockgen/testdata/inner"
+	"github.com/go-spring/mock/gsmock/testdata/inner"
 )
 
-type RepositoryV2[T ~int | ~uint, M *http.Request] interface {
-	Repository[T]
+//go:generate gsmock -o src_mock.go -i '!ServiceV2'
+
+var _ = fmt.Println
+
+type Response struct{}
+
+type Service interface {
+	Get(ctx context.Context, req *inner.Request, params map[string]string) (*Response, error)
 }
 
-type ServiceV2 interface {
-	Get(ctx context.Context, req *inner.Request, params map[string]string) (*Response, error)
+type Repository[T any] interface {
+	Save(item T) error
+	FindByID(id string) (T, error)
 }

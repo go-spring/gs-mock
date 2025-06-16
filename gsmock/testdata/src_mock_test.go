@@ -21,8 +21,8 @@ import (
 	"testing"
 
 	"github.com/go-spring/mock"
+	"github.com/go-spring/mock/gsmock/testdata/inner"
 	"github.com/go-spring/mock/internal/assert"
-	"github.com/go-spring/mock/mockgen/testdata/inner"
 )
 
 func runService(s Service) {
