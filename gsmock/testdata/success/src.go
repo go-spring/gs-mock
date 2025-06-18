@@ -39,6 +39,7 @@ type GenericService[T any, R any] interface {
 	M02() (R, bool)
 	M12(T) (R, bool)
 	M22(ctx context.Context, req map[string]T) (*Response, bool)
+	Printf(format string, args ...any)
 }
 
 type Service interface {
@@ -50,4 +51,5 @@ type Service interface {
 	M02() (*Response, bool)
 	M12(*inner.Request) (*Response, bool)
 	M22(ctx context.Context, req map[string]*inner.Request) (*Response, bool)
+	Printf(format string, args ...any)
 }

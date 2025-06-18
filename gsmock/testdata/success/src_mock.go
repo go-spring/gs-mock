@@ -149,6 +149,19 @@ func (impl *GenericServiceMockImpl[T, R]) MockM22() *mock.Mocker22[context.Conte
 	return mock.NewMocker22[context.Context, map[string]T, *Response, bool](impl.r, t, "M22")
 }
 
+func (impl *GenericServiceMockImpl[T, R]) Printf(format string, args ...any) {
+	t := reflect.TypeFor[GenericServiceMockImpl[T, R]]()
+	if _, ok := mock.Invoke(impl.r, t, "Printf", format, args); ok {
+		return
+	}
+	panic("no mock code matched")
+}
+
+func (impl *GenericServiceMockImpl[T, R]) MockPrintf() *mock.Mocker20[string, []any] {
+	t := reflect.TypeFor[GenericServiceMockImpl[T, R]]()
+	return mock.NewMocker20[string, []any](impl.r, t, "Printf")
+}
+
 type ServiceMockImpl struct {
 	io.Writer
 
@@ -248,4 +261,17 @@ func (impl *ServiceMockImpl) M22(ctx context.Context, req map[string]*inner.Requ
 func (impl *ServiceMockImpl) MockM22() *mock.Mocker22[context.Context, map[string]*inner.Request, *Response, bool] {
 	t := reflect.TypeFor[ServiceMockImpl]()
 	return mock.NewMocker22[context.Context, map[string]*inner.Request, *Response, bool](impl.r, t, "M22")
+}
+
+func (impl *ServiceMockImpl) Printf(format string, args ...any) {
+	t := reflect.TypeFor[ServiceMockImpl]()
+	if _, ok := mock.Invoke(impl.r, t, "Printf", format, args); ok {
+		return
+	}
+	panic("no mock code matched")
+}
+
+func (impl *ServiceMockImpl) MockPrintf() *mock.Mocker20[string, []any] {
+	t := reflect.TypeFor[ServiceMockImpl]()
+	return mock.NewMocker20[string, []any](impl.r, t, "Printf")
 }

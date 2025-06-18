@@ -356,13 +356,17 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 				)
 				if ft.Params != nil {
 					for i, param := range ft.Params.List {
-						typeText, pkgNames := getTypeText(param.Type)
-						paramTypes = append(paramTypes, typeText)
 						var paramName string
 						if len(param.Names) == 0 {
 							paramName = "r" + strconv.Itoa(i)
 						} else {
 							paramName = param.Names[0].Name
+						}
+						typeText, pkgNames := getTypeText(param.Type)
+						if strings.HasPrefix(typeText, "...") {
+							paramTypes = append(paramTypes, "[]"+typeText[3:])
+						} else {
+							paramTypes = append(paramTypes, typeText)
 						}
 						paramNames = append(paramNames, paramName)
 						params = append(params, paramName+" "+typeText)
