@@ -19,21 +19,35 @@ package success
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/go-spring/mock/gsmock/testdata/success/inner"
 )
 
-//go:generate gsmock -o src_mock.go -i '!ServiceV2'
+//go:generate gsmock -o src_mock.go -i '!RepositoryV2'
 
 var _ = fmt.Println
 
 type Response struct{}
 
-type Service interface {
-	Get(ctx context.Context, req *inner.Request, params map[string]string) (*Response, error)
+type GenericService[T any, R any] interface {
+	io.Writer
+	M00()
+	M01() R
+	M10(T)
+	M11(T) R
+	M02() (R, bool)
+	M12(T) (R, bool)
+	M22(ctx context.Context, req map[string]T) (*Response, bool)
 }
 
-type Repository[T any] interface {
-	Save(item T) error
-	FindByID(id string) (T, error)
+type Service interface {
+	io.Writer
+	M00()
+	M01() *Response
+	M10(*inner.Request)
+	M11(*inner.Request) *Response
+	M02() (*Response, bool)
+	M12(*inner.Request) (*Response, bool)
+	M22(ctx context.Context, req map[string]*inner.Request) (*Response, bool)
 }

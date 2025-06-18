@@ -17,16 +17,14 @@
 package success
 
 import (
-	"context"
 	"net/http"
-
-	"github.com/go-spring/mock/gsmock/testdata/success/inner"
 )
 
-type RepositoryV2[T ~int | ~uint, M *http.Request] interface {
-	Repository[T]
+type Repository[T ~int | ~uint, M *http.Request] interface {
+	FindByID(id string) (T, error)
+	Save(item T) error
 }
 
-type ServiceV2 interface {
-	Get(ctx context.Context, req *inner.Request, params map[string]string) (*Response, error)
+type RepositoryV2[T ~int | ~uint, M *http.Request] interface {
+	Repository[T, M]
 }

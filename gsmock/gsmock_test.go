@@ -21,9 +21,18 @@ import (
 )
 
 func TestMockgen(t *testing.T) {
-	run(runParam{
-		sourceDir:      "./testdata",
-		outputFile:     "src_mock.go",
-		mockInterfaces: "!ServiceV2",
+	//t.Run("all_default", func(t *testing.T) {
+	//	run(runParam{
+	//		sourceDir:  "./testdata/all_default",
+	//		outputFile: "src_mock.go",
+	//	})
+	//})
+
+	t.Run("success", func(t *testing.T) {
+		run(runParam{
+			sourceDir:      "./testdata/success",
+			outputFile:     "src_mock.go",
+			mockInterfaces: "!RepositoryV2",
+		})
 	})
 }

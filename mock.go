@@ -109,6 +109,9 @@ func Invoke(r *Manager, typ reflect.Type, method string, params ...interface{}) 
 
 // InvokeContext is a convenience function that invokes a mock using context to retrieve the Manager.
 func InvokeContext(ctx context.Context, typ reflect.Type, method string, params ...interface{}) ([]interface{}, bool) {
+	if !testing.Testing() {
+		return nil, false
+	}
 	return Invoke(getManager(ctx), typ, method, params...)
 }
 
@@ -117,7 +120,7 @@ func Unbox1[R1 any](ret []interface{}) (r1 R1) {
 	if len(ret) == 1 {
 		r1, _ = ret[0].(R1)
 	} else {
-		log.Printf("Warning: unexpected number of return values: %d", len(ret))
+		log.Printf("Warning: expected 1 return value, but got %d", len(ret))
 	}
 	return
 }
@@ -128,7 +131,7 @@ func Unbox2[R1, R2 any](ret []interface{}) (r1 R1, r2 R2) {
 		r1, _ = ret[0].(R1)
 		r2, _ = ret[1].(R2)
 	} else {
-		log.Printf("Warning: unexpected number of return values: %d", len(ret))
+		log.Printf("Warning: expected 2 return values, but got %d", len(ret))
 	}
 	return
 }
@@ -140,7 +143,7 @@ func Unbox3[R1, R2, R3 any](ret []interface{}) (r1 R1, r2 R2, r3 R3) {
 		r2, _ = ret[1].(R2)
 		r3, _ = ret[2].(R3)
 	} else {
-		log.Printf("Warning: unexpected number of return values: %d", len(ret))
+		log.Printf("Warning: expected 3 return values, but got %d", len(ret))
 	}
 	return
 }
@@ -153,7 +156,7 @@ func Unbox4[R1, R2, R3, R4 any](ret []interface{}) (r1 R1, r2 R2, r3 R3, r4 R4) 
 		r3, _ = ret[2].(R3)
 		r4, _ = ret[3].(R4)
 	} else {
-		log.Printf("Warning: unexpected number of return values: %d", len(ret))
+		log.Printf("Warning: expected 4 return values, but got %d", len(ret))
 	}
 	return
 }
@@ -167,7 +170,7 @@ func Unbox5[R1, R2, R3, R4, R5 any](ret []interface{}) (r1 R1, r2 R2, r3 R3, r4 
 		r4, _ = ret[3].(R4)
 		r5, _ = ret[4].(R5)
 	} else {
-		log.Printf("Warning: unexpected number of return values: %d", len(ret))
+		log.Printf("Warning: expected 5 return values, but got %d", len(ret))
 	}
 	return
 }
