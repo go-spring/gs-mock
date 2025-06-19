@@ -31,24 +31,6 @@ const (
 	ModeWhenReturn
 )
 
-var managerKey int
-
-// getManager retrieves the Manager instance from the context.
-func getManager(ctx context.Context) *Manager {
-	if r, ok := ctx.Value(&managerKey).(*Manager); ok {
-		return r
-	}
-	return nil
-}
-
-// Init initializes a new Manager and embeds it into the given context.
-func Init(ctx context.Context) (*Manager, context.Context) {
-	r := &Manager{
-		mockers: make(map[mockerKey][]Invoker),
-	}
-	return r, context.WithValue(ctx, &managerKey, r)
-}
-
 // Invoker defines the interface that all mock implementations must satisfy.
 type Invoker interface {
 	// Mode returns the mocking mode
@@ -70,6 +52,28 @@ type mockerKey struct {
 // Manager manages a collection of mockers for different types and methods.
 type Manager struct {
 	mockers map[mockerKey][]Invoker
+}
+
+// NewManager creates and returns a new Manager instance.
+func NewManager() *Manager {
+	return &Manager{
+		mockers: make(map[mockerKey][]Invoker),
+	}
+}
+
+var managerKey int
+
+// getManager retrieves the Manager instance from the context.
+func getManager(ctx context.Context) *Manager {
+	if r, ok := ctx.Value(&managerKey).(*Manager); ok {
+		return r
+	}
+	return nil
+}
+
+// BindTo returns a new context with the Manager attached to it.
+func (r *Manager) BindTo(ctx context.Context) context.Context {
+	return context.WithValue(ctx, &managerKey, r)
 }
 
 // GetMockers retrieves all mockers for a given type and method.

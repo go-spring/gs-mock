@@ -31,6 +31,9 @@ type Mocker00 struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker00) Handle(fn func() bool) {
 	m.fnHandle = fn
 }
@@ -114,6 +117,9 @@ type {{.mockerName}}[{{.resp}} any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *{{.mockerName}}[{{.resp}}]) Handle(fn func() ({{.resp}}, bool)) {
 	m.fnHandle = fn
 }
@@ -197,6 +203,9 @@ type {{.mockerName}}[{{.req}} any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *{{.mockerName}}[{{.req}}]) Handle(fn func({{.req}}) bool) {
 	m.fnHandle = fn
 }
@@ -280,6 +289,9 @@ type {{.mockerName}}[{{.req}} any, {{.resp}} any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Handle(fn func({{.req}}) ({{.resp}}, bool)) {
 	m.fnHandle = fn
 }

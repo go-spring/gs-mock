@@ -85,7 +85,8 @@ func TestMockWithContext(t *testing.T) {
 		assert.Equal(t, resp.Message, "9:xxx")
 	}
 
-	r, ctx := mock.Init(context.Background())
+	r := mock.NewManager()
+	ctx := r.BindTo(t.Context())
 
 	// Test case: When && Return
 	{
@@ -214,7 +215,7 @@ func (c *MockClient) MockQueryWithHeader() *mock.Mocker23[*Request, *Trace, *Res
 
 func TestMockNoContext(t *testing.T) {
 
-	r, _ := mock.Init(context.Background())
+	r := mock.NewManager()
 
 	var c ClientInterface
 	mc := NewMockClient(r)

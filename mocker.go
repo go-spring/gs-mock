@@ -34,6 +34,9 @@ type Mocker00 struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker00) Handle(fn func() bool) {
 	m.fnHandle = fn
 }
@@ -114,6 +117,9 @@ type Mocker01[R1 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker01[R1]) Handle(fn func() (R1, bool)) {
 	m.fnHandle = fn
 }
@@ -194,6 +200,9 @@ type Mocker02[R1, R2 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker02[R1, R2]) Handle(fn func() (R1, R2, bool)) {
 	m.fnHandle = fn
 }
@@ -274,6 +283,9 @@ type Mocker03[R1, R2, R3 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker03[R1, R2, R3]) Handle(fn func() (R1, R2, R3, bool)) {
 	m.fnHandle = fn
 }
@@ -354,6 +366,9 @@ type Mocker04[R1, R2, R3, R4 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker04[R1, R2, R3, R4]) Handle(fn func() (R1, R2, R3, R4, bool)) {
 	m.fnHandle = fn
 }
@@ -434,6 +449,9 @@ type Mocker05[R1, R2, R3, R4, R5 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker05[R1, R2, R3, R4, R5]) Handle(fn func() (R1, R2, R3, R4, R5, bool)) {
 	m.fnHandle = fn
 }
@@ -514,6 +532,9 @@ type Mocker10[T1 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker10[T1]) Handle(fn func(T1) bool) {
 	m.fnHandle = fn
 }
@@ -594,6 +615,9 @@ type Mocker11[T1 any, R1 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker11[T1, R1]) Handle(fn func(T1) (R1, bool)) {
 	m.fnHandle = fn
 }
@@ -674,6 +698,9 @@ type Mocker12[T1 any, R1, R2 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker12[T1, R1, R2]) Handle(fn func(T1) (R1, R2, bool)) {
 	m.fnHandle = fn
 }
@@ -754,6 +781,9 @@ type Mocker13[T1 any, R1, R2, R3 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker13[T1, R1, R2, R3]) Handle(fn func(T1) (R1, R2, R3, bool)) {
 	m.fnHandle = fn
 }
@@ -834,6 +864,9 @@ type Mocker14[T1 any, R1, R2, R3, R4 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker14[T1, R1, R2, R3, R4]) Handle(fn func(T1) (R1, R2, R3, R4, bool)) {
 	m.fnHandle = fn
 }
@@ -914,6 +947,9 @@ type Mocker15[T1 any, R1, R2, R3, R4, R5 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker15[T1, R1, R2, R3, R4, R5]) Handle(fn func(T1) (R1, R2, R3, R4, R5, bool)) {
 	m.fnHandle = fn
 }
@@ -994,6 +1030,9 @@ type Mocker20[T1, T2 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker20[T1, T2]) Handle(fn func(T1, T2) bool) {
 	m.fnHandle = fn
 }
@@ -1074,6 +1113,9 @@ type Mocker21[T1, T2 any, R1 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker21[T1, T2, R1]) Handle(fn func(T1, T2) (R1, bool)) {
 	m.fnHandle = fn
 }
@@ -1154,6 +1196,9 @@ type Mocker22[T1, T2 any, R1, R2 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker22[T1, T2, R1, R2]) Handle(fn func(T1, T2) (R1, R2, bool)) {
 	m.fnHandle = fn
 }
@@ -1234,6 +1279,9 @@ type Mocker23[T1, T2 any, R1, R2, R3 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker23[T1, T2, R1, R2, R3]) Handle(fn func(T1, T2) (R1, R2, R3, bool)) {
 	m.fnHandle = fn
 }
@@ -1314,6 +1362,9 @@ type Mocker24[T1, T2 any, R1, R2, R3, R4 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Handle(fn func(T1, T2) (R1, R2, R3, R4, bool)) {
 	m.fnHandle = fn
 }
@@ -1394,6 +1445,9 @@ type Mocker25[T1, T2 any, R1, R2, R3, R4, R5 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2) (R1, R2, R3, R4, R5, bool)) {
 	m.fnHandle = fn
 }
@@ -1474,6 +1528,9 @@ type Mocker30[T1, T2, T3 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker30[T1, T2, T3]) Handle(fn func(T1, T2, T3) bool) {
 	m.fnHandle = fn
 }
@@ -1554,6 +1611,9 @@ type Mocker31[T1, T2, T3 any, R1 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker31[T1, T2, T3, R1]) Handle(fn func(T1, T2, T3) (R1, bool)) {
 	m.fnHandle = fn
 }
@@ -1634,6 +1694,9 @@ type Mocker32[T1, T2, T3 any, R1, R2 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker32[T1, T2, T3, R1, R2]) Handle(fn func(T1, T2, T3) (R1, R2, bool)) {
 	m.fnHandle = fn
 }
@@ -1714,6 +1777,9 @@ type Mocker33[T1, T2, T3 any, R1, R2, R3 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Handle(fn func(T1, T2, T3) (R1, R2, R3, bool)) {
 	m.fnHandle = fn
 }
@@ -1794,6 +1860,9 @@ type Mocker34[T1, T2, T3 any, R1, R2, R3, R4 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3) (R1, R2, R3, R4, bool)) {
 	m.fnHandle = fn
 }
@@ -1874,6 +1943,9 @@ type Mocker35[T1, T2, T3 any, R1, R2, R3, R4, R5 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3) (R1, R2, R3, R4, R5, bool)) {
 	m.fnHandle = fn
 }
@@ -1954,6 +2026,9 @@ type Mocker40[T1, T2, T3, T4 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker40[T1, T2, T3, T4]) Handle(fn func(T1, T2, T3, T4) bool) {
 	m.fnHandle = fn
 }
@@ -2034,6 +2109,9 @@ type Mocker41[T1, T2, T3, T4 any, R1 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker41[T1, T2, T3, T4, R1]) Handle(fn func(T1, T2, T3, T4) (R1, bool)) {
 	m.fnHandle = fn
 }
@@ -2114,6 +2192,9 @@ type Mocker42[T1, T2, T3, T4 any, R1, R2 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Handle(fn func(T1, T2, T3, T4) (R1, R2, bool)) {
 	m.fnHandle = fn
 }
@@ -2194,6 +2275,9 @@ type Mocker43[T1, T2, T3, T4 any, R1, R2, R3 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, bool)) {
 	m.fnHandle = fn
 }
@@ -2274,6 +2358,9 @@ type Mocker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, R4, bool)) {
 	m.fnHandle = fn
 }
@@ -2354,6 +2441,9 @@ type Mocker45[T1, T2, T3, T4 any, R1, R2, R3, R4, R5 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, R4, R5, bool)) {
 	m.fnHandle = fn
 }
@@ -2434,6 +2524,9 @@ type Mocker50[T1, T2, T3, T4, T5 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker50[T1, T2, T3, T4, T5]) Handle(fn func(T1, T2, T3, T4, T5) bool) {
 	m.fnHandle = fn
 }
@@ -2514,6 +2607,9 @@ type Mocker51[T1, T2, T3, T4, T5 any, R1 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Handle(fn func(T1, T2, T3, T4, T5) (R1, bool)) {
 	m.fnHandle = fn
 }
@@ -2594,6 +2690,9 @@ type Mocker52[T1, T2, T3, T4, T5 any, R1, R2 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, bool)) {
 	m.fnHandle = fn
 }
@@ -2674,6 +2773,9 @@ type Mocker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, bool)) {
 	m.fnHandle = fn
 }
@@ -2754,6 +2856,9 @@ type Mocker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, bool)) {
 	m.fnHandle = fn
 }
@@ -2834,6 +2939,9 @@ type Mocker55[T1, T2, T3, T4, T5 any, R1, R2, R3, R4, R5 any] struct {
 }
 
 // Handle sets a custom function to handle requests.
+// The provided function returns a boolean indicating whether the request was handled.
+// If the boolean is true, the handler is considered to have processed the request;
+// otherwise, it is treated as unhandled.
 func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, R5, bool)) {
 	m.fnHandle = fn
 }

@@ -26,8 +26,7 @@ import (
 )
 
 func TestNil(t *testing.T) {
-	r, _ := mock.Init(t.Context())
-	s := assert.NewTMockImpl(r)
+	s := assert.NewTMockImpl(mock.NewManager())
 
 	s.MockHelper().Ignore()
 
@@ -45,8 +44,7 @@ func TestNil(t *testing.T) {
 }
 
 func TestEqual(t *testing.T) {
-	r, _ := mock.Init(t.Context())
-	s := assert.NewTMockImpl(r)
+	s := assert.NewTMockImpl(mock.NewManager())
 
 	s.MockHelper().Ignore()
 
@@ -61,8 +59,7 @@ func TestEqual(t *testing.T) {
 }
 
 func TestPanic(t *testing.T) {
-	r, _ := mock.Init(t.Context())
-	s := assert.NewTMockImpl(r)
+	s := assert.NewTMockImpl(mock.NewManager())
 
 	s.MockHelper().Ignore()
 
