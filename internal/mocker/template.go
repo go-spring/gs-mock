@@ -25,16 +25,13 @@ var mocker00Tmpl = template.Must(template.New("mocker").Parse(`
 /******************************** Mocker00 ***********************************/
 
 type Mocker00 struct {
-	fnHandle func() bool
+	fnHandle func()
 	fnWhen   func() bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker00) Handle(fn func() bool) {
+func (m *Mocker00) Handle(fn func()) {
 	m.fnHandle = fn
 }
 
@@ -78,9 +75,9 @@ func (m *Invoker00) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker00) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle({{.cvtParams}})
-	return []interface{}{}, ok
+func (m *Invoker00) Handle(params []interface{}) ([]interface{}) {
+	m.fnHandle({{.cvtParams}})
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -111,16 +108,13 @@ var mocker0NTmpl = template.Must(template.New("mocker").Parse(`
 /******************************** {{.mockerName}} ***********************************/
 
 type {{.mockerName}}[{{.resp}} any] struct {
-	fnHandle func() ({{.resp}}, bool)
+	fnHandle func() ({{.resp}})
 	fnWhen   func() bool
 	fnReturn func() ({{.resp}})
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *{{.mockerName}}[{{.resp}}]) Handle(fn func() ({{.resp}}, bool)) {
+func (m *{{.mockerName}}[{{.resp}}]) Handle(fn func() ({{.resp}})) {
 	m.fnHandle = fn
 }
 
@@ -164,9 +158,9 @@ func (m *{{.invokerName}}[{{.resp}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.resp}}]) Handle(params []interface{}) ([]interface{}, bool) {
-	{{.respOnlyArg}}, ok := m.fnHandle({{.cvtParams}})
-	return []interface{}{ {{.respOnlyArg}}}, ok
+func (m *{{.invokerName}}[{{.resp}}]) Handle(params []interface{}) ([]interface{}) {
+	{{.respOnlyArg}} := m.fnHandle({{.cvtParams}})
+	return []interface{}{ {{.respOnlyArg}}}
 }
 
 // When checks if the condition function evaluates to true.
@@ -197,16 +191,13 @@ var mockerN0Tmpl = template.Must(template.New("mocker").Parse(`
 /******************************** {{.mockerName}} ***********************************/
 
 type {{.mockerName}}[{{.req}} any] struct {
-	fnHandle func({{.req}}) bool
+	fnHandle func({{.req}})
 	fnWhen   func({{.req}}) bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *{{.mockerName}}[{{.req}}]) Handle(fn func({{.req}}) bool) {
+func (m *{{.mockerName}}[{{.req}}]) Handle(fn func({{.req}})) {
 	m.fnHandle = fn
 }
 
@@ -250,9 +241,9 @@ func (m *{{.invokerName}}[{{.req}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.req}}]) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle({{.cvtParams}})
-	return []interface{}{}, ok
+func (m *{{.invokerName}}[{{.req}}]) Handle(params []interface{}) ([]interface{}) {
+	m.fnHandle({{.cvtParams}})
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -283,16 +274,13 @@ var mockerNNTmpl = template.Must(template.New("mocker").Parse(`
 /******************************** {{.mockerName}} ***********************************/
 
 type {{.mockerName}}[{{.req}} any, {{.resp}} any] struct {
-	fnHandle func({{.req}}) ({{.resp}}, bool)
+	fnHandle func({{.req}}) ({{.resp}})
 	fnWhen   func({{.req}}) bool
 	fnReturn func() ({{.resp}})
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Handle(fn func({{.req}}) ({{.resp}}, bool)) {
+func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Handle(fn func({{.req}}) ({{.resp}})) {
 	m.fnHandle = fn
 }
 
@@ -336,9 +324,9 @@ func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Handle(params []interface{}) ([]interface{}, bool) {
-	{{.respOnlyArg}}, ok := m.fnHandle({{.cvtParams}})
-	return []interface{}{ {{.respOnlyArg}}}, ok
+func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Handle(params []interface{}) ([]interface{}) {
+	{{.respOnlyArg}} := m.fnHandle({{.cvtParams}})
+	return []interface{}{ {{.respOnlyArg}}}
 }
 
 // When checks if the condition function evaluates to true.

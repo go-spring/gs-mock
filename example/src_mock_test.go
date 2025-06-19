@@ -36,8 +36,8 @@ func TestRepositoryMockImpl_FindByID(t *testing.T) {
 		_, _ = s.FindByID("1")
 	}, "no mock code matched")
 
-	s.MockFindByID().Handle(func(s string) (ItemType, error, bool) {
-		return ItemType(666), nil, true
+	s.MockFindByID().Handle(func(s string) (ItemType, error) {
+		return ItemType(666), nil
 	})
 
 	v, err := s.FindByID("1")
@@ -52,8 +52,8 @@ func TestRepositoryMockImpl_Save(t *testing.T) {
 		_ = s.Save(ItemType(666))
 	}, "no mock code matched")
 
-	s.MockSave().Handle(func(v ItemType) (error, bool) {
-		return nil, true
+	s.MockSave().Handle(func(v ItemType) error {
+		return nil
 	})
 
 	err := s.Save(ItemType(666))
@@ -79,8 +79,8 @@ func TestGenericServiceMockImpl_M01(t *testing.T) {
 		s.M01()
 	}, "no mock code matched")
 
-	s.MockM01().Handle(func() (int, bool) {
-		return 5, true
+	s.MockM01().Handle(func() int {
+		return 5
 	})
 
 	resp := s.M01()
@@ -106,8 +106,8 @@ func TestGenericServiceMockImpl_M11(t *testing.T) {
 		s.M11("")
 	}, "no mock code matched")
 
-	s.MockM11().Handle(func(s string) (int, bool) {
-		return 5, true
+	s.MockM11().Handle(func(s string) int {
+		return 5
 	})
 
 	resp := s.M11("abc")
@@ -121,8 +121,8 @@ func TestGenericServiceMockImpl_M02(t *testing.T) {
 		s.M02()
 	}, "no mock code matched")
 
-	s.MockM02().Handle(func() (int, bool, bool) {
-		return 5, false, true
+	s.MockM02().Handle(func() (int, bool) {
+		return 5, false
 	})
 
 	resp, ok := s.M02()
@@ -137,8 +137,8 @@ func TestGenericServiceMockImpl_M12(t *testing.T) {
 		s.M12("")
 	}, "no mock code matched")
 
-	s.MockM12().Handle(func(s string) (int, bool, bool) {
-		return 5, false, true
+	s.MockM12().Handle(func(s string) (int, bool) {
+		return 5, false
 	})
 
 	resp, ok := s.M12("abc")
@@ -155,8 +155,8 @@ func TestGenericServiceMockImpl_M22(t *testing.T) {
 		s.M22(ctx, map[string]string{})
 	}, "no mock code matched")
 
-	s.MockM22().Handle(func(ctx context.Context, m map[string]string) (*Response, bool, bool) {
-		return &Response{Value: 5}, false, true
+	s.MockM22().Handle(func(ctx context.Context, m map[string]string) (*Response, bool) {
+		return &Response{Value: 5}, false
 	})
 
 	resp, ok := s.M22(ctx, map[string]string{})
@@ -172,9 +172,8 @@ func TestGenericServiceMockImpl_Print(t *testing.T) {
 	}, "no mock code matched")
 
 	var buf bytes.Buffer
-	s.MockPrintf().Handle(func(format string, args []any) bool {
+	s.MockPrintf().Handle(func(format string, args []any) {
 		buf.WriteString(fmt.Sprintf(format, args...))
-		return true
 	})
 
 	s.Printf("%s\n", "123")
@@ -200,8 +199,8 @@ func TestServiceMockImpl_M01(t *testing.T) {
 		s.M01()
 	}, "no mock code matched")
 
-	s.MockM01().Handle(func() (*Response, bool) {
-		return &Response{Value: 5}, true
+	s.MockM01().Handle(func() *Response {
+		return &Response{Value: 5}
 	})
 
 	resp := s.M01()
@@ -227,8 +226,8 @@ func TestServiceMockImpl_M11(t *testing.T) {
 		s.M11(&inner.Request{})
 	}, "no mock code matched")
 
-	s.MockM11().Handle(func(req *inner.Request) (*Response, bool) {
-		return &Response{Value: 5}, true
+	s.MockM11().Handle(func(req *inner.Request) *Response {
+		return &Response{Value: 5}
 	})
 
 	resp := s.M11(&inner.Request{})
@@ -242,8 +241,8 @@ func TestServiceMockImpl_M02(t *testing.T) {
 		s.M02()
 	}, "no mock code matched")
 
-	s.MockM02().Handle(func() (*Response, bool, bool) {
-		return &Response{Value: 5}, false, true
+	s.MockM02().Handle(func() (*Response, bool) {
+		return &Response{Value: 5}, false
 	})
 
 	resp, ok := s.M02()
@@ -258,8 +257,8 @@ func TestServiceMockImpl_M12(t *testing.T) {
 		s.M12(&inner.Request{})
 	}, "no mock code matched")
 
-	s.MockM12().Handle(func(req *inner.Request) (*Response, bool, bool) {
-		return &Response{Value: 5}, false, true
+	s.MockM12().Handle(func(req *inner.Request) (*Response, bool) {
+		return &Response{Value: 5}, false
 	})
 
 	resp, ok := s.M12(&inner.Request{})
@@ -276,8 +275,8 @@ func TestServiceMockImpl_M22(t *testing.T) {
 		s.M22(ctx, map[string]*inner.Request{})
 	}, "no mock code matched")
 
-	s.MockM22().Handle(func(ctx context.Context, m map[string]*inner.Request) (*Response, bool, bool) {
-		return &Response{Value: 5}, false, true
+	s.MockM22().Handle(func(ctx context.Context, m map[string]*inner.Request) (*Response, bool) {
+		return &Response{Value: 5}, false
 	})
 
 	resp, ok := s.M22(ctx, map[string]*inner.Request{})
@@ -293,9 +292,8 @@ func TestServiceMockImpl_Print(t *testing.T) {
 	}, "no mock code matched")
 
 	var buf bytes.Buffer
-	s.MockPrintf().Handle(func(format string, args []any) bool {
+	s.MockPrintf().Handle(func(format string, args []any) {
 		buf.WriteString(fmt.Sprintf(format, args...))
-		return true
 	})
 
 	s.Printf("%s\n", "123")

@@ -40,7 +40,7 @@ type Invoker interface {
 	// Return returns mock values
 	Return(params []interface{}) []interface{}
 	// Handle handles the function call and indicates if it was handled
-	Handle(params []interface{}) ([]interface{}, bool)
+	Handle(params []interface{}) []interface{}
 }
 
 // mockerKey is used as a key in the map to identify mockers by type and method.
@@ -93,13 +93,11 @@ func Invoke(r *Manager, typ reflect.Type, method string, params ...interface{}) 
 		return nil, false
 	}
 	mockers := r.getMockers(typ, method)
+	var defaultHandler Invoker
 	for _, f := range mockers {
 		switch f.Mode() {
 		case ModeHandle:
-			ret, ok := f.Handle(params)
-			if ok {
-				return ret, true
-			}
+			defaultHandler = f
 		case ModeWhenReturn:
 			if f.When(params) {
 				ret := f.Return(params)
@@ -107,6 +105,9 @@ func Invoke(r *Manager, typ reflect.Type, method string, params ...interface{}) 
 			}
 		default: // for linter
 		}
+	}
+	if defaultHandler != nil {
+		return defaultHandler.Handle(params), true
 	}
 	return nil, false
 }

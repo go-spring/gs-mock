@@ -28,16 +28,13 @@ const (
 /******************************** Mocker00 ***********************************/
 
 type Mocker00 struct {
-	fnHandle func() bool
+	fnHandle func()
 	fnWhen   func() bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker00) Handle(fn func() bool) {
+func (m *Mocker00) Handle(fn func()) {
 	m.fnHandle = fn
 }
 
@@ -81,9 +78,9 @@ func (m *Invoker00) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker00) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle()
-	return []interface{}{}, ok
+func (m *Invoker00) Handle(params []interface{}) []interface{} {
+	m.fnHandle()
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -111,16 +108,13 @@ func NewMocker00(r *Manager, typ reflect.Type, method string) *Mocker00 {
 /******************************** Mocker01 ***********************************/
 
 type Mocker01[R1 any] struct {
-	fnHandle func() (R1, bool)
+	fnHandle func() R1
 	fnWhen   func() bool
 	fnReturn func() R1
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker01[R1]) Handle(fn func() (R1, bool)) {
+func (m *Mocker01[R1]) Handle(fn func() R1) {
 	m.fnHandle = fn
 }
 
@@ -164,9 +158,9 @@ func (m *Invoker01[R1]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker01[R1]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, ok := m.fnHandle()
-	return []interface{}{r1}, ok
+func (m *Invoker01[R1]) Handle(params []interface{}) []interface{} {
+	r1 := m.fnHandle()
+	return []interface{}{r1}
 }
 
 // When checks if the condition function evaluates to true.
@@ -194,16 +188,13 @@ func NewMocker01[R1 any](r *Manager, typ reflect.Type, method string) *Mocker01[
 /******************************** Mocker02 ***********************************/
 
 type Mocker02[R1, R2 any] struct {
-	fnHandle func() (R1, R2, bool)
+	fnHandle func() (R1, R2)
 	fnWhen   func() bool
 	fnReturn func() (R1, R2)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker02[R1, R2]) Handle(fn func() (R1, R2, bool)) {
+func (m *Mocker02[R1, R2]) Handle(fn func() (R1, R2)) {
 	m.fnHandle = fn
 }
 
@@ -247,9 +238,9 @@ func (m *Invoker02[R1, R2]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker02[R1, R2]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, ok := m.fnHandle()
-	return []interface{}{r1, r2}, ok
+func (m *Invoker02[R1, R2]) Handle(params []interface{}) []interface{} {
+	r1, r2 := m.fnHandle()
+	return []interface{}{r1, r2}
 }
 
 // When checks if the condition function evaluates to true.
@@ -277,16 +268,13 @@ func NewMocker02[R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocke
 /******************************** Mocker03 ***********************************/
 
 type Mocker03[R1, R2, R3 any] struct {
-	fnHandle func() (R1, R2, R3, bool)
+	fnHandle func() (R1, R2, R3)
 	fnWhen   func() bool
 	fnReturn func() (R1, R2, R3)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker03[R1, R2, R3]) Handle(fn func() (R1, R2, R3, bool)) {
+func (m *Mocker03[R1, R2, R3]) Handle(fn func() (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
@@ -330,9 +318,9 @@ func (m *Invoker03[R1, R2, R3]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker03[R1, R2, R3]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, ok := m.fnHandle()
-	return []interface{}{r1, r2, r3}, ok
+func (m *Invoker03[R1, R2, R3]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3 := m.fnHandle()
+	return []interface{}{r1, r2, r3}
 }
 
 // When checks if the condition function evaluates to true.
@@ -360,16 +348,13 @@ func NewMocker03[R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *M
 /******************************** Mocker04 ***********************************/
 
 type Mocker04[R1, R2, R3, R4 any] struct {
-	fnHandle func() (R1, R2, R3, R4, bool)
+	fnHandle func() (R1, R2, R3, R4)
 	fnWhen   func() bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker04[R1, R2, R3, R4]) Handle(fn func() (R1, R2, R3, R4, bool)) {
+func (m *Mocker04[R1, R2, R3, R4]) Handle(fn func() (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
@@ -413,9 +398,9 @@ func (m *Invoker04[R1, R2, R3, R4]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker04[R1, R2, R3, R4]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, ok := m.fnHandle()
-	return []interface{}{r1, r2, r3, r4}, ok
+func (m *Invoker04[R1, R2, R3, R4]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4 := m.fnHandle()
+	return []interface{}{r1, r2, r3, r4}
 }
 
 // When checks if the condition function evaluates to true.
@@ -443,16 +428,13 @@ func NewMocker04[R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string
 /******************************** Mocker05 ***********************************/
 
 type Mocker05[R1, R2, R3, R4, R5 any] struct {
-	fnHandle func() (R1, R2, R3, R4, R5, bool)
+	fnHandle func() (R1, R2, R3, R4, R5)
 	fnWhen   func() bool
 	fnReturn func() (R1, R2, R3, R4, R5)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker05[R1, R2, R3, R4, R5]) Handle(fn func() (R1, R2, R3, R4, R5, bool)) {
+func (m *Mocker05[R1, R2, R3, R4, R5]) Handle(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnHandle = fn
 }
 
@@ -496,9 +478,9 @@ func (m *Invoker05[R1, R2, R3, R4, R5]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker05[R1, R2, R3, R4, R5]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, r5, ok := m.fnHandle()
-	return []interface{}{r1, r2, r3, r4, r5}, ok
+func (m *Invoker05[R1, R2, R3, R4, R5]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4, r5 := m.fnHandle()
+	return []interface{}{r1, r2, r3, r4, r5}
 }
 
 // When checks if the condition function evaluates to true.
@@ -526,16 +508,13 @@ func NewMocker05[R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method st
 /******************************** Mocker10 ***********************************/
 
 type Mocker10[T1 any] struct {
-	fnHandle func(T1) bool
+	fnHandle func(T1)
 	fnWhen   func(T1) bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker10[T1]) Handle(fn func(T1) bool) {
+func (m *Mocker10[T1]) Handle(fn func(T1)) {
 	m.fnHandle = fn
 }
 
@@ -579,9 +558,9 @@ func (m *Invoker10[T1]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker10[T1]) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle(params[0].(T1))
-	return []interface{}{}, ok
+func (m *Invoker10[T1]) Handle(params []interface{}) []interface{} {
+	m.fnHandle(params[0].(T1))
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -609,16 +588,13 @@ func NewMocker10[T1 any](r *Manager, typ reflect.Type, method string) *Mocker10[
 /******************************** Mocker11 ***********************************/
 
 type Mocker11[T1 any, R1 any] struct {
-	fnHandle func(T1) (R1, bool)
+	fnHandle func(T1) R1
 	fnWhen   func(T1) bool
 	fnReturn func() R1
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker11[T1, R1]) Handle(fn func(T1) (R1, bool)) {
+func (m *Mocker11[T1, R1]) Handle(fn func(T1) R1) {
 	m.fnHandle = fn
 }
 
@@ -662,9 +638,9 @@ func (m *Invoker11[T1, R1]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker11[T1, R1]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, ok := m.fnHandle(params[0].(T1))
-	return []interface{}{r1}, ok
+func (m *Invoker11[T1, R1]) Handle(params []interface{}) []interface{} {
+	r1 := m.fnHandle(params[0].(T1))
+	return []interface{}{r1}
 }
 
 // When checks if the condition function evaluates to true.
@@ -692,16 +668,13 @@ func NewMocker11[T1 any, R1 any](r *Manager, typ reflect.Type, method string) *M
 /******************************** Mocker12 ***********************************/
 
 type Mocker12[T1 any, R1, R2 any] struct {
-	fnHandle func(T1) (R1, R2, bool)
+	fnHandle func(T1) (R1, R2)
 	fnWhen   func(T1) bool
 	fnReturn func() (R1, R2)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker12[T1, R1, R2]) Handle(fn func(T1) (R1, R2, bool)) {
+func (m *Mocker12[T1, R1, R2]) Handle(fn func(T1) (R1, R2)) {
 	m.fnHandle = fn
 }
 
@@ -745,9 +718,9 @@ func (m *Invoker12[T1, R1, R2]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker12[T1, R1, R2]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, ok := m.fnHandle(params[0].(T1))
-	return []interface{}{r1, r2}, ok
+func (m *Invoker12[T1, R1, R2]) Handle(params []interface{}) []interface{} {
+	r1, r2 := m.fnHandle(params[0].(T1))
+	return []interface{}{r1, r2}
 }
 
 // When checks if the condition function evaluates to true.
@@ -775,16 +748,13 @@ func NewMocker12[T1 any, R1, R2 any](r *Manager, typ reflect.Type, method string
 /******************************** Mocker13 ***********************************/
 
 type Mocker13[T1 any, R1, R2, R3 any] struct {
-	fnHandle func(T1) (R1, R2, R3, bool)
+	fnHandle func(T1) (R1, R2, R3)
 	fnWhen   func(T1) bool
 	fnReturn func() (R1, R2, R3)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker13[T1, R1, R2, R3]) Handle(fn func(T1) (R1, R2, R3, bool)) {
+func (m *Mocker13[T1, R1, R2, R3]) Handle(fn func(T1) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
@@ -828,9 +798,9 @@ func (m *Invoker13[T1, R1, R2, R3]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker13[T1, R1, R2, R3]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, ok := m.fnHandle(params[0].(T1))
-	return []interface{}{r1, r2, r3}, ok
+func (m *Invoker13[T1, R1, R2, R3]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3 := m.fnHandle(params[0].(T1))
+	return []interface{}{r1, r2, r3}
 }
 
 // When checks if the condition function evaluates to true.
@@ -858,16 +828,13 @@ func NewMocker13[T1 any, R1, R2, R3 any](r *Manager, typ reflect.Type, method st
 /******************************** Mocker14 ***********************************/
 
 type Mocker14[T1 any, R1, R2, R3, R4 any] struct {
-	fnHandle func(T1) (R1, R2, R3, R4, bool)
+	fnHandle func(T1) (R1, R2, R3, R4)
 	fnWhen   func(T1) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker14[T1, R1, R2, R3, R4]) Handle(fn func(T1) (R1, R2, R3, R4, bool)) {
+func (m *Mocker14[T1, R1, R2, R3, R4]) Handle(fn func(T1) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
@@ -911,9 +878,9 @@ func (m *Invoker14[T1, R1, R2, R3, R4]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker14[T1, R1, R2, R3, R4]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, ok := m.fnHandle(params[0].(T1))
-	return []interface{}{r1, r2, r3, r4}, ok
+func (m *Invoker14[T1, R1, R2, R3, R4]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4 := m.fnHandle(params[0].(T1))
+	return []interface{}{r1, r2, r3, r4}
 }
 
 // When checks if the condition function evaluates to true.
@@ -941,16 +908,13 @@ func NewMocker14[T1 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Type, metho
 /******************************** Mocker15 ***********************************/
 
 type Mocker15[T1 any, R1, R2, R3, R4, R5 any] struct {
-	fnHandle func(T1) (R1, R2, R3, R4, R5, bool)
+	fnHandle func(T1) (R1, R2, R3, R4, R5)
 	fnWhen   func(T1) bool
 	fnReturn func() (R1, R2, R3, R4, R5)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker15[T1, R1, R2, R3, R4, R5]) Handle(fn func(T1) (R1, R2, R3, R4, R5, bool)) {
+func (m *Mocker15[T1, R1, R2, R3, R4, R5]) Handle(fn func(T1) (R1, R2, R3, R4, R5)) {
 	m.fnHandle = fn
 }
 
@@ -994,9 +958,9 @@ func (m *Invoker15[T1, R1, R2, R3, R4, R5]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker15[T1, R1, R2, R3, R4, R5]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, r5, ok := m.fnHandle(params[0].(T1))
-	return []interface{}{r1, r2, r3, r4, r5}, ok
+func (m *Invoker15[T1, R1, R2, R3, R4, R5]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4, r5 := m.fnHandle(params[0].(T1))
+	return []interface{}{r1, r2, r3, r4, r5}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1024,16 +988,13 @@ func NewMocker15[T1 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, m
 /******************************** Mocker20 ***********************************/
 
 type Mocker20[T1, T2 any] struct {
-	fnHandle func(T1, T2) bool
+	fnHandle func(T1, T2)
 	fnWhen   func(T1, T2) bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker20[T1, T2]) Handle(fn func(T1, T2) bool) {
+func (m *Mocker20[T1, T2]) Handle(fn func(T1, T2)) {
 	m.fnHandle = fn
 }
 
@@ -1077,9 +1038,9 @@ func (m *Invoker20[T1, T2]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker20[T1, T2]) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []interface{}{}, ok
+func (m *Invoker20[T1, T2]) Handle(params []interface{}) []interface{} {
+	m.fnHandle(params[0].(T1), params[1].(T2))
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1107,16 +1068,13 @@ func NewMocker20[T1, T2 any](r *Manager, typ reflect.Type, method string) *Mocke
 /******************************** Mocker21 ***********************************/
 
 type Mocker21[T1, T2 any, R1 any] struct {
-	fnHandle func(T1, T2) (R1, bool)
+	fnHandle func(T1, T2) R1
 	fnWhen   func(T1, T2) bool
 	fnReturn func() R1
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker21[T1, T2, R1]) Handle(fn func(T1, T2) (R1, bool)) {
+func (m *Mocker21[T1, T2, R1]) Handle(fn func(T1, T2) R1) {
 	m.fnHandle = fn
 }
 
@@ -1160,9 +1118,9 @@ func (m *Invoker21[T1, T2, R1]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker21[T1, T2, R1]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, ok := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []interface{}{r1}, ok
+func (m *Invoker21[T1, T2, R1]) Handle(params []interface{}) []interface{} {
+	r1 := m.fnHandle(params[0].(T1), params[1].(T2))
+	return []interface{}{r1}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1190,16 +1148,13 @@ func NewMocker21[T1, T2 any, R1 any](r *Manager, typ reflect.Type, method string
 /******************************** Mocker22 ***********************************/
 
 type Mocker22[T1, T2 any, R1, R2 any] struct {
-	fnHandle func(T1, T2) (R1, R2, bool)
+	fnHandle func(T1, T2) (R1, R2)
 	fnWhen   func(T1, T2) bool
 	fnReturn func() (R1, R2)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker22[T1, T2, R1, R2]) Handle(fn func(T1, T2) (R1, R2, bool)) {
+func (m *Mocker22[T1, T2, R1, R2]) Handle(fn func(T1, T2) (R1, R2)) {
 	m.fnHandle = fn
 }
 
@@ -1243,9 +1198,9 @@ func (m *Invoker22[T1, T2, R1, R2]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker22[T1, T2, R1, R2]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, ok := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []interface{}{r1, r2}, ok
+func (m *Invoker22[T1, T2, R1, R2]) Handle(params []interface{}) []interface{} {
+	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2))
+	return []interface{}{r1, r2}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1273,16 +1228,13 @@ func NewMocker22[T1, T2 any, R1, R2 any](r *Manager, typ reflect.Type, method st
 /******************************** Mocker23 ***********************************/
 
 type Mocker23[T1, T2 any, R1, R2, R3 any] struct {
-	fnHandle func(T1, T2) (R1, R2, R3, bool)
+	fnHandle func(T1, T2) (R1, R2, R3)
 	fnWhen   func(T1, T2) bool
 	fnReturn func() (R1, R2, R3)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker23[T1, T2, R1, R2, R3]) Handle(fn func(T1, T2) (R1, R2, R3, bool)) {
+func (m *Mocker23[T1, T2, R1, R2, R3]) Handle(fn func(T1, T2) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
@@ -1326,9 +1278,9 @@ func (m *Invoker23[T1, T2, R1, R2, R3]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker23[T1, T2, R1, R2, R3]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, ok := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []interface{}{r1, r2, r3}, ok
+func (m *Invoker23[T1, T2, R1, R2, R3]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2))
+	return []interface{}{r1, r2, r3}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1356,16 +1308,13 @@ func NewMocker23[T1, T2 any, R1, R2, R3 any](r *Manager, typ reflect.Type, metho
 /******************************** Mocker24 ***********************************/
 
 type Mocker24[T1, T2 any, R1, R2, R3, R4 any] struct {
-	fnHandle func(T1, T2) (R1, R2, R3, R4, bool)
+	fnHandle func(T1, T2) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Handle(fn func(T1, T2) (R1, R2, R3, R4, bool)) {
+func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Handle(fn func(T1, T2) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
@@ -1409,9 +1358,9 @@ func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, ok := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []interface{}{r1, r2, r3, r4}, ok
+func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2))
+	return []interface{}{r1, r2, r3, r4}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1439,16 +1388,13 @@ func NewMocker24[T1, T2 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Type, m
 /******************************** Mocker25 ***********************************/
 
 type Mocker25[T1, T2 any, R1, R2, R3, R4, R5 any] struct {
-	fnHandle func(T1, T2) (R1, R2, R3, R4, R5, bool)
+	fnHandle func(T1, T2) (R1, R2, R3, R4, R5)
 	fnWhen   func(T1, T2) bool
 	fnReturn func() (R1, R2, R3, R4, R5)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2) (R1, R2, R3, R4, R5, bool)) {
+func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2) (R1, R2, R3, R4, R5)) {
 	m.fnHandle = fn
 }
 
@@ -1492,9 +1438,9 @@ func (m *Invoker25[T1, T2, R1, R2, R3, R4, R5]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker25[T1, T2, R1, R2, R3, R4, R5]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, r5, ok := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []interface{}{r1, r2, r3, r4, r5}, ok
+func (m *Invoker25[T1, T2, R1, R2, R3, R4, R5]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4, r5 := m.fnHandle(params[0].(T1), params[1].(T2))
+	return []interface{}{r1, r2, r3, r4, r5}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1522,16 +1468,13 @@ func NewMocker25[T1, T2 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Typ
 /******************************** Mocker30 ***********************************/
 
 type Mocker30[T1, T2, T3 any] struct {
-	fnHandle func(T1, T2, T3) bool
+	fnHandle func(T1, T2, T3)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker30[T1, T2, T3]) Handle(fn func(T1, T2, T3) bool) {
+func (m *Mocker30[T1, T2, T3]) Handle(fn func(T1, T2, T3)) {
 	m.fnHandle = fn
 }
 
@@ -1575,9 +1518,9 @@ func (m *Invoker30[T1, T2, T3]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker30[T1, T2, T3]) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []interface{}{}, ok
+func (m *Invoker30[T1, T2, T3]) Handle(params []interface{}) []interface{} {
+	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1605,16 +1548,13 @@ func NewMocker30[T1, T2, T3 any](r *Manager, typ reflect.Type, method string) *M
 /******************************** Mocker31 ***********************************/
 
 type Mocker31[T1, T2, T3 any, R1 any] struct {
-	fnHandle func(T1, T2, T3) (R1, bool)
+	fnHandle func(T1, T2, T3) R1
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() R1
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker31[T1, T2, T3, R1]) Handle(fn func(T1, T2, T3) (R1, bool)) {
+func (m *Mocker31[T1, T2, T3, R1]) Handle(fn func(T1, T2, T3) R1) {
 	m.fnHandle = fn
 }
 
@@ -1658,9 +1598,9 @@ func (m *Invoker31[T1, T2, T3, R1]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker31[T1, T2, T3, R1]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []interface{}{r1}, ok
+func (m *Invoker31[T1, T2, T3, R1]) Handle(params []interface{}) []interface{} {
+	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+	return []interface{}{r1}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1688,16 +1628,13 @@ func NewMocker31[T1, T2, T3 any, R1 any](r *Manager, typ reflect.Type, method st
 /******************************** Mocker32 ***********************************/
 
 type Mocker32[T1, T2, T3 any, R1, R2 any] struct {
-	fnHandle func(T1, T2, T3) (R1, R2, bool)
+	fnHandle func(T1, T2, T3) (R1, R2)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() (R1, R2)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker32[T1, T2, T3, R1, R2]) Handle(fn func(T1, T2, T3) (R1, R2, bool)) {
+func (m *Mocker32[T1, T2, T3, R1, R2]) Handle(fn func(T1, T2, T3) (R1, R2)) {
 	m.fnHandle = fn
 }
 
@@ -1741,9 +1678,9 @@ func (m *Invoker32[T1, T2, T3, R1, R2]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker32[T1, T2, T3, R1, R2]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []interface{}{r1, r2}, ok
+func (m *Invoker32[T1, T2, T3, R1, R2]) Handle(params []interface{}) []interface{} {
+	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+	return []interface{}{r1, r2}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1771,16 +1708,13 @@ func NewMocker32[T1, T2, T3 any, R1, R2 any](r *Manager, typ reflect.Type, metho
 /******************************** Mocker33 ***********************************/
 
 type Mocker33[T1, T2, T3 any, R1, R2, R3 any] struct {
-	fnHandle func(T1, T2, T3) (R1, R2, R3, bool)
+	fnHandle func(T1, T2, T3) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() (R1, R2, R3)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Handle(fn func(T1, T2, T3) (R1, R2, R3, bool)) {
+func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Handle(fn func(T1, T2, T3) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
@@ -1824,9 +1758,9 @@ func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []interface{}{r1, r2, r3}, ok
+func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+	return []interface{}{r1, r2, r3}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1854,16 +1788,13 @@ func NewMocker33[T1, T2, T3 any, R1, R2, R3 any](r *Manager, typ reflect.Type, m
 /******************************** Mocker34 ***********************************/
 
 type Mocker34[T1, T2, T3 any, R1, R2, R3, R4 any] struct {
-	fnHandle func(T1, T2, T3) (R1, R2, R3, R4, bool)
+	fnHandle func(T1, T2, T3) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3) (R1, R2, R3, R4, bool)) {
+func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
@@ -1907,9 +1838,9 @@ func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []interface{}{r1, r2, r3, r4}, ok
+func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+	return []interface{}{r1, r2, r3, r4}
 }
 
 // When checks if the condition function evaluates to true.
@@ -1937,16 +1868,13 @@ func NewMocker34[T1, T2, T3 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Typ
 /******************************** Mocker35 ***********************************/
 
 type Mocker35[T1, T2, T3 any, R1, R2, R3, R4, R5 any] struct {
-	fnHandle func(T1, T2, T3) (R1, R2, R3, R4, R5, bool)
+	fnHandle func(T1, T2, T3) (R1, R2, R3, R4, R5)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() (R1, R2, R3, R4, R5)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3) (R1, R2, R3, R4, R5, bool)) {
+func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3) (R1, R2, R3, R4, R5)) {
 	m.fnHandle = fn
 }
 
@@ -1990,9 +1918,9 @@ func (m *Invoker35[T1, T2, T3, R1, R2, R3, R4, R5]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker35[T1, T2, T3, R1, R2, R3, R4, R5]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, r5, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []interface{}{r1, r2, r3, r4, r5}, ok
+func (m *Invoker35[T1, T2, T3, R1, R2, R3, R4, R5]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4, r5 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+	return []interface{}{r1, r2, r3, r4, r5}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2020,16 +1948,13 @@ func NewMocker35[T1, T2, T3 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect
 /******************************** Mocker40 ***********************************/
 
 type Mocker40[T1, T2, T3, T4 any] struct {
-	fnHandle func(T1, T2, T3, T4) bool
+	fnHandle func(T1, T2, T3, T4)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker40[T1, T2, T3, T4]) Handle(fn func(T1, T2, T3, T4) bool) {
+func (m *Mocker40[T1, T2, T3, T4]) Handle(fn func(T1, T2, T3, T4)) {
 	m.fnHandle = fn
 }
 
@@ -2073,9 +1998,9 @@ func (m *Invoker40[T1, T2, T3, T4]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker40[T1, T2, T3, T4]) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []interface{}{}, ok
+func (m *Invoker40[T1, T2, T3, T4]) Handle(params []interface{}) []interface{} {
+	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2103,16 +2028,13 @@ func NewMocker40[T1, T2, T3, T4 any](r *Manager, typ reflect.Type, method string
 /******************************** Mocker41 ***********************************/
 
 type Mocker41[T1, T2, T3, T4 any, R1 any] struct {
-	fnHandle func(T1, T2, T3, T4) (R1, bool)
+	fnHandle func(T1, T2, T3, T4) R1
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() R1
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker41[T1, T2, T3, T4, R1]) Handle(fn func(T1, T2, T3, T4) (R1, bool)) {
+func (m *Mocker41[T1, T2, T3, T4, R1]) Handle(fn func(T1, T2, T3, T4) R1) {
 	m.fnHandle = fn
 }
 
@@ -2156,9 +2078,9 @@ func (m *Invoker41[T1, T2, T3, T4, R1]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker41[T1, T2, T3, T4, R1]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []interface{}{r1}, ok
+func (m *Invoker41[T1, T2, T3, T4, R1]) Handle(params []interface{}) []interface{} {
+	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return []interface{}{r1}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2186,16 +2108,13 @@ func NewMocker41[T1, T2, T3, T4 any, R1 any](r *Manager, typ reflect.Type, metho
 /******************************** Mocker42 ***********************************/
 
 type Mocker42[T1, T2, T3, T4 any, R1, R2 any] struct {
-	fnHandle func(T1, T2, T3, T4) (R1, R2, bool)
+	fnHandle func(T1, T2, T3, T4) (R1, R2)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() (R1, R2)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Handle(fn func(T1, T2, T3, T4) (R1, R2, bool)) {
+func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Handle(fn func(T1, T2, T3, T4) (R1, R2)) {
 	m.fnHandle = fn
 }
 
@@ -2239,9 +2158,9 @@ func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []interface{}{r1, r2}, ok
+func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Handle(params []interface{}) []interface{} {
+	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return []interface{}{r1, r2}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2269,16 +2188,13 @@ func NewMocker42[T1, T2, T3, T4 any, R1, R2 any](r *Manager, typ reflect.Type, m
 /******************************** Mocker43 ***********************************/
 
 type Mocker43[T1, T2, T3, T4 any, R1, R2, R3 any] struct {
-	fnHandle func(T1, T2, T3, T4) (R1, R2, R3, bool)
+	fnHandle func(T1, T2, T3, T4) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() (R1, R2, R3)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, bool)) {
+func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
@@ -2322,9 +2238,9 @@ func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []interface{}{r1, r2, r3}, ok
+func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return []interface{}{r1, r2, r3}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2352,16 +2268,13 @@ func NewMocker43[T1, T2, T3, T4 any, R1, R2, R3 any](r *Manager, typ reflect.Typ
 /******************************** Mocker44 ***********************************/
 
 type Mocker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any] struct {
-	fnHandle func(T1, T2, T3, T4) (R1, R2, R3, R4, bool)
+	fnHandle func(T1, T2, T3, T4) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, R4, bool)) {
+func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
@@ -2405,9 +2318,9 @@ func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []interface{}{r1, r2, r3, r4}, ok
+func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return []interface{}{r1, r2, r3, r4}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2435,16 +2348,13 @@ func NewMocker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](r *Manager, typ reflect
 /******************************** Mocker45 ***********************************/
 
 type Mocker45[T1, T2, T3, T4 any, R1, R2, R3, R4, R5 any] struct {
-	fnHandle func(T1, T2, T3, T4) (R1, R2, R3, R4, R5, bool)
+	fnHandle func(T1, T2, T3, T4) (R1, R2, R3, R4, R5)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() (R1, R2, R3, R4, R5)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, R4, R5, bool)) {
+func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, R4, R5)) {
 	m.fnHandle = fn
 }
 
@@ -2488,9 +2398,9 @@ func (m *Invoker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, r5, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []interface{}{r1, r2, r3, r4, r5}, ok
+func (m *Invoker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4, r5 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return []interface{}{r1, r2, r3, r4, r5}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2518,16 +2428,13 @@ func NewMocker45[T1, T2, T3, T4 any, R1, R2, R3, R4, R5 any](r *Manager, typ ref
 /******************************** Mocker50 ***********************************/
 
 type Mocker50[T1, T2, T3, T4, T5 any] struct {
-	fnHandle func(T1, T2, T3, T4, T5) bool
+	fnHandle func(T1, T2, T3, T4, T5)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func()
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker50[T1, T2, T3, T4, T5]) Handle(fn func(T1, T2, T3, T4, T5) bool) {
+func (m *Mocker50[T1, T2, T3, T4, T5]) Handle(fn func(T1, T2, T3, T4, T5)) {
 	m.fnHandle = fn
 }
 
@@ -2571,9 +2478,9 @@ func (m *Invoker50[T1, T2, T3, T4, T5]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker50[T1, T2, T3, T4, T5]) Handle(params []interface{}) ([]interface{}, bool) {
-	ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []interface{}{}, ok
+func (m *Invoker50[T1, T2, T3, T4, T5]) Handle(params []interface{}) []interface{} {
+	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return []interface{}{}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2601,16 +2508,13 @@ func NewMocker50[T1, T2, T3, T4, T5 any](r *Manager, typ reflect.Type, method st
 /******************************** Mocker51 ***********************************/
 
 type Mocker51[T1, T2, T3, T4, T5 any, R1 any] struct {
-	fnHandle func(T1, T2, T3, T4, T5) (R1, bool)
+	fnHandle func(T1, T2, T3, T4, T5) R1
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() R1
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Handle(fn func(T1, T2, T3, T4, T5) (R1, bool)) {
+func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Handle(fn func(T1, T2, T3, T4, T5) R1) {
 	m.fnHandle = fn
 }
 
@@ -2654,9 +2558,9 @@ func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []interface{}{r1}, ok
+func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Handle(params []interface{}) []interface{} {
+	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return []interface{}{r1}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2684,16 +2588,13 @@ func NewMocker51[T1, T2, T3, T4, T5 any, R1 any](r *Manager, typ reflect.Type, m
 /******************************** Mocker52 ***********************************/
 
 type Mocker52[T1, T2, T3, T4, T5 any, R1, R2 any] struct {
-	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, bool)
+	fnHandle func(T1, T2, T3, T4, T5) (R1, R2)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() (R1, R2)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, bool)) {
+func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2)) {
 	m.fnHandle = fn
 }
 
@@ -2737,9 +2638,9 @@ func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []interface{}{r1, r2}, ok
+func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Handle(params []interface{}) []interface{} {
+	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return []interface{}{r1, r2}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2767,16 +2668,13 @@ func NewMocker52[T1, T2, T3, T4, T5 any, R1, R2 any](r *Manager, typ reflect.Typ
 /******************************** Mocker53 ***********************************/
 
 type Mocker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any] struct {
-	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3, bool)
+	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() (R1, R2, R3)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, bool)) {
+func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
@@ -2820,9 +2718,9 @@ func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []interface{}{r1, r2, r3}, ok
+func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return []interface{}{r1, r2, r3}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2850,16 +2748,13 @@ func NewMocker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](r *Manager, typ reflect
 /******************************** Mocker54 ***********************************/
 
 type Mocker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any] struct {
-	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, bool)
+	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, bool)) {
+func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
@@ -2903,9 +2798,9 @@ func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []interface{}{r1, r2, r3, r4}, ok
+func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return []interface{}{r1, r2, r3, r4}
 }
 
 // When checks if the condition function evaluates to true.
@@ -2933,16 +2828,13 @@ func NewMocker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](r *Manager, typ ref
 /******************************** Mocker55 ***********************************/
 
 type Mocker55[T1, T2, T3, T4, T5 any, R1, R2, R3, R4, R5 any] struct {
-	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, R5, bool)
+	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, R5)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() (R1, R2, R3, R4, R5)
 }
 
 // Handle sets a custom function to handle requests.
-// The provided function returns a boolean indicating whether the request was handled.
-// If the boolean is true, the handler is considered to have processed the request;
-// otherwise, it is treated as unhandled.
-func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, R5, bool)) {
+func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, R4, R5)) {
 	m.fnHandle = fn
 }
 
@@ -2986,9 +2878,9 @@ func (m *Invoker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Handle(params []interface{}) ([]interface{}, bool) {
-	r1, r2, r3, r4, r5, ok := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []interface{}{r1, r2, r3, r4, r5}, ok
+func (m *Invoker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Handle(params []interface{}) []interface{} {
+	r1, r2, r3, r4, r5 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return []interface{}{r1, r2, r3, r4, r5}
 }
 
 // When checks if the condition function evaluates to true.

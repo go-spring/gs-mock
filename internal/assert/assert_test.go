@@ -34,9 +34,8 @@ func TestNil(t *testing.T) {
 	assert.Nil(s, (*int)(nil))
 
 	var buf bytes.Buffer
-	s.MockError().Handle(func(args []interface{}) bool {
+	s.MockError().Handle(func(args []interface{}) {
 		buf.WriteString(args[0].(string))
-		return true
 	})
 
 	assert.Nil(s, errors.New("error"))
@@ -49,9 +48,8 @@ func TestEqual(t *testing.T) {
 	s.MockHelper().Ignore()
 
 	var buf bytes.Buffer
-	s.MockError().Handle(func(args []interface{}) bool {
+	s.MockError().Handle(func(args []interface{}) {
 		buf.WriteString(args[0].(string))
-		return true
 	})
 
 	assert.Equal(s, 1, 2)
@@ -64,9 +62,8 @@ func TestPanic(t *testing.T) {
 	s.MockHelper().Ignore()
 
 	var buf bytes.Buffer
-	s.MockError().Handle(func(args []interface{}) bool {
+	s.MockError().Handle(func(args []interface{}) {
 		buf.WriteString(args[0].(string))
-		return true
 	})
 
 	t.Run("did not panic", func(t *testing.T) {
