@@ -104,7 +104,7 @@ func (m *Invoker00) Return(params []interface{}) []interface{} {
 func NewMocker00(r *Manager, typ reflect.Type, method string) *Mocker00 {
 	m := &Mocker00{}
 	i := &Invoker00{Mocker00: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -187,7 +187,7 @@ func (m *Invoker01[R1]) Return(params []interface{}) []interface{} {
 func NewMocker01[R1 any](r *Manager, typ reflect.Type, method string) *Mocker01[R1] {
 	m := &Mocker01[R1]{}
 	i := &Invoker01[R1]{Mocker01: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -270,7 +270,7 @@ func (m *Invoker02[R1, R2]) Return(params []interface{}) []interface{} {
 func NewMocker02[R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocker02[R1, R2] {
 	m := &Mocker02[R1, R2]{}
 	i := &Invoker02[R1, R2]{Mocker02: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -353,7 +353,7 @@ func (m *Invoker03[R1, R2, R3]) Return(params []interface{}) []interface{} {
 func NewMocker03[R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *Mocker03[R1, R2, R3] {
 	m := &Mocker03[R1, R2, R3]{}
 	i := &Invoker03[R1, R2, R3]{Mocker03: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -436,7 +436,7 @@ func (m *Invoker04[R1, R2, R3, R4]) Return(params []interface{}) []interface{} {
 func NewMocker04[R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string) *Mocker04[R1, R2, R3, R4] {
 	m := &Mocker04[R1, R2, R3, R4]{}
 	i := &Invoker04[R1, R2, R3, R4]{Mocker04: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -519,7 +519,7 @@ func (m *Invoker05[R1, R2, R3, R4, R5]) Return(params []interface{}) []interface
 func NewMocker05[R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker05[R1, R2, R3, R4, R5] {
 	m := &Mocker05[R1, R2, R3, R4, R5]{}
 	i := &Invoker05[R1, R2, R3, R4, R5]{Mocker05: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -602,7 +602,7 @@ func (m *Invoker10[T1]) Return(params []interface{}) []interface{} {
 func NewMocker10[T1 any](r *Manager, typ reflect.Type, method string) *Mocker10[T1] {
 	m := &Mocker10[T1]{}
 	i := &Invoker10[T1]{Mocker10: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -685,7 +685,7 @@ func (m *Invoker11[T1, R1]) Return(params []interface{}) []interface{} {
 func NewMocker11[T1 any, R1 any](r *Manager, typ reflect.Type, method string) *Mocker11[T1, R1] {
 	m := &Mocker11[T1, R1]{}
 	i := &Invoker11[T1, R1]{Mocker11: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -768,7 +768,7 @@ func (m *Invoker12[T1, R1, R2]) Return(params []interface{}) []interface{} {
 func NewMocker12[T1 any, R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocker12[T1, R1, R2] {
 	m := &Mocker12[T1, R1, R2]{}
 	i := &Invoker12[T1, R1, R2]{Mocker12: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -851,7 +851,7 @@ func (m *Invoker13[T1, R1, R2, R3]) Return(params []interface{}) []interface{} {
 func NewMocker13[T1 any, R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *Mocker13[T1, R1, R2, R3] {
 	m := &Mocker13[T1, R1, R2, R3]{}
 	i := &Invoker13[T1, R1, R2, R3]{Mocker13: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -934,7 +934,7 @@ func (m *Invoker14[T1, R1, R2, R3, R4]) Return(params []interface{}) []interface
 func NewMocker14[T1 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string) *Mocker14[T1, R1, R2, R3, R4] {
 	m := &Mocker14[T1, R1, R2, R3, R4]{}
 	i := &Invoker14[T1, R1, R2, R3, R4]{Mocker14: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1017,7 +1017,7 @@ func (m *Invoker15[T1, R1, R2, R3, R4, R5]) Return(params []interface{}) []inter
 func NewMocker15[T1 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker15[T1, R1, R2, R3, R4, R5] {
 	m := &Mocker15[T1, R1, R2, R3, R4, R5]{}
 	i := &Invoker15[T1, R1, R2, R3, R4, R5]{Mocker15: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1100,7 +1100,7 @@ func (m *Invoker20[T1, T2]) Return(params []interface{}) []interface{} {
 func NewMocker20[T1, T2 any](r *Manager, typ reflect.Type, method string) *Mocker20[T1, T2] {
 	m := &Mocker20[T1, T2]{}
 	i := &Invoker20[T1, T2]{Mocker20: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1183,7 +1183,7 @@ func (m *Invoker21[T1, T2, R1]) Return(params []interface{}) []interface{} {
 func NewMocker21[T1, T2 any, R1 any](r *Manager, typ reflect.Type, method string) *Mocker21[T1, T2, R1] {
 	m := &Mocker21[T1, T2, R1]{}
 	i := &Invoker21[T1, T2, R1]{Mocker21: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1266,7 +1266,7 @@ func (m *Invoker22[T1, T2, R1, R2]) Return(params []interface{}) []interface{} {
 func NewMocker22[T1, T2 any, R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocker22[T1, T2, R1, R2] {
 	m := &Mocker22[T1, T2, R1, R2]{}
 	i := &Invoker22[T1, T2, R1, R2]{Mocker22: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1349,7 +1349,7 @@ func (m *Invoker23[T1, T2, R1, R2, R3]) Return(params []interface{}) []interface
 func NewMocker23[T1, T2 any, R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *Mocker23[T1, T2, R1, R2, R3] {
 	m := &Mocker23[T1, T2, R1, R2, R3]{}
 	i := &Invoker23[T1, T2, R1, R2, R3]{Mocker23: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1432,7 +1432,7 @@ func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Return(params []interface{}) []inter
 func NewMocker24[T1, T2 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string) *Mocker24[T1, T2, R1, R2, R3, R4] {
 	m := &Mocker24[T1, T2, R1, R2, R3, R4]{}
 	i := &Invoker24[T1, T2, R1, R2, R3, R4]{Mocker24: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1515,7 +1515,7 @@ func (m *Invoker25[T1, T2, R1, R2, R3, R4, R5]) Return(params []interface{}) []i
 func NewMocker25[T1, T2 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker25[T1, T2, R1, R2, R3, R4, R5] {
 	m := &Mocker25[T1, T2, R1, R2, R3, R4, R5]{}
 	i := &Invoker25[T1, T2, R1, R2, R3, R4, R5]{Mocker25: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1598,7 +1598,7 @@ func (m *Invoker30[T1, T2, T3]) Return(params []interface{}) []interface{} {
 func NewMocker30[T1, T2, T3 any](r *Manager, typ reflect.Type, method string) *Mocker30[T1, T2, T3] {
 	m := &Mocker30[T1, T2, T3]{}
 	i := &Invoker30[T1, T2, T3]{Mocker30: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1681,7 +1681,7 @@ func (m *Invoker31[T1, T2, T3, R1]) Return(params []interface{}) []interface{} {
 func NewMocker31[T1, T2, T3 any, R1 any](r *Manager, typ reflect.Type, method string) *Mocker31[T1, T2, T3, R1] {
 	m := &Mocker31[T1, T2, T3, R1]{}
 	i := &Invoker31[T1, T2, T3, R1]{Mocker31: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1764,7 +1764,7 @@ func (m *Invoker32[T1, T2, T3, R1, R2]) Return(params []interface{}) []interface
 func NewMocker32[T1, T2, T3 any, R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocker32[T1, T2, T3, R1, R2] {
 	m := &Mocker32[T1, T2, T3, R1, R2]{}
 	i := &Invoker32[T1, T2, T3, R1, R2]{Mocker32: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1847,7 +1847,7 @@ func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Return(params []interface{}) []inter
 func NewMocker33[T1, T2, T3 any, R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *Mocker33[T1, T2, T3, R1, R2, R3] {
 	m := &Mocker33[T1, T2, T3, R1, R2, R3]{}
 	i := &Invoker33[T1, T2, T3, R1, R2, R3]{Mocker33: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -1930,7 +1930,7 @@ func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Return(params []interface{}) []i
 func NewMocker34[T1, T2, T3 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string) *Mocker34[T1, T2, T3, R1, R2, R3, R4] {
 	m := &Mocker34[T1, T2, T3, R1, R2, R3, R4]{}
 	i := &Invoker34[T1, T2, T3, R1, R2, R3, R4]{Mocker34: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2013,7 +2013,7 @@ func (m *Invoker35[T1, T2, T3, R1, R2, R3, R4, R5]) Return(params []interface{})
 func NewMocker35[T1, T2, T3 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5] {
 	m := &Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]{}
 	i := &Invoker35[T1, T2, T3, R1, R2, R3, R4, R5]{Mocker35: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2096,7 +2096,7 @@ func (m *Invoker40[T1, T2, T3, T4]) Return(params []interface{}) []interface{} {
 func NewMocker40[T1, T2, T3, T4 any](r *Manager, typ reflect.Type, method string) *Mocker40[T1, T2, T3, T4] {
 	m := &Mocker40[T1, T2, T3, T4]{}
 	i := &Invoker40[T1, T2, T3, T4]{Mocker40: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2179,7 +2179,7 @@ func (m *Invoker41[T1, T2, T3, T4, R1]) Return(params []interface{}) []interface
 func NewMocker41[T1, T2, T3, T4 any, R1 any](r *Manager, typ reflect.Type, method string) *Mocker41[T1, T2, T3, T4, R1] {
 	m := &Mocker41[T1, T2, T3, T4, R1]{}
 	i := &Invoker41[T1, T2, T3, T4, R1]{Mocker41: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2262,7 +2262,7 @@ func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Return(params []interface{}) []inter
 func NewMocker42[T1, T2, T3, T4 any, R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocker42[T1, T2, T3, T4, R1, R2] {
 	m := &Mocker42[T1, T2, T3, T4, R1, R2]{}
 	i := &Invoker42[T1, T2, T3, T4, R1, R2]{Mocker42: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2345,7 +2345,7 @@ func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Return(params []interface{}) []i
 func NewMocker43[T1, T2, T3, T4 any, R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *Mocker43[T1, T2, T3, T4, R1, R2, R3] {
 	m := &Mocker43[T1, T2, T3, T4, R1, R2, R3]{}
 	i := &Invoker43[T1, T2, T3, T4, R1, R2, R3]{Mocker43: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2428,7 +2428,7 @@ func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return(params []interface{})
 func NewMocker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string) *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
 	m := &Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]{}
 	i := &Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]{Mocker44: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2511,7 +2511,7 @@ func (m *Invoker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Return(params []interfac
 func NewMocker45[T1, T2, T3, T4 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5] {
 	m := &Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]{}
 	i := &Invoker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]{Mocker45: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2594,7 +2594,7 @@ func (m *Invoker50[T1, T2, T3, T4, T5]) Return(params []interface{}) []interface
 func NewMocker50[T1, T2, T3, T4, T5 any](r *Manager, typ reflect.Type, method string) *Mocker50[T1, T2, T3, T4, T5] {
 	m := &Mocker50[T1, T2, T3, T4, T5]{}
 	i := &Invoker50[T1, T2, T3, T4, T5]{Mocker50: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2677,7 +2677,7 @@ func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Return(params []interface{}) []inter
 func NewMocker51[T1, T2, T3, T4, T5 any, R1 any](r *Manager, typ reflect.Type, method string) *Mocker51[T1, T2, T3, T4, T5, R1] {
 	m := &Mocker51[T1, T2, T3, T4, T5, R1]{}
 	i := &Invoker51[T1, T2, T3, T4, T5, R1]{Mocker51: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2760,7 +2760,7 @@ func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Return(params []interface{}) []i
 func NewMocker52[T1, T2, T3, T4, T5 any, R1, R2 any](r *Manager, typ reflect.Type, method string) *Mocker52[T1, T2, T3, T4, T5, R1, R2] {
 	m := &Mocker52[T1, T2, T3, T4, T5, R1, R2]{}
 	i := &Invoker52[T1, T2, T3, T4, T5, R1, R2]{Mocker52: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2843,7 +2843,7 @@ func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return(params []interface{})
 func NewMocker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](r *Manager, typ reflect.Type, method string) *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
 	m := &Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]{}
 	i := &Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]{Mocker53: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -2926,7 +2926,7 @@ func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return(params []interfac
 func NewMocker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](r *Manager, typ reflect.Type, method string) *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
 	m := &Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{}
 	i := &Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{Mocker54: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 
@@ -3009,6 +3009,6 @@ func (m *Invoker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Return(params []inte
 func NewMocker55[T1, T2, T3, T4, T5 any, R1, R2, R3, R4, R5 any](r *Manager, typ reflect.Type, method string) *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5] {
 	m := &Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]{}
 	i := &Invoker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]{Mocker55: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }

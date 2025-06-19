@@ -101,7 +101,7 @@ func (m *Invoker00) Return(params []interface{}) []interface{} {
 func NewMocker00(r *Manager, typ reflect.Type, method string) *Mocker00 {
 	m := &Mocker00{}
 	i := &Invoker00{ Mocker00: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 `))
@@ -187,7 +187,7 @@ func (m *{{.invokerName}}[{{.resp}}]) Return(params []interface{}) []interface{}
 func New{{.mockerName}}[{{.resp}} any](r *Manager, typ reflect.Type, method string) *{{.mockerName}}[{{.resp}}] {
 	m := &{{.mockerName}}[{{.resp}}]{}
 	i := &{{.invokerName}}[{{.resp}}]{ {{.mockerName}}: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 `))
@@ -273,7 +273,7 @@ func (m *{{.invokerName}}[{{.req}}]) Return(params []interface{}) []interface{} 
 func New{{.mockerName}}[{{.req}} any](r *Manager, typ reflect.Type, method string) *{{.mockerName}}[{{.req}}] {
 	m := &{{.mockerName}}[{{.req}}]{}
 	i := &{{.invokerName}}[{{.req}}]{ {{.mockerName}}: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 `))
@@ -359,7 +359,7 @@ func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Return(params []interface{}) []i
 func New{{.mockerName}}[{{.req}} any, {{.resp}} any](r *Manager, typ reflect.Type, method string) *{{.mockerName}}[{{.req}}, {{.resp}}] {
 	m := &{{.mockerName}}[{{.req}}, {{.resp}}]{}
 	i := &{{.invokerName}}[{{.req}}, {{.resp}}]{ {{.mockerName}}: m}
-	r.AddMocker(typ, method, i)
+	r.addMocker(typ, method, i)
 	return m
 }
 `))

@@ -76,13 +76,13 @@ func (r *Manager) BindTo(ctx context.Context) context.Context {
 	return context.WithValue(ctx, &managerKey, r)
 }
 
-// GetMockers retrieves all mockers for a given type and method.
-func (r *Manager) GetMockers(typ reflect.Type, method string) []Invoker {
+// getMockers retrieves all mockers for a given type and method.
+func (r *Manager) getMockers(typ reflect.Type, method string) []Invoker {
 	return r.mockers[mockerKey{typ, method}]
 }
 
-// AddMocker adds a new mocker for a specific type and method.
-func (r *Manager) AddMocker(typ reflect.Type, method string, i Invoker) {
+// addMocker adds a new mocker for a specific type and method.
+func (r *Manager) addMocker(typ reflect.Type, method string, i Invoker) {
 	k := mockerKey{typ, method}
 	r.mockers[k] = append(r.mockers[k], i)
 }
@@ -92,7 +92,7 @@ func Invoke(r *Manager, typ reflect.Type, method string, params ...interface{}) 
 	if r == nil || !testing.Testing() {
 		return nil, false
 	}
-	mockers := r.GetMockers(typ, method)
+	mockers := r.getMockers(typ, method)
 	for _, f := range mockers {
 		switch f.Mode() {
 		case ModeHandle:
