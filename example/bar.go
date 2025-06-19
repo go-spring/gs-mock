@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package success
+package example
 
 import (
 	"net/http"

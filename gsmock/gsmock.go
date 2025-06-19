@@ -109,7 +109,7 @@ func run(param runParam) {
 		toolCommand += "-o " + param.outputFile
 	}
 	if len(param.mockInterfaces) > 0 {
-		toolCommand += " -i '" + param.mockInterfaces + "'"
+		toolCommand += " -i " + param.mockInterfaces + ""
 	}
 
 	packageName := interfaces[0].PackageName

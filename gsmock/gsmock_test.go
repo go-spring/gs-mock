@@ -32,7 +32,7 @@ func TestMockgen(t *testing.T) {
 		run(runParam{
 			sourceDir:      "./testdata/success",
 			outputFile:     "src_mock.go",
-			mockInterfaces: "!RepositoryV2",
+			mockInterfaces: "'!RepositoryV2'",
 		})
 	})
 }

@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package success
+package example
 
 import (
 	"context"
 	"fmt"
 	"io"
 
-	"github.com/go-spring/mock/gsmock/testdata/success/inner"
+	"github.com/go-spring/mock/example/inner"
 )
 
 //go:generate gsmock -o src_mock.go -i '!RepositoryV2'
 
 var _ = fmt.Println
 
-type Response struct{}
+type Response struct {
+	Value int
+}
 
 type GenericService[T any, R any] interface {
 	io.Writer

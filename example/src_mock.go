@@ -2,7 +2,7 @@
 // Source: https://github.com/go-spring/mock
 // gsmock -o src_mock.go -i '!RepositoryV2'
 
-package success
+package example
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"reflect"
 
 	"github.com/go-spring/mock"
-	"github.com/go-spring/mock/gsmock/testdata/success/inner"
+	"github.com/go-spring/mock/example/inner"
 )
 
 type RepositoryMockImpl[T ~int | ~uint, M *http.Request] struct {
