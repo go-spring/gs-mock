@@ -49,6 +49,21 @@ func (m *Mocker00) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker00) Always() *Mocker00 {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker00) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker00) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker00 is an Invoker implementation for Mocker00.
 type Invoker00 struct {
 	*Mocker00
@@ -112,6 +127,21 @@ func (m *Mocker01[R1]) When(fn func() bool) *Mocker01[R1] {
 // Return sets a function that returns predefined values.
 func (m *Mocker01[R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker01[R1]) Always() *Mocker01[R1] {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker01[R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker01[R1]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker01 is an Invoker implementation for Mocker01.
@@ -179,6 +209,21 @@ func (m *Mocker02[R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker02[R1, R2]) Always() *Mocker02[R1, R2] {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker02[R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker02[R1, R2]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker02 is an Invoker implementation for Mocker02.
 type Invoker02[R1, R2 any] struct {
 	*Mocker02[R1, R2]
@@ -242,6 +287,21 @@ func (m *Mocker03[R1, R2, R3]) When(fn func() bool) *Mocker03[R1, R2, R3] {
 // Return sets a function that returns predefined values.
 func (m *Mocker03[R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker03[R1, R2, R3]) Always() *Mocker03[R1, R2, R3] {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker03[R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker03[R1, R2, R3]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker03 is an Invoker implementation for Mocker03.
@@ -309,6 +369,21 @@ func (m *Mocker04[R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker04[R1, R2, R3, R4]) Always() *Mocker04[R1, R2, R3, R4] {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker04[R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker04[R1, R2, R3, R4]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker04 is an Invoker implementation for Mocker04.
 type Invoker04[R1, R2, R3, R4 any] struct {
 	*Mocker04[R1, R2, R3, R4]
@@ -372,6 +447,21 @@ func (m *Mocker05[R1, R2, R3, R4, R5]) When(fn func() bool) *Mocker05[R1, R2, R3
 // Return sets a function that returns predefined values.
 func (m *Mocker05[R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker05[R1, R2, R3, R4, R5]) Always() *Mocker05[R1, R2, R3, R4, R5] {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker05[R1, R2, R3, R4, R5]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) { return r1, r2, r3, r4, r5 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker05[R1, R2, R3, R4, R5]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker05 is an Invoker implementation for Mocker05.
@@ -439,6 +529,21 @@ func (m *Mocker10[T1]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker10[T1]) Always() *Mocker10[T1] {
+	return m.When(func(T1) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker10[T1]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker10[T1]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker10 is an Invoker implementation for Mocker10.
 type Invoker10[T1 any] struct {
 	*Mocker10[T1]
@@ -502,6 +607,21 @@ func (m *Mocker11[T1, R1]) When(fn func(T1) bool) *Mocker11[T1, R1] {
 // Return sets a function that returns predefined values.
 func (m *Mocker11[T1, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker11[T1, R1]) Always() *Mocker11[T1, R1] {
+	return m.When(func(T1) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker11[T1, R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker11[T1, R1]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker11 is an Invoker implementation for Mocker11.
@@ -569,6 +689,21 @@ func (m *Mocker12[T1, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker12[T1, R1, R2]) Always() *Mocker12[T1, R1, R2] {
+	return m.When(func(T1) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker12[T1, R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker12[T1, R1, R2]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker12 is an Invoker implementation for Mocker12.
 type Invoker12[T1 any, R1, R2 any] struct {
 	*Mocker12[T1, R1, R2]
@@ -632,6 +767,21 @@ func (m *Mocker13[T1, R1, R2, R3]) When(fn func(T1) bool) *Mocker13[T1, R1, R2, 
 // Return sets a function that returns predefined values.
 func (m *Mocker13[T1, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker13[T1, R1, R2, R3]) Always() *Mocker13[T1, R1, R2, R3] {
+	return m.When(func(T1) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker13[T1, R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker13[T1, R1, R2, R3]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker13 is an Invoker implementation for Mocker13.
@@ -699,6 +849,21 @@ func (m *Mocker14[T1, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker14[T1, R1, R2, R3, R4]) Always() *Mocker14[T1, R1, R2, R3, R4] {
+	return m.When(func(T1) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker14[T1, R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker14[T1, R1, R2, R3, R4]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker14 is an Invoker implementation for Mocker14.
 type Invoker14[T1 any, R1, R2, R3, R4 any] struct {
 	*Mocker14[T1, R1, R2, R3, R4]
@@ -762,6 +927,21 @@ func (m *Mocker15[T1, R1, R2, R3, R4, R5]) When(fn func(T1) bool) *Mocker15[T1, 
 // Return sets a function that returns predefined values.
 func (m *Mocker15[T1, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker15[T1, R1, R2, R3, R4, R5]) Always() *Mocker15[T1, R1, R2, R3, R4, R5] {
+	return m.When(func(T1) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker15[T1, R1, R2, R3, R4, R5]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) { return r1, r2, r3, r4, r5 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker15[T1, R1, R2, R3, R4, R5]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker15 is an Invoker implementation for Mocker15.
@@ -829,6 +1009,21 @@ func (m *Mocker20[T1, T2]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker20[T1, T2]) Always() *Mocker20[T1, T2] {
+	return m.When(func(T1, T2) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker20[T1, T2]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker20[T1, T2]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker20 is an Invoker implementation for Mocker20.
 type Invoker20[T1, T2 any] struct {
 	*Mocker20[T1, T2]
@@ -892,6 +1087,21 @@ func (m *Mocker21[T1, T2, R1]) When(fn func(T1, T2) bool) *Mocker21[T1, T2, R1] 
 // Return sets a function that returns predefined values.
 func (m *Mocker21[T1, T2, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker21[T1, T2, R1]) Always() *Mocker21[T1, T2, R1] {
+	return m.When(func(T1, T2) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker21[T1, T2, R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker21[T1, T2, R1]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker21 is an Invoker implementation for Mocker21.
@@ -959,6 +1169,21 @@ func (m *Mocker22[T1, T2, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker22[T1, T2, R1, R2]) Always() *Mocker22[T1, T2, R1, R2] {
+	return m.When(func(T1, T2) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker22[T1, T2, R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker22[T1, T2, R1, R2]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker22 is an Invoker implementation for Mocker22.
 type Invoker22[T1, T2 any, R1, R2 any] struct {
 	*Mocker22[T1, T2, R1, R2]
@@ -1022,6 +1247,21 @@ func (m *Mocker23[T1, T2, R1, R2, R3]) When(fn func(T1, T2) bool) *Mocker23[T1, 
 // Return sets a function that returns predefined values.
 func (m *Mocker23[T1, T2, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker23[T1, T2, R1, R2, R3]) Always() *Mocker23[T1, T2, R1, R2, R3] {
+	return m.When(func(T1, T2) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker23[T1, T2, R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker23[T1, T2, R1, R2, R3]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker23 is an Invoker implementation for Mocker23.
@@ -1089,6 +1329,21 @@ func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Always() *Mocker24[T1, T2, R1, R2, R3, R4] {
+	return m.When(func(T1, T2) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker24[T1, T2, R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker24 is an Invoker implementation for Mocker24.
 type Invoker24[T1, T2 any, R1, R2, R3, R4 any] struct {
 	*Mocker24[T1, T2, R1, R2, R3, R4]
@@ -1152,6 +1407,21 @@ func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) When(fn func(T1, T2) bool) *Mocke
 // Return sets a function that returns predefined values.
 func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) Always() *Mocker25[T1, T2, R1, R2, R3, R4, R5] {
+	return m.When(func(T1, T2) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) { return r1, r2, r3, r4, r5 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker25 is an Invoker implementation for Mocker25.
@@ -1219,6 +1489,21 @@ func (m *Mocker30[T1, T2, T3]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker30[T1, T2, T3]) Always() *Mocker30[T1, T2, T3] {
+	return m.When(func(T1, T2, T3) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker30[T1, T2, T3]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker30[T1, T2, T3]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker30 is an Invoker implementation for Mocker30.
 type Invoker30[T1, T2, T3 any] struct {
 	*Mocker30[T1, T2, T3]
@@ -1282,6 +1567,21 @@ func (m *Mocker31[T1, T2, T3, R1]) When(fn func(T1, T2, T3) bool) *Mocker31[T1, 
 // Return sets a function that returns predefined values.
 func (m *Mocker31[T1, T2, T3, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker31[T1, T2, T3, R1]) Always() *Mocker31[T1, T2, T3, R1] {
+	return m.When(func(T1, T2, T3) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker31[T1, T2, T3, R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker31[T1, T2, T3, R1]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker31 is an Invoker implementation for Mocker31.
@@ -1349,6 +1649,21 @@ func (m *Mocker32[T1, T2, T3, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker32[T1, T2, T3, R1, R2]) Always() *Mocker32[T1, T2, T3, R1, R2] {
+	return m.When(func(T1, T2, T3) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker32[T1, T2, T3, R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker32[T1, T2, T3, R1, R2]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker32 is an Invoker implementation for Mocker32.
 type Invoker32[T1, T2, T3 any, R1, R2 any] struct {
 	*Mocker32[T1, T2, T3, R1, R2]
@@ -1412,6 +1727,21 @@ func (m *Mocker33[T1, T2, T3, R1, R2, R3]) When(fn func(T1, T2, T3) bool) *Mocke
 // Return sets a function that returns predefined values.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Always() *Mocker33[T1, T2, T3, R1, R2, R3] {
+	return m.When(func(T1, T2, T3) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker33[T1, T2, T3, R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker33 is an Invoker implementation for Mocker33.
@@ -1479,6 +1809,21 @@ func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Always() *Mocker34[T1, T2, T3, R1, R2, R3, R4] {
+	return m.When(func(T1, T2, T3) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker34 is an Invoker implementation for Mocker34.
 type Invoker34[T1, T2, T3 any, R1, R2, R3, R4 any] struct {
 	*Mocker34[T1, T2, T3, R1, R2, R3, R4]
@@ -1542,6 +1887,21 @@ func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) When(fn func(T1, T2, T3) bool
 // Return sets a function that returns predefined values.
 func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) Always() *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5] {
+	return m.When(func(T1, T2, T3) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) { return r1, r2, r3, r4, r5 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker35 is an Invoker implementation for Mocker35.
@@ -1609,6 +1969,21 @@ func (m *Mocker40[T1, T2, T3, T4]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker40[T1, T2, T3, T4]) Always() *Mocker40[T1, T2, T3, T4] {
+	return m.When(func(T1, T2, T3, T4) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker40[T1, T2, T3, T4]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker40[T1, T2, T3, T4]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker40 is an Invoker implementation for Mocker40.
 type Invoker40[T1, T2, T3, T4 any] struct {
 	*Mocker40[T1, T2, T3, T4]
@@ -1672,6 +2047,21 @@ func (m *Mocker41[T1, T2, T3, T4, R1]) When(fn func(T1, T2, T3, T4) bool) *Mocke
 // Return sets a function that returns predefined values.
 func (m *Mocker41[T1, T2, T3, T4, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker41[T1, T2, T3, T4, R1]) Always() *Mocker41[T1, T2, T3, T4, R1] {
+	return m.When(func(T1, T2, T3, T4) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker41[T1, T2, T3, T4, R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker41[T1, T2, T3, T4, R1]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker41 is an Invoker implementation for Mocker41.
@@ -1739,6 +2129,21 @@ func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Always() *Mocker42[T1, T2, T3, T4, R1, R2] {
+	return m.When(func(T1, T2, T3, T4) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker42[T1, T2, T3, T4, R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker42 is an Invoker implementation for Mocker42.
 type Invoker42[T1, T2, T3, T4 any, R1, R2 any] struct {
 	*Mocker42[T1, T2, T3, T4, R1, R2]
@@ -1802,6 +2207,21 @@ func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) When(fn func(T1, T2, T3, T4) bool
 // Return sets a function that returns predefined values.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Always() *Mocker43[T1, T2, T3, T4, R1, R2, R3] {
+	return m.When(func(T1, T2, T3, T4) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker43 is an Invoker implementation for Mocker43.
@@ -1869,6 +2289,21 @@ func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3,
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Always() *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
+	return m.When(func(T1, T2, T3, T4) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker44 is an Invoker implementation for Mocker44.
 type Invoker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any] struct {
 	*Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]
@@ -1932,6 +2367,21 @@ func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) When(fn func(T1, T2, T3, 
 // Return sets a function that returns predefined values.
 func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Always() *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5] {
+	return m.When(func(T1, T2, T3, T4) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) { return r1, r2, r3, r4, r5 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker45 is an Invoker implementation for Mocker45.
@@ -1999,6 +2449,21 @@ func (m *Mocker50[T1, T2, T3, T4, T5]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker50[T1, T2, T3, T4, T5]) Always() *Mocker50[T1, T2, T3, T4, T5] {
+	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker50[T1, T2, T3, T4, T5]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker50[T1, T2, T3, T4, T5]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker50 is an Invoker implementation for Mocker50.
 type Invoker50[T1, T2, T3, T4, T5 any] struct {
 	*Mocker50[T1, T2, T3, T4, T5]
@@ -2062,6 +2527,21 @@ func (m *Mocker51[T1, T2, T3, T4, T5, R1]) When(fn func(T1, T2, T3, T4, T5) bool
 // Return sets a function that returns predefined values.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Always() *Mocker51[T1, T2, T3, T4, T5, R1] {
+	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker51[T1, T2, T3, T4, T5, R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker51 is an Invoker implementation for Mocker51.
@@ -2129,6 +2609,21 @@ func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Always() *Mocker52[T1, T2, T3, T4, T5, R1, R2] {
+	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker52 is an Invoker implementation for Mocker52.
 type Invoker52[T1, T2, T3, T4, T5 any, R1, R2 any] struct {
 	*Mocker52[T1, T2, T3, T4, T5, R1, R2]
@@ -2192,6 +2687,21 @@ func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) When(fn func(T1, T2, T3, T4, 
 // Return sets a function that returns predefined values.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Always() *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
+	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker53 is an Invoker implementation for Mocker53.
@@ -2259,6 +2769,21 @@ func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return(fn func() (R1, R2,
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Always() *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
+	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker54 is an Invoker implementation for Mocker54.
 type Invoker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any] struct {
 	*Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]
@@ -2322,6 +2847,21 @@ func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) When(fn func(T1, T2, 
 // Return sets a function that returns predefined values.
 func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Always() *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5] {
+	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) { return r1, r2, r3, r4, r5 })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // Invoker55 is an Invoker implementation for Mocker55.

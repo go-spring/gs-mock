@@ -92,12 +92,12 @@ func main() {
 				req[k] = "T" + fmt.Sprint(k+1)
 			}
 			resp := make([]string, j)
+			respOnlyArg := make([]string, j)
+			respWithArg := make([]string, j)
 			for k := 0; k < j; k++ {
 				resp[k] = "R" + fmt.Sprint(k+1)
-			}
-			respOnlyArg := make([]string, j)
-			for k := 0; k < j; k++ {
 				respOnlyArg[k] = "r" + fmt.Sprint(k+1)
+				respWithArg[k] = respOnlyArg[k] + " " + resp[k]
 			}
 			cvtParams := make([]string, i)
 			for k := 0; k < i; k++ {
@@ -109,6 +109,7 @@ func main() {
 				"req":         strings.Join(req, ", "),
 				"resp":        strings.Join(resp, ", "),
 				"respOnlyArg": strings.Join(respOnlyArg, ", "),
+				"respWithArg": strings.Join(respWithArg, ", "),
 				"cvtParams":   strings.Join(cvtParams, ", "),
 			}
 			if err := getTemplate(i, j).Execute(s, data); err != nil {

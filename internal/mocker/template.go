@@ -46,6 +46,21 @@ func (m *Mocker00) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *Mocker00) Always() *Mocker00 {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *Mocker00) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *Mocker00) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // Invoker00 is an Invoker implementation for Mocker00.
 type Invoker00 struct {
 	*Mocker00
@@ -112,6 +127,21 @@ func (m *{{.mockerName}}[{{.resp}}]) When(fn func() bool) *{{.mockerName}}[{{.re
 // Return sets a function that returns predefined values.
 func (m *{{.mockerName}}[{{.resp}}]) Return(fn func() ({{.resp}})) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *{{.mockerName}}[{{.resp}}]) Always() *{{.mockerName}}[{{.resp}}] {
+	return m.When(func() bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *{{.mockerName}}[{{.resp}}]) ReturnDefault() {
+	m.Return(func() ({{.respWithArg}}) { return {{.respOnlyArg}} })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *{{.mockerName}}[{{.resp}}]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // {{.invokerName}} is an Invoker implementation for {{.mockerName}}.
@@ -182,6 +212,21 @@ func (m *{{.mockerName}}[{{.req}}]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *{{.mockerName}}[{{.req}}]) Always() *{{.mockerName}}[{{.req}}] {
+	return m.When(func({{.req}}) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *{{.mockerName}}[{{.req}}]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *{{.mockerName}}[{{.req}}]) Ignore() {
+	m.Always().ReturnDefault()
+}
+
 // {{.invokerName}} is an Invoker implementation for {{.mockerName}}.
 type {{.invokerName}}[{{.req}} any] struct {
 	*{{.mockerName}}[{{.req}}]
@@ -248,6 +293,21 @@ func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) When(fn func({{.req}}) bool) *{{.
 // Return sets a function that returns predefined values.
 func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Return(fn func() ({{.resp}})) {
 	m.fnReturn = fn
+}
+
+// Always sets the condition to always return true, meaning the mock will be applied for any input.
+func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Always() *{{.mockerName}}[{{.req}}, {{.resp}}] {
+	return m.When(func({{.req}}) bool { return true })
+}
+
+// ReturnDefault sets a return function that returns zero values for all return types.
+func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) ReturnDefault() {
+	m.Return(func() ({{.respWithArg}}) { return {{.respOnlyArg}} })
+}
+
+// Ignore sets the mock to always apply and return default zero values.
+func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Ignore() {
+	m.Always().ReturnDefault()
 }
 
 // {{.invokerName}} is an Invoker implementation for {{.mockerName}}.

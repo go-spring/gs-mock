@@ -17,6 +17,7 @@
 package assert_test
 
 import (
+	"bytes"
 	"errors"
 	"testing"
 
@@ -28,129 +29,64 @@ func TestNil(t *testing.T) {
 	r, _ := mock.Init(t.Context())
 	s := assert.NewTMockImpl(r)
 
-	helperCount := 0
-	s.MockHelper().Handle(func() bool {
-		helperCount++
-		return true
-	})
+	s.MockHelper().Ignore()
 
 	assert.Nil(s, nil)
-	assert.Equal(t, helperCount, 1)
 	assert.Nil(s, (*int)(nil))
-	assert.Equal(t, helperCount, 2)
 
-	errorCount := 0
-	s.MockError().Handle(func(i []interface{}) bool {
-		errorCount++
-		assert.Equal(t, len(i), 1)
-		assert.Equal(t, i[0], "got (*errors.errorString) error but expect nil")
+	var buf bytes.Buffer
+	s.MockError().Handle(func(args []interface{}) bool {
+		buf.WriteString(args[0].(string))
 		return true
 	})
 
 	assert.Nil(s, errors.New("error"))
-	assert.Equal(t, errorCount, 1)
+	assert.Equal(t, buf.String(), "got (*errors.errorString) error but expect nil")
 }
 
 func TestEqual(t *testing.T) {
 	r, _ := mock.Init(t.Context())
 	s := assert.NewTMockImpl(r)
 
-	helperCount := 0
-	s.MockHelper().Handle(func() bool {
-		helperCount++
-		return true
-	})
+	s.MockHelper().Ignore()
 
-	errorCount := 0
-	s.MockError().Handle(func(i []interface{}) bool {
-		errorCount++
-		assert.Equal(t, len(i), 1)
-		assert.Equal(t, i[0], "got (int) 1 but expect (int) 2")
+	var buf bytes.Buffer
+	s.MockError().Handle(func(args []interface{}) bool {
+		buf.WriteString(args[0].(string))
 		return true
 	})
 
 	assert.Equal(s, 1, 2)
-	assert.Equal(t, helperCount, 1)
-	assert.Equal(t, errorCount, 1)
+	assert.Equal(t, buf.String(), "got (int) 1 but expect (int) 2")
 }
 
 func TestPanic(t *testing.T) {
+	r, _ := mock.Init(t.Context())
+	s := assert.NewTMockImpl(r)
+
+	s.MockHelper().Ignore()
+
+	var buf bytes.Buffer
+	s.MockError().Handle(func(args []interface{}) bool {
+		buf.WriteString(args[0].(string))
+		return true
+	})
 
 	t.Run("did not panic", func(t *testing.T) {
-		r, _ := mock.Init(t.Context())
-		s := assert.NewTMockImpl(r)
-
-		helperCount := 0
-		s.MockHelper().Handle(func() bool {
-			helperCount++
-			return true
-		})
-
-		errorCount := 0
-		s.MockError().Handle(func(i []interface{}) bool {
-			errorCount++
-			assert.Equal(t, len(i), 1)
-			assert.Equal(t, i[0], "did not panic")
-			return true
-		})
-
-		assert.Panic(s, func() {
-			// not panic
-		}, "")
-
-		assert.Equal(t, helperCount, 1)
-		assert.Equal(t, errorCount, 1)
+		buf.Reset()
+		assert.Panic(s, func() {}, "")
+		assert.Equal(t, buf.String(), "did not panic")
 	})
 
 	t.Run("invalid pattern", func(t *testing.T) {
-		r, _ := mock.Init(t.Context())
-		s := assert.NewTMockImpl(r)
-
-		helperCount := 0
-		s.MockHelper().Handle(func() bool {
-			helperCount++
-			return true
-		})
-
-		errorCount := 0
-		s.MockError().Handle(func(i []interface{}) bool {
-			errorCount++
-			assert.Equal(t, len(i), 1)
-			assert.Equal(t, i[0], "invalid pattern")
-			return true
-		})
-
-		assert.Panic(s, func() {
-			panic("error")
-		}, "\\9")
-
-		assert.Equal(t, helperCount, 2)
-		assert.Equal(t, errorCount, 1)
+		buf.Reset()
+		assert.Panic(s, func() { panic("error") }, "\\9")
+		assert.Equal(t, buf.String(), "invalid pattern")
 	})
 
 	t.Run("success", func(t *testing.T) {
-		r, _ := mock.Init(t.Context())
-		s := assert.NewTMockImpl(r)
-
-		helperCount := 0
-		s.MockHelper().Handle(func() bool {
-			helperCount++
-			return true
-		})
-
-		errorCount := 0
-		s.MockError().Handle(func(i []interface{}) bool {
-			errorCount++
-			assert.Equal(t, len(i), 1)
-			assert.Equal(t, i[0], `got "error" which does not match "panic"`)
-			return true
-		})
-
-		assert.Panic(s, func() {
-			panic("error")
-		}, "panic")
-
-		assert.Equal(t, helperCount, 2)
-		assert.Equal(t, errorCount, 1)
+		buf.Reset()
+		assert.Panic(s, func() { panic("error") }, "panic")
+		assert.Equal(t, buf.String(), `got "error" which does not match "panic"`)
 	})
 }
