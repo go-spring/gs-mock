@@ -2,28 +2,24 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-**mock** is a modern, type-safe mocking library for the Go programming language, fully supporting generic programming.
-It provides a simple and easy-to-use interface that helps developers easily create and manage mock objects, thereby
-improving the quality and efficiency of unit testing. The library is designed to address the lack of type safety and the
-complexity of traditional mocking tools in Go.
+mock 是一个现代化的、类型安全的 Go 语言 mocking 库，完全支持泛型编程。它提供了简单易用的接口，
+可以帮助开发者轻松创建和管理模拟对象，从而提高单元测试的质量和效率。该库旨在解决 Go 语言中传统
+mocking 工具存在的类型安全性不足和使用复杂性问题。
 
-## Key Features
+## 主要特性
 
-* **Type Safety**: Utilizes Go 1.18+ generics to ensure compile-time safety and avoid runtime type errors
-* **Multiple Mocking Modes**:
-    * `Handle` Mode: Directly handle function calls
-    * `When/Return` Mode: Conditional mock returns
-* **Flexible Method Matching**: Supports different numbers and types of parameters and return values (up to 5 parameters
-  and 5 return values)
-* **Context Support**: Provides integration with the `context` package, making it easier to test in distributed systems
-* **Auto Reset Functionality**: The `Manager` provides a `Reset` method to easily reset all mockers to their initial
-  state
-* **Detailed Error Messages**: Offers clear error prompts when no matching mock code is found or when multiple matches
-  exist
+- **类型安全**：利用 Go 1.18+ 的泛型特性，确保编译时的安全性，避免运行时类型错误
+- **多种 Mock 模式**：
+    - `Handle` 模式：直接处理函数调用
+    - `When/Return` 模式：基于条件的模拟返回
+- **灵活的方法匹配**：支持不同数量和类型的参数及返回值（最多支持5个参数和5个返回值）
+- **上下文支持**：提供与 context 包的集成，方便在分布式系统中进行测试
+- **自动重置功能**：Manager 提供 Reset 方法，可轻松重置所有模拟器到初始状态
+- **详细的错误信息**：当没有匹配的 mock 代码或存在多个匹配时，提供清晰的错误提示
 
-## Usage Example
+## 使用示例
 
-Below is a simple usage example:
+以下是一个简单的使用示例：
 
 ```go
 package mock_test
@@ -195,6 +191,6 @@ func TestMockNoContext(t *testing.T) {
 }
 ```
 
-## License
+## 许可证
 
-This project is licensed under the Apache License Version 2.0.
+本项目采用 Apache License Version 2.0 许可证。
