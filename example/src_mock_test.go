@@ -43,6 +43,14 @@ func TestRepositoryMockImpl_FindByID(t *testing.T) {
 	v, err := s.FindByID("1")
 	assert.Nil(t, err)
 	assert.Equal(t, v, ItemType(666))
+
+	s.MockFindByID().Handle(func(s string) (ItemType, error) {
+		return ItemType(666), nil
+	})
+
+	assert.Panic(t, func() {
+		_, _ = s.FindByID("1")
+	}, "found multiple Handle functions for .*FindByID")
 }
 
 func TestRepositoryMockImpl_Save(t *testing.T) {

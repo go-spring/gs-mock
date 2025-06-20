@@ -49,6 +49,11 @@ func (m *Mocker00) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker00) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker00) Always() *Mocker00 {
 	return m.When(func() bool { return true })
@@ -127,6 +132,11 @@ func (m *Mocker01[R1]) When(fn func() bool) *Mocker01[R1] {
 // Return sets a function that returns predefined values.
 func (m *Mocker01[R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker01[R1]) ReturnValue(r1 R1) {
+	m.fnReturn = func() R1 { return r1 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -209,6 +219,11 @@ func (m *Mocker02[R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker02[R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.fnReturn = func() (R1, R2) { return r1, r2 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker02[R1, R2]) Always() *Mocker02[R1, R2] {
 	return m.When(func() bool { return true })
@@ -287,6 +302,11 @@ func (m *Mocker03[R1, R2, R3]) When(fn func() bool) *Mocker03[R1, R2, R3] {
 // Return sets a function that returns predefined values.
 func (m *Mocker03[R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker03[R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.fnReturn = func() (R1, R2, R3) { return r1, r2, r3 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -369,6 +389,11 @@ func (m *Mocker04[R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker04[R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.fnReturn = func() (R1, R2, R3, R4) { return r1, r2, r3, r4 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker04[R1, R2, R3, R4]) Always() *Mocker04[R1, R2, R3, R4] {
 	return m.When(func() bool { return true })
@@ -447,6 +472,11 @@ func (m *Mocker05[R1, R2, R3, R4, R5]) When(fn func() bool) *Mocker05[R1, R2, R3
 // Return sets a function that returns predefined values.
 func (m *Mocker05[R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker05[R1, R2, R3, R4, R5]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) {
+	m.fnReturn = func() (R1, R2, R3, R4, R5) { return r1, r2, r3, r4, r5 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -529,6 +559,11 @@ func (m *Mocker10[T1]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker10[T1]) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker10[T1]) Always() *Mocker10[T1] {
 	return m.When(func(T1) bool { return true })
@@ -607,6 +642,11 @@ func (m *Mocker11[T1, R1]) When(fn func(T1) bool) *Mocker11[T1, R1] {
 // Return sets a function that returns predefined values.
 func (m *Mocker11[T1, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker11[T1, R1]) ReturnValue(r1 R1) {
+	m.fnReturn = func() R1 { return r1 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -689,6 +729,11 @@ func (m *Mocker12[T1, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker12[T1, R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.fnReturn = func() (R1, R2) { return r1, r2 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker12[T1, R1, R2]) Always() *Mocker12[T1, R1, R2] {
 	return m.When(func(T1) bool { return true })
@@ -767,6 +812,11 @@ func (m *Mocker13[T1, R1, R2, R3]) When(fn func(T1) bool) *Mocker13[T1, R1, R2, 
 // Return sets a function that returns predefined values.
 func (m *Mocker13[T1, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker13[T1, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.fnReturn = func() (R1, R2, R3) { return r1, r2, r3 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -849,6 +899,11 @@ func (m *Mocker14[T1, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker14[T1, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.fnReturn = func() (R1, R2, R3, R4) { return r1, r2, r3, r4 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker14[T1, R1, R2, R3, R4]) Always() *Mocker14[T1, R1, R2, R3, R4] {
 	return m.When(func(T1) bool { return true })
@@ -927,6 +982,11 @@ func (m *Mocker15[T1, R1, R2, R3, R4, R5]) When(fn func(T1) bool) *Mocker15[T1, 
 // Return sets a function that returns predefined values.
 func (m *Mocker15[T1, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker15[T1, R1, R2, R3, R4, R5]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) {
+	m.fnReturn = func() (R1, R2, R3, R4, R5) { return r1, r2, r3, r4, r5 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -1009,6 +1069,11 @@ func (m *Mocker20[T1, T2]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker20[T1, T2]) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker20[T1, T2]) Always() *Mocker20[T1, T2] {
 	return m.When(func(T1, T2) bool { return true })
@@ -1087,6 +1152,11 @@ func (m *Mocker21[T1, T2, R1]) When(fn func(T1, T2) bool) *Mocker21[T1, T2, R1] 
 // Return sets a function that returns predefined values.
 func (m *Mocker21[T1, T2, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker21[T1, T2, R1]) ReturnValue(r1 R1) {
+	m.fnReturn = func() R1 { return r1 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -1169,6 +1239,11 @@ func (m *Mocker22[T1, T2, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker22[T1, T2, R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.fnReturn = func() (R1, R2) { return r1, r2 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker22[T1, T2, R1, R2]) Always() *Mocker22[T1, T2, R1, R2] {
 	return m.When(func(T1, T2) bool { return true })
@@ -1247,6 +1322,11 @@ func (m *Mocker23[T1, T2, R1, R2, R3]) When(fn func(T1, T2) bool) *Mocker23[T1, 
 // Return sets a function that returns predefined values.
 func (m *Mocker23[T1, T2, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker23[T1, T2, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.fnReturn = func() (R1, R2, R3) { return r1, r2, r3 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -1329,6 +1409,11 @@ func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker24[T1, T2, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.fnReturn = func() (R1, R2, R3, R4) { return r1, r2, r3, r4 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Always() *Mocker24[T1, T2, R1, R2, R3, R4] {
 	return m.When(func(T1, T2) bool { return true })
@@ -1407,6 +1492,11 @@ func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) When(fn func(T1, T2) bool) *Mocke
 // Return sets a function that returns predefined values.
 func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker25[T1, T2, R1, R2, R3, R4, R5]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) {
+	m.fnReturn = func() (R1, R2, R3, R4, R5) { return r1, r2, r3, r4, r5 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -1489,6 +1579,11 @@ func (m *Mocker30[T1, T2, T3]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker30[T1, T2, T3]) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker30[T1, T2, T3]) Always() *Mocker30[T1, T2, T3] {
 	return m.When(func(T1, T2, T3) bool { return true })
@@ -1567,6 +1662,11 @@ func (m *Mocker31[T1, T2, T3, R1]) When(fn func(T1, T2, T3) bool) *Mocker31[T1, 
 // Return sets a function that returns predefined values.
 func (m *Mocker31[T1, T2, T3, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker31[T1, T2, T3, R1]) ReturnValue(r1 R1) {
+	m.fnReturn = func() R1 { return r1 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -1649,6 +1749,11 @@ func (m *Mocker32[T1, T2, T3, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker32[T1, T2, T3, R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.fnReturn = func() (R1, R2) { return r1, r2 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker32[T1, T2, T3, R1, R2]) Always() *Mocker32[T1, T2, T3, R1, R2] {
 	return m.When(func(T1, T2, T3) bool { return true })
@@ -1727,6 +1832,11 @@ func (m *Mocker33[T1, T2, T3, R1, R2, R3]) When(fn func(T1, T2, T3) bool) *Mocke
 // Return sets a function that returns predefined values.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker33[T1, T2, T3, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.fnReturn = func() (R1, R2, R3) { return r1, r2, r3 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -1809,6 +1919,11 @@ func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.fnReturn = func() (R1, R2, R3, R4) { return r1, r2, r3, r4 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Always() *Mocker34[T1, T2, T3, R1, R2, R3, R4] {
 	return m.When(func(T1, T2, T3) bool { return true })
@@ -1887,6 +2002,11 @@ func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) When(fn func(T1, T2, T3) bool
 // Return sets a function that returns predefined values.
 func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker35[T1, T2, T3, R1, R2, R3, R4, R5]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) {
+	m.fnReturn = func() (R1, R2, R3, R4, R5) { return r1, r2, r3, r4, r5 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -1969,6 +2089,11 @@ func (m *Mocker40[T1, T2, T3, T4]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker40[T1, T2, T3, T4]) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker40[T1, T2, T3, T4]) Always() *Mocker40[T1, T2, T3, T4] {
 	return m.When(func(T1, T2, T3, T4) bool { return true })
@@ -2047,6 +2172,11 @@ func (m *Mocker41[T1, T2, T3, T4, R1]) When(fn func(T1, T2, T3, T4) bool) *Mocke
 // Return sets a function that returns predefined values.
 func (m *Mocker41[T1, T2, T3, T4, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker41[T1, T2, T3, T4, R1]) ReturnValue(r1 R1) {
+	m.fnReturn = func() R1 { return r1 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -2129,6 +2259,11 @@ func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker42[T1, T2, T3, T4, R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.fnReturn = func() (R1, R2) { return r1, r2 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Always() *Mocker42[T1, T2, T3, T4, R1, R2] {
 	return m.When(func(T1, T2, T3, T4) bool { return true })
@@ -2207,6 +2342,11 @@ func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) When(fn func(T1, T2, T3, T4) bool
 // Return sets a function that returns predefined values.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.fnReturn = func() (R1, R2, R3) { return r1, r2, r3 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -2289,6 +2429,11 @@ func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3,
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.fnReturn = func() (R1, R2, R3, R4) { return r1, r2, r3, r4 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Always() *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
 	return m.When(func(T1, T2, T3, T4) bool { return true })
@@ -2367,6 +2512,11 @@ func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) When(fn func(T1, T2, T3, 
 // Return sets a function that returns predefined values.
 func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker45[T1, T2, T3, T4, R1, R2, R3, R4, R5]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) {
+	m.fnReturn = func() (R1, R2, R3, R4, R5) { return r1, r2, r3, r4, r5 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -2449,6 +2599,11 @@ func (m *Mocker50[T1, T2, T3, T4, T5]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker50[T1, T2, T3, T4, T5]) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker50[T1, T2, T3, T4, T5]) Always() *Mocker50[T1, T2, T3, T4, T5] {
 	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
@@ -2527,6 +2682,11 @@ func (m *Mocker51[T1, T2, T3, T4, T5, R1]) When(fn func(T1, T2, T3, T4, T5) bool
 // Return sets a function that returns predefined values.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker51[T1, T2, T3, T4, T5, R1]) ReturnValue(r1 R1) {
+	m.fnReturn = func() R1 { return r1 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -2609,6 +2769,11 @@ func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.fnReturn = func() (R1, R2) { return r1, r2 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Always() *Mocker52[T1, T2, T3, T4, T5, R1, R2] {
 	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
@@ -2687,6 +2852,11 @@ func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) When(fn func(T1, T2, T3, T4, 
 // Return sets a function that returns predefined values.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.fnReturn = func() (R1, R2, R3) { return r1, r2, r3 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
@@ -2769,6 +2939,11 @@ func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return(fn func() (R1, R2,
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.fnReturn = func() (R1, R2, R3, R4) { return r1, r2, r3, r4 }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Always() *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
 	return m.When(func(T1, T2, T3, T4, T5) bool { return true })
@@ -2847,6 +3022,11 @@ func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) When(fn func(T1, T2, 
 // Return sets a function that returns predefined values.
 func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) Return(fn func() (R1, R2, R3, R4, R5)) {
 	m.fnReturn = fn
+}
+
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker55[T1, T2, T3, T4, T5, R1, R2, R3, R4, R5]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) {
+	m.fnReturn = func() (R1, R2, R3, R4, R5) { return r1, r2, r3, r4, r5 }
 }
 
 // Always sets the condition to always return true, meaning the mock will be applied for any input.

@@ -18,10 +18,14 @@ package mock
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"reflect"
 	"testing"
 )
+
+// R is the root Manager instance used for mocking.
+var R = NewManager()
 
 // Mode represents the mocking mode.
 type Mode int
@@ -61,6 +65,11 @@ func NewManager() *Manager {
 	}
 }
 
+// Reset resets the Manager to its initial state.
+func (r *Manager) Reset() {
+	r.mockers = make(map[mockerKey][]Invoker)
+}
+
 var managerKey int
 
 // getManager retrieves the Manager instance from the context.
@@ -97,6 +106,9 @@ func Invoke(r *Manager, typ reflect.Type, method string, params ...interface{}) 
 	for _, f := range mockers {
 		switch f.Mode() {
 		case ModeHandle:
+			if defaultHandler != nil {
+				panic(fmt.Sprintf("found multiple Handle functions for %s.%s", typ, method))
+			}
 			defaultHandler = f
 		case ModeWhenReturn:
 			if f.When(params) {

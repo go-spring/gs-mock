@@ -46,6 +46,11 @@ func (m *Mocker00) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *Mocker00) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *Mocker00) Always() *Mocker00 {
 	return m.When(func() bool { return true })
@@ -75,7 +80,7 @@ func (m *Invoker00) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker00) Handle(params []interface{}) ([]interface{}) {
+func (m *Invoker00) Handle(params []interface{}) []interface{} {
 	m.fnHandle({{.cvtParams}})
 	return []interface{}{}
 }
@@ -129,6 +134,11 @@ func (m *{{.mockerName}}[{{.resp}}]) Return(fn func() ({{.resp}})) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *{{.mockerName}}[{{.resp}}]) ReturnValue({{.respWithArg}}) {
+	m.fnReturn = func() ({{.resp}}) { return {{.respOnlyArg}} }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *{{.mockerName}}[{{.resp}}]) Always() *{{.mockerName}}[{{.resp}}] {
 	return m.When(func() bool { return true })
@@ -158,7 +168,7 @@ func (m *{{.invokerName}}[{{.resp}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.resp}}]) Handle(params []interface{}) ([]interface{}) {
+func (m *{{.invokerName}}[{{.resp}}]) Handle(params []interface{}) []interface{} {
 	{{.respOnlyArg}} := m.fnHandle({{.cvtParams}})
 	return []interface{}{ {{.respOnlyArg}}}
 }
@@ -212,6 +222,11 @@ func (m *{{.mockerName}}[{{.req}}]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *{{.mockerName}}[{{.req}}]) ReturnValue() {
+	m.fnReturn = func() {}
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *{{.mockerName}}[{{.req}}]) Always() *{{.mockerName}}[{{.req}}] {
 	return m.When(func({{.req}}) bool { return true })
@@ -241,7 +256,7 @@ func (m *{{.invokerName}}[{{.req}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.req}}]) Handle(params []interface{}) ([]interface{}) {
+func (m *{{.invokerName}}[{{.req}}]) Handle(params []interface{}) []interface{} {
 	m.fnHandle({{.cvtParams}})
 	return []interface{}{}
 }
@@ -295,6 +310,11 @@ func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Return(fn func() ({{.resp}})) {
 	m.fnReturn = fn
 }
 
+// ReturnValue sets a return function with predefined values.
+func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) ReturnValue({{.respWithArg}}) {
+	m.fnReturn = func() ({{.resp}}) { return {{.respOnlyArg}} }
+}
+
 // Always sets the condition to always return true, meaning the mock will be applied for any input.
 func (m *{{.mockerName}}[{{.req}}, {{.resp}}]) Always() *{{.mockerName}}[{{.req}}, {{.resp}}] {
 	return m.When(func({{.req}}) bool { return true })
@@ -324,7 +344,7 @@ func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Handle(params []interface{}) ([]interface{}) {
+func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Handle(params []interface{}) []interface{} {
 	{{.respOnlyArg}} := m.fnHandle({{.cvtParams}})
 	return []interface{}{ {{.respOnlyArg}}}
 }
