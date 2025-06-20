@@ -21,6 +21,50 @@ complexity of traditional mocking tools in Go.
 * **Detailed Error Messages**: Offers clear error prompts when no matching mock code is found or when multiple matches
   exist
 
+## Installation Tool
+
+**gsmock** is a tool used to generate Go mock code. You can install it with the following command:
+
+```bash
+go install github.com/go-spring/mock/gsmock@latest
+```
+
+### Basic Usage
+
+1. **Define an Interface**
+
+First, define the interface you want to mock in your project. For example, create a file named `service.go` and add the
+following code:
+
+```go
+package main
+
+type Service interface {
+	Save(r1, r2, r3, r4, r5, r6 int)
+}
+```
+
+2. **Generate Mock Code**
+
+Then, add a `go:generate` directive to the `service.go` file to generate the mock code:
+
+```go
+//go:generate gsmock
+```
+
+You need to specify an output filename, such as `service_mock.go`, otherwise the output will be printed to the console.
+
+```go
+//go:generate gsmock -o src_mock.go
+```
+
+You can also specify which interfaces to generate mocks for and which to exclude (prefix the interface name with `!` to
+exclude it).
+
+```go
+//go:generate gsmock -o src_mock.go -i '!RepositoryV2,Repository'
+```
+
 ## Usage Example
 
 Below is a simple usage example:

@@ -17,6 +17,48 @@ mocking 工具存在的类型安全性不足和使用复杂性问题。
 - **自动重置功能**：Manager 提供 Reset 方法，可轻松重置所有模拟器到初始状态
 - **详细的错误信息**：当没有匹配的 mock 代码或存在多个匹配时，提供清晰的错误提示
 
+## 安装工具
+
+gsmock 是一个用于生成 Go mock 代码的工具，你可以通过以下方式安装它：
+
+```bash
+go install github.com/go-spring/mock/gsmock@latest
+```
+
+### 基本用法
+
+1. 定义接口
+
+首先，在你的项目中定义需要 mock 的接口。例如，创建一个名为 service.go 的文件，并添加如下代码：
+
+```go
+package main
+
+type Service interface {
+	Save(r1, r2, r3, r4, r5, r6 int)
+}
+```
+
+2. 生成 Mock 代码
+
+然后在 service.go 文件中加入 go:generate 指令，即可生成 mock 代码：
+
+```go
+//go:generate gsmock
+```
+
+你需要指定一个输出文件名，例如 service_mock.go，否则会输出到控制台上。
+
+```go
+//go:generate gsmock -o src_mock.go
+```
+
+你还可以指定哪些接口生成 mock，哪些接口不生成 mock (在接口名前面加!即可)。
+
+```go
+//go:generate gsmock -o src_mock.go -i '!RepositoryV2,Repository'
+```
+
 ## 使用示例
 
 以下是一个简单的使用示例：
