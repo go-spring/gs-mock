@@ -17,22 +17,56 @@
 package main
 
 import (
+	"bytes"
+	"os"
 	"testing"
+
+	"github.com/go-spring/mock/internal/assert"
 )
 
 func TestMockgen(t *testing.T) {
-	//t.Run("all_default", func(t *testing.T) {
-	//	run(runParam{
-	//		sourceDir:  "./testdata/all_default",
-	//		outputFile: "src_mock.go",
-	//	})
-	//})
+
+	t.Run("all_default", func(t *testing.T) {
+		old := stdOut
+		stdOut = bytes.NewBuffer(nil)
+		defer func() { stdOut = old }()
+		run(runParam{
+			sourceDir: "./testdata/all_default",
+		})
+		b, err := os.ReadFile("./testdata/all_default/output.txt")
+		assert.Nil(t, err)
+		assert.Equal(t, stdOut.(*bytes.Buffer).String(), string(b))
+	})
+
+	t.Run("conflict_pkg_name", func(t *testing.T) {
+		assert.Panic(t, func() {
+			run(runParam{
+				sourceDir: "./testdata/conflict_pkg_name",
+			})
+		}, "import package name conflict: stdio, io")
+	})
+
+	t.Run("error_input_params", func(t *testing.T) {
+		assert.Panic(t, func() {
+			run(runParam{
+				sourceDir: "./testdata/error_input_params",
+			})
+		}, "have more than 5 parameters")
+	})
+
+	t.Run("error_return_params", func(t *testing.T) {
+		assert.Panic(t, func() {
+			run(runParam{
+				sourceDir: "./testdata/error_return_params",
+			})
+		}, "have more than 5 results")
+	})
 
 	t.Run("success", func(t *testing.T) {
 		run(runParam{
-			sourceDir:      "./testdata/success",
+			sourceDir:      "../example",
 			outputFile:     "src_mock.go",
-			mockInterfaces: "'!RepositoryV2'",
+			mockInterfaces: "'!RepositoryV2,,GenericService,Service,,Repository'",
 		})
 	})
 }

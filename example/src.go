@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-spring/mock/example/inner"
+	exp "github.com/go-spring/mock/example/inner"
 )
 
-//go:generate gsmock -o src_mock.go -i '!RepositoryV2'
+//go:generate gsmock -o src_mock.go -i '!RepositoryV2,,GenericService,Service,,Repository'
 
 var _ = fmt.Println
 
@@ -48,10 +48,10 @@ type Service interface {
 	io.Writer
 	M00()
 	M01() *Response
-	M10(*inner.Request)
-	M11(*inner.Request) *Response
+	M10(*exp.Request)
+	M11(*exp.Request) *Response
 	M02() (*Response, bool)
-	M12(*inner.Request) (*Response, bool)
-	M22(ctx context.Context, req map[string]*inner.Request) (*Response, bool)
+	M12(*exp.Request) (*Response, bool)
+	M22(ctx context.Context, req map[string]*exp.Request) (*Response, bool)
 	Printf(format string, args ...any)
 }

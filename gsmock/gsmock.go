@@ -25,6 +25,7 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -33,6 +34,9 @@ import (
 
 	"github.com/go-spring/mock"
 )
+
+// stdOut is the standard output writer, just for test.
+var stdOut io.Writer = os.Stdout
 
 // ToolVersion is the version of the mock generation tool.
 const ToolVersion = "v0.0.1"
@@ -147,7 +151,7 @@ func run(param runParam) {
 	// Output to file or stdout.
 	switch {
 	case param.outputFile == "":
-		if _, err := os.Stdout.Write(b); err != nil {
+		if _, err := stdOut.Write(b); err != nil {
 			panic(err)
 		}
 	default:
@@ -334,20 +338,7 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 				methodName := method.Names[0].Name
 
 				paramCount := 0
-				if ft.Params != nil {
-					paramCount = len(ft.Params.List)
-				}
-				if paramCount > mock.MaxParamCount {
-					panic(fmt.Sprintf("have more than %d parameters", mock.MaxParamCount))
-				}
-
 				resultCount := 0
-				if ft.Results != nil {
-					resultCount = len(ft.Results.List)
-				}
-				if resultCount > mock.MaxResultCount {
-					panic(fmt.Sprintf("have more than %d results", mock.MaxResultCount))
-				}
 
 				var (
 					params     []string
@@ -355,23 +346,34 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 					paramTypes []string
 				)
 				if ft.Params != nil {
-					for i, param := range ft.Params.List {
-						var paramName string
+					for _, param := range ft.Params.List {
+
+						var tempNames []string
 						if len(param.Names) == 0 {
-							paramName = "r" + strconv.Itoa(i)
+							tempNames = append(tempNames, "r"+strconv.Itoa(paramCount))
 						} else {
-							paramName = param.Names[0].Name
+							for _, r := range param.Names {
+								tempNames = append(tempNames, r.Name)
+							}
 						}
+
 						typeText, pkgNames := getTypeText(param.Type)
-						if strings.HasPrefix(typeText, "...") {
-							paramTypes = append(paramTypes, "[]"+typeText[3:])
-						} else {
-							paramTypes = append(paramTypes, typeText)
+						for _, paramName := range tempNames {
+							if strings.HasPrefix(typeText, "...") {
+								paramTypes = append(paramTypes, "[]"+typeText[3:])
+							} else {
+								paramTypes = append(paramTypes, typeText)
+							}
+							paramNames = append(paramNames, paramName)
+							params = append(params, paramName+" "+typeText)
 						}
-						paramNames = append(paramNames, paramName)
-						params = append(params, paramName+" "+typeText)
 						putImport(pkgNames)
+						paramCount += len(tempNames)
 					}
+				}
+
+				if paramCount > mock.MaxParamCount {
+					panic(fmt.Sprintf("have more than %d parameters", mock.MaxParamCount))
 				}
 
 				var (
@@ -379,10 +381,27 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 				)
 				if ft.Results != nil {
 					for _, result := range ft.Results.List {
+
+						var tempNames []string
+						if len(result.Names) == 0 {
+							tempNames = append(tempNames, "r"+strconv.Itoa(resultCount))
+						} else {
+							for _, r := range result.Names {
+								tempNames = append(tempNames, r.Name)
+							}
+						}
+
 						typeText, pkgNames := getTypeText(result.Type)
-						resultTypes = append(resultTypes, typeText)
+						for range tempNames {
+							resultTypes = append(resultTypes, typeText)
+						}
 						putImport(pkgNames)
+						resultCount += len(tempNames)
 					}
+				}
+
+				if resultCount > mock.MaxResultCount {
+					panic(fmt.Sprintf("have more than %d results", mock.MaxResultCount))
 				}
 
 				methods = append(methods, Method{

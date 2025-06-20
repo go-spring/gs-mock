@@ -23,7 +23,7 @@ import (
 	"testing"
 
 	"github.com/go-spring/mock"
-	"github.com/go-spring/mock/example/inner"
+	exp "github.com/go-spring/mock/example/inner"
 	"github.com/go-spring/mock/internal/assert"
 )
 
@@ -219,26 +219,26 @@ func TestServiceMockImpl_M10(t *testing.T) {
 	s := NewServiceMockImpl(mock.NewManager())
 
 	assert.Panic(t, func() {
-		s.M10(&inner.Request{})
+		s.M10(&exp.Request{})
 	}, "no mock code matched")
 
 	s.MockM10().Ignore()
 
-	s.M10(&inner.Request{})
+	s.M10(&exp.Request{})
 }
 
 func TestServiceMockImpl_M11(t *testing.T) {
 	s := NewServiceMockImpl(mock.NewManager())
 
 	assert.Panic(t, func() {
-		s.M11(&inner.Request{})
+		s.M11(&exp.Request{})
 	}, "no mock code matched")
 
-	s.MockM11().Handle(func(req *inner.Request) *Response {
+	s.MockM11().Handle(func(req *exp.Request) *Response {
 		return &Response{Value: 5}
 	})
 
-	resp := s.M11(&inner.Request{})
+	resp := s.M11(&exp.Request{})
 	assert.Equal(t, resp.Value, 5)
 }
 
@@ -262,14 +262,14 @@ func TestServiceMockImpl_M12(t *testing.T) {
 	s := NewServiceMockImpl(mock.NewManager())
 
 	assert.Panic(t, func() {
-		s.M12(&inner.Request{})
+		s.M12(&exp.Request{})
 	}, "no mock code matched")
 
-	s.MockM12().Handle(func(req *inner.Request) (*Response, bool) {
+	s.MockM12().Handle(func(req *exp.Request) (*Response, bool) {
 		return &Response{Value: 5}, false
 	})
 
-	resp, ok := s.M12(&inner.Request{})
+	resp, ok := s.M12(&exp.Request{})
 	assert.Equal(t, ok, false)
 	assert.Equal(t, resp.Value, 5)
 }
@@ -280,14 +280,14 @@ func TestServiceMockImpl_M22(t *testing.T) {
 	ctx := r.BindTo(t.Context())
 
 	assert.Panic(t, func() {
-		s.M22(ctx, map[string]*inner.Request{})
+		s.M22(ctx, map[string]*exp.Request{})
 	}, "no mock code matched")
 
-	s.MockM22().Handle(func(ctx context.Context, m map[string]*inner.Request) (*Response, bool) {
+	s.MockM22().Handle(func(ctx context.Context, m map[string]*exp.Request) (*Response, bool) {
 		return &Response{Value: 5}, false
 	})
 
-	resp, ok := s.M22(ctx, map[string]*inner.Request{})
+	resp, ok := s.M22(ctx, map[string]*exp.Request{})
 	assert.Equal(t, ok, false)
 	assert.Equal(t, resp.Value, 5)
 }
