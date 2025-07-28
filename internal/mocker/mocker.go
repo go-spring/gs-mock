@@ -66,7 +66,7 @@ func main() {
 	 * limitations under the License.
 	 */
 	
-	package mock
+	package gsmock
 	
 	import (
 		"reflect"
@@ -121,7 +121,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = os.WriteFile("../../mocker.go", b, os.ModePerm)
+	err = os.WriteFile("../../gsmock/mocker.go", b, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package mock_test
+package gsmock_test
 
 import (
 	"context"
 	"reflect"
 	"testing"
 
-	"github.com/go-spring/mock"
-	"github.com/go-spring/mock/internal/assert"
+	"github.com/go-spring/gs-mock/gsmock"
+	"github.com/go-spring/gs-mock/internal/assert"
 )
 
 type Trace struct {
@@ -42,15 +42,15 @@ type Client struct{}
 var clientType = reflect.TypeFor[Client]()
 
 func (c *Client) Get(ctx context.Context, req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := mock.InvokeContext(ctx, clientType, "Get", ctx, req, trace); ok {
-		return mock.Unbox2[*Response, error](ret)
+	if ret, ok := gsmock.InvokeContext(ctx, clientType, "Get", ctx, req, trace); ok {
+		return gsmock.Unbox2[*Response, error](ret)
 	}
 	return &Response{Message: "9:xxx"}, nil
 }
 
 // MockGet registers a mock implementation for the Get method.
-func MockGet(r *mock.Manager) *mock.Mocker32[context.Context, *Request, *Trace, *Response, error] {
-	return mock.NewMocker32[context.Context, *Request, *Trace, *Response, error](r, clientType, "Get")
+func MockGet(r *gsmock.Manager) *gsmock.Mocker32[context.Context, *Request, *Trace, *Response, error] {
+	return gsmock.NewMocker32[context.Context, *Request, *Trace, *Response, error](r, clientType, "Get")
 }
 
 func TestMockWithContext(t *testing.T) {
@@ -63,7 +63,7 @@ func TestMockWithContext(t *testing.T) {
 		assert.Equal(t, resp.Message, "9:xxx")
 	}
 
-	r := mock.NewManager()
+	r := gsmock.NewManager()
 	ctx := r.BindTo(t.Context())
 
 	// Test case: When && Return
@@ -112,31 +112,31 @@ type ClientInterface interface {
 
 // MockClient is a mock implementation of ClientInterface.
 type MockClient struct {
-	r *mock.Manager
+	r *gsmock.Manager
 }
 
 var mockClientType = reflect.TypeFor[MockClient]()
 
 // NewMockClient creates a new instance of MockClient.
-func NewMockClient(r *mock.Manager) *MockClient {
+func NewMockClient(r *gsmock.Manager) *MockClient {
 	return &MockClient{r}
 }
 
 // Query mocks the Query method by invoking a registered mock implementation.
 func (c *MockClient) Query(req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := mock.Invoke(c.r, mockClientType, "Query", req, trace); ok {
-		return mock.Unbox2[*Response, error](ret)
+	if ret, ok := gsmock.Invoke(c.r, mockClientType, "Query", req, trace); ok {
+		return gsmock.Unbox2[*Response, error](ret)
 	}
 	panic("mock error")
 }
 
 // MockQuery registers a mock implementation for the Query method.
-func (c *MockClient) MockQuery() *mock.Mocker22[*Request, *Trace, *Response, error] {
-	return mock.NewMocker22[*Request, *Trace, *Response, error](c.r, mockClientType, "Query")
+func (c *MockClient) MockQuery() *gsmock.Mocker22[*Request, *Trace, *Response, error] {
+	return gsmock.NewMocker22[*Request, *Trace, *Response, error](c.r, mockClientType, "Query")
 }
 
 func TestMockNoContext(t *testing.T) {
-	r := mock.NewManager()
+	r := gsmock.NewManager()
 
 	var c ClientInterface
 	mc := NewMockClient(r)

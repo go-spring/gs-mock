@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"io"
 
-	exp "github.com/go-spring/mock/example/inner"
+	exp "github.com/go-spring/gs-mock/example/inner"
 )
 
-//go:generate gsmock -o src_mock.go -i '!RepositoryV2,,GenericService,Service,,Repository'
+//go:generate gs-mock -o src_mock.go -i '!RepositoryV2,,GenericService,Service,,Repository'
 
 var _ = fmt.Println
 

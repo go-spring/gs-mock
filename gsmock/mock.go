@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mock
+package gsmock
 
 import (
 	"context"

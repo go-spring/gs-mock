@@ -32,7 +32,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-spring/mock"
+	"github.com/go-spring/gs-mock/gsmock"
 )
 
 // stdOut is the standard output writer, just for test.
@@ -88,7 +88,7 @@ func run(param runParam) {
 	// Collect necessary imports.
 	imports := make(map[string]string)
 	imports["reflect"] = "reflect"
-	imports["mock"] = "github.com/go-spring/mock"
+	imports["gsmock"] = "github.com/go-spring/gs-mock/gsmock"
 	for _, m := range interfaces {
 		for pkgName, pkgPath := range m.Imports {
 			imports[pkgName] = pkgPath
@@ -372,8 +372,8 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 					}
 				}
 
-				if paramCount > mock.MaxParamCount {
-					panic(fmt.Sprintf("have more than %d parameters", mock.MaxParamCount))
+				if paramCount > gsmock.MaxParamCount {
+					panic(fmt.Sprintf("have more than %d parameters", gsmock.MaxParamCount))
 				}
 
 				var (
@@ -400,8 +400,8 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 					}
 				}
 
-				if resultCount > mock.MaxResultCount {
-					panic(fmt.Sprintf("have more than %d results", mock.MaxResultCount))
+				if resultCount > gsmock.MaxResultCount {
+					panic(fmt.Sprintf("have more than %d results", gsmock.MaxResultCount))
 				}
 
 				methods = append(methods, Method{

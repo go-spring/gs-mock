@@ -22,15 +22,15 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/go-spring/mock"
-	exp "github.com/go-spring/mock/example/inner"
-	"github.com/go-spring/mock/internal/assert"
+	exp "github.com/go-spring/gs-mock/example/inner"
+	"github.com/go-spring/gs-mock/gsmock"
+	"github.com/go-spring/gs-mock/internal/assert"
 )
 
 type ItemType int
 
 func TestRepositoryMockImpl_FindByID(t *testing.T) {
-	s := NewRepositoryMockImpl[ItemType](mock.NewManager())
+	s := NewRepositoryMockImpl[ItemType](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		_, _ = s.FindByID("1")
@@ -54,7 +54,7 @@ func TestRepositoryMockImpl_FindByID(t *testing.T) {
 }
 
 func TestRepositoryMockImpl_Save(t *testing.T) {
-	s := NewRepositoryMockImpl[ItemType](mock.NewManager())
+	s := NewRepositoryMockImpl[ItemType](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		_ = s.Save(ItemType(666))
@@ -69,7 +69,7 @@ func TestRepositoryMockImpl_Save(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_M00(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](mock.NewManager())
+	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M00()
@@ -81,7 +81,7 @@ func TestGenericServiceMockImpl_M00(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_M01(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](mock.NewManager())
+	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M01()
@@ -96,7 +96,7 @@ func TestGenericServiceMockImpl_M01(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_M10(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](mock.NewManager())
+	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M10("")
@@ -108,7 +108,7 @@ func TestGenericServiceMockImpl_M10(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_M11(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](mock.NewManager())
+	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M11("")
@@ -123,7 +123,7 @@ func TestGenericServiceMockImpl_M11(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_M02(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](mock.NewManager())
+	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M02()
@@ -139,7 +139,7 @@ func TestGenericServiceMockImpl_M02(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_M12(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](mock.NewManager())
+	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M12("")
@@ -155,7 +155,7 @@ func TestGenericServiceMockImpl_M12(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_M22(t *testing.T) {
-	r := mock.NewManager()
+	r := gsmock.NewManager()
 	s := NewGenericServiceMockImpl[string, int](r)
 	ctx := r.BindTo(t.Context())
 
@@ -173,7 +173,7 @@ func TestGenericServiceMockImpl_M22(t *testing.T) {
 }
 
 func TestGenericServiceMockImpl_Print(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](mock.NewManager())
+	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.Printf("%s\n", "123")
@@ -189,7 +189,7 @@ func TestGenericServiceMockImpl_Print(t *testing.T) {
 }
 
 func TestServiceMockImpl_M00(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M00()
@@ -201,7 +201,7 @@ func TestServiceMockImpl_M00(t *testing.T) {
 }
 
 func TestServiceMockImpl_M01(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M01()
@@ -216,7 +216,7 @@ func TestServiceMockImpl_M01(t *testing.T) {
 }
 
 func TestServiceMockImpl_M10(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M10(&exp.Request{})
@@ -228,7 +228,7 @@ func TestServiceMockImpl_M10(t *testing.T) {
 }
 
 func TestServiceMockImpl_M11(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M11(&exp.Request{})
@@ -243,7 +243,7 @@ func TestServiceMockImpl_M11(t *testing.T) {
 }
 
 func TestServiceMockImpl_M02(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M02()
@@ -259,7 +259,7 @@ func TestServiceMockImpl_M02(t *testing.T) {
 }
 
 func TestServiceMockImpl_M12(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.M12(&exp.Request{})
@@ -275,7 +275,7 @@ func TestServiceMockImpl_M12(t *testing.T) {
 }
 
 func TestServiceMockImpl_M22(t *testing.T) {
-	r := mock.NewManager()
+	r := gsmock.NewManager()
 	s := NewServiceMockImpl(r)
 	ctx := r.BindTo(t.Context())
 
@@ -293,7 +293,7 @@ func TestServiceMockImpl_M22(t *testing.T) {
 }
 
 func TestServiceMockImpl_Print(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		s.Printf("%s\n", "123")
@@ -309,7 +309,7 @@ func TestServiceMockImpl_Print(t *testing.T) {
 }
 
 func TestServiceMockImpl_Writer(t *testing.T) {
-	s := NewServiceMockImpl(mock.NewManager())
+	s := NewServiceMockImpl(gsmock.NewManager())
 
 	assert.Panic(t, func() {
 		_, _ = s.Write([]byte("123"))

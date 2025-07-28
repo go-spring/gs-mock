@@ -21,7 +21,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-spring/mock/internal/assert"
+	"github.com/go-spring/gs-mock/internal/assert"
 )
 
 func TestMockgen(t *testing.T) {
@@ -64,7 +64,7 @@ func TestMockgen(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		run(runParam{
-			sourceDir:      "../example",
+			sourceDir:      "example",
 			outputFile:     "src_mock.go",
 			mockInterfaces: "'!RepositoryV2,,GenericService,Service,,Repository'",
 		})
