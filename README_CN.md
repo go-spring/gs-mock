@@ -19,7 +19,7 @@ mocking 工具存在的类型安全性不足和使用复杂性问题。
 
 ## 安装工具
 
-gsmock 是一个用于生成 Go mock 代码的工具，你可以通过以下方式安装它：
+**gs-mock** 是一个用于生成 Go mock 代码的工具，你可以通过以下方式安装它：
 
 ```bash
 go install github.com/go-spring/gs-mock@latest
@@ -44,19 +44,19 @@ type Service interface {
 然后在 service.go 文件中加入 go:generate 指令，即可生成 mock 代码：
 
 ```go
-//go:generate gsmock
+//go:generate gs mock
 ```
 
 你需要指定一个输出文件名，例如 service_mock.go，否则会输出到控制台上。
 
 ```go
-//go:generate gsmock -o src_mock.go
+//go:generate gs mock -o src_mock.go
 ```
 
 你还可以指定哪些接口生成 mock，哪些接口不生成 mock (在接口名前面加!即可)。
 
 ```go
-//go:generate gsmock -o src_mock.go -i '!RepositoryV2,Repository'
+//go:generate gs mock -o src_mock.go -i '!RepositoryV2,Repository'
 ```
 
 ## 使用示例

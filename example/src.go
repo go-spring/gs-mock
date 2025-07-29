@@ -24,7 +24,7 @@ import (
 	exp "github.com/go-spring/gs-mock/example/inner"
 )
 
-//go:generate gs-mock -o src_mock.go -i '!RepositoryV2,,GenericService,Service,,Repository'
+//go:generate gs mock -o src_mock.go -i '!RepositoryV2,,GenericService,Service,,Repository'
 
 var _ = fmt.Println
 

@@ -39,7 +39,7 @@ import (
 var stdOut io.Writer = os.Stdout
 
 // ToolVersion is the version of the mock generation tool.
-const ToolVersion = "v0.0.1"
+const ToolVersion = "v0.0.2"
 
 // flagVar holds the command-line flag values.
 var flagVar struct {
@@ -55,6 +55,11 @@ func init() {
 }
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Println("gs-mock is a tool used to generate Go mock code.")
+		fmt.Println(ToolVersion)
+		return
+	}
 	flag.Parse()
 	run(runParam{
 		sourceDir:      ".",
@@ -79,7 +84,12 @@ func run(param runParam) {
 	}
 
 	// Parse user-defined mock interface filters.
-	ctx.parse(param.mockInterfaces)
+	if s := param.mockInterfaces; len(s) > 0 {
+		if s[0] == '\'' || s[0] == '"' {
+			param.mockInterfaces = s[1 : len(s)-1]
+		}
+		ctx.parse(param.mockInterfaces)
+	}
 
 	// Map from import path to package name.
 	pkgs := make(map[string]string)
@@ -113,7 +123,7 @@ func run(param runParam) {
 		toolCommand += "-o " + param.outputFile
 	}
 	if len(param.mockInterfaces) > 0 {
-		toolCommand += " -i " + param.mockInterfaces + ""
+		toolCommand += " -i '" + param.mockInterfaces + "'"
 	}
 
 	packageName := interfaces[0].PackageName
@@ -173,9 +183,6 @@ type scanContext struct {
 func (ctx *scanContext) parse(mockInterfaces string) {
 	if len(mockInterfaces) == 0 {
 		return
-	}
-	if c := mockInterfaces[0]; c == '\'' || c == '"' {
-		mockInterfaces = mockInterfaces[1 : len(mockInterfaces)-1]
 	}
 	ss := strings.Split(mockInterfaces, ",")
 	for _, s := range ss {
