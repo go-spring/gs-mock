@@ -22,8 +22,6 @@ import (
 	"regexp"
 )
 
-//go:generate gsmock -o assert_mock.go -i 'T'
-
 // T is the minimum interface of *testing.T.
 type T interface {
 	Helper()
