@@ -19,10 +19,10 @@ mocking 工具存在的类型安全性不足和使用复杂性问题。
 
 ## 安装工具
 
-**gs-mock** 是一个用于生成 Go mock 代码的工具，你可以通过以下方式安装它：
+**gs-mock** 是一个用于生成 Go mock 代码的工具，也是 gs 工具集中的一员。你可以通过以下方式安装它：
 
 ```bash
-go install github.com/go-spring/gs-mock@latest
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/go-spring/gs/HEAD/install.sh)"
 ```
 
 ### 基本用法

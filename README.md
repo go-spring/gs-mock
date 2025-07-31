@@ -23,10 +23,10 @@ complexity of traditional mocking tools in Go.
 
 ## Installation Tool
 
-**gs-mock** is a tool used to generate Go mock code. You can install it with the following command:
+**gs-mock** is a tool used to generate Go mock code, and one member of gs. You can install it with the following command:
 
 ```bash
-go install github.com/go-spring/gs-mock@latest
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/go-spring/gs/HEAD/install.sh)"
 ```
 
 ### Basic Usage

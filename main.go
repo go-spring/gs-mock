@@ -161,12 +161,12 @@ func run(param runParam) {
 	// Output to file or stdout.
 	switch {
 	case param.outputFile == "":
-		if _, err := stdOut.Write(b); err != nil {
+		if _, err = stdOut.Write(b); err != nil {
 			panic(err)
 		}
 	default:
 		outputFile := filepath.Join(param.sourceDir, param.outputFile)
-		if err := os.WriteFile(outputFile, b, os.ModePerm); err != nil {
+		if err = os.WriteFile(outputFile, b, os.ModePerm); err != nil {
 			panic(err)
 		}
 	}
