@@ -56,7 +56,7 @@ func init() {
 
 func main() {
 	if len(os.Args) == 2 && os.Args[1] == "--version" {
-		fmt.Println("gs-mock is a tool used to generate Go mock code.")
+		fmt.Println("A tool used to generate Go mock code.")
 		fmt.Println(ToolVersion)
 		return
 	}
