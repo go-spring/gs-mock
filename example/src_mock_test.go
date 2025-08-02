@@ -75,7 +75,7 @@ func TestGenericServiceMockImpl_M00(t *testing.T) {
 		s.M00()
 	}, "no mock code matched")
 
-	s.MockM00().Ignore()
+	s.MockM00().ReturnDefault()
 
 	s.M00()
 }
@@ -102,7 +102,7 @@ func TestGenericServiceMockImpl_M10(t *testing.T) {
 		s.M10("")
 	}, "no mock code matched")
 
-	s.MockM10().Ignore()
+	s.MockM10().ReturnDefault()
 
 	s.M10("abc")
 }
@@ -195,7 +195,7 @@ func TestServiceMockImpl_M00(t *testing.T) {
 		s.M00()
 	}, "no mock code matched")
 
-	s.MockM00().Ignore()
+	s.MockM00().ReturnDefault()
 
 	s.M00()
 }
@@ -222,7 +222,7 @@ func TestServiceMockImpl_M10(t *testing.T) {
 		s.M10(&exp.Request{})
 	}, "no mock code matched")
 
-	s.MockM10().Ignore()
+	s.MockM10().ReturnDefault()
 
 	s.M10(&exp.Request{})
 }
