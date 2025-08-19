@@ -18,6 +18,7 @@ package gsmock_test
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -127,7 +128,7 @@ func (c *MockClient) Query(req *Request, trace *Trace) (*Response, error) {
 	if ret, ok := gsmock.Invoke(c.r, mockClientType, "Query", req, trace); ok {
 		return gsmock.Unbox2[*Response, error](ret)
 	}
-	panic("mock error")
+	panic(fmt.Sprintf("no mock code matched for %s.%s", mockClientType.Name(), "Query"))
 }
 
 // MockQuery registers a mock implementation for the Query method.
@@ -178,6 +179,6 @@ func TestMockNoContext(t *testing.T) {
 
 		assert.Panic(t, func() {
 			_, _ = c.Query(&Request{}, &Trace{})
-		}, "mock error")
+		}, "no mock code matched for MockClient.Query")
 	}
 }

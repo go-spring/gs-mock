@@ -26,7 +26,7 @@ func (impl *RepositoryMockImpl[T, M]) FindByID(id string) (T, error) {
 	if ret, ok := gsmock.Invoke(impl.r, t, "FindByID", id); ok {
 		return gsmock.Unbox2[T, error](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Repository.FindByID")
 }
 
 func (impl *RepositoryMockImpl[T, M]) MockFindByID() *gsmock.Mocker12[string, T, error] {
@@ -39,7 +39,7 @@ func (impl *RepositoryMockImpl[T, M]) Save(item T) error {
 	if ret, ok := gsmock.Invoke(impl.r, t, "Save", item); ok {
 		return gsmock.Unbox1[error](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Repository.Save")
 }
 
 func (impl *RepositoryMockImpl[T, M]) MockSave() *gsmock.Mocker11[T, error] {
@@ -62,7 +62,7 @@ func (impl *GenericServiceMockImpl[T, R]) M00() {
 	if _, ok := gsmock.Invoke(impl.r, t, "M00"); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.M00")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockM00() *gsmock.Mocker00 {
@@ -75,7 +75,7 @@ func (impl *GenericServiceMockImpl[T, R]) M01() R {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M01"); ok {
 		return gsmock.Unbox1[R](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.M01")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockM01() *gsmock.Mocker01[R] {
@@ -88,7 +88,7 @@ func (impl *GenericServiceMockImpl[T, R]) M10(r0 T) {
 	if _, ok := gsmock.Invoke(impl.r, t, "M10", r0); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.M10")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockM10() *gsmock.Mocker10[T] {
@@ -101,7 +101,7 @@ func (impl *GenericServiceMockImpl[T, R]) M11(r0 T) R {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M11", r0); ok {
 		return gsmock.Unbox1[R](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.M11")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockM11() *gsmock.Mocker11[T, R] {
@@ -114,7 +114,7 @@ func (impl *GenericServiceMockImpl[T, R]) M02() (R, bool) {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M02"); ok {
 		return gsmock.Unbox2[R, bool](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.M02")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockM02() *gsmock.Mocker02[R, bool] {
@@ -127,7 +127,7 @@ func (impl *GenericServiceMockImpl[T, R]) M12(r0 T) (R, bool) {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M12", r0); ok {
 		return gsmock.Unbox2[R, bool](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.M12")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockM12() *gsmock.Mocker12[T, R, bool] {
@@ -140,7 +140,7 @@ func (impl *GenericServiceMockImpl[T, R]) M22(ctx context.Context, req map[strin
 	if ret, ok := gsmock.Invoke(impl.r, t, "M22", ctx, req); ok {
 		return gsmock.Unbox2[*Response, bool](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.M22")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockM22() *gsmock.Mocker22[context.Context, map[string]T, *Response, bool] {
@@ -153,7 +153,7 @@ func (impl *GenericServiceMockImpl[T, R]) Printf(format string, args ...any) {
 	if _, ok := gsmock.Invoke(impl.r, t, "Printf", format, args); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for GenericService.Printf")
 }
 
 func (impl *GenericServiceMockImpl[T, R]) MockPrintf() *gsmock.Mocker20[string, []any] {
@@ -176,7 +176,7 @@ func (impl *ServiceMockImpl) M00() {
 	if _, ok := gsmock.Invoke(impl.r, t, "M00"); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.M00")
 }
 
 func (impl *ServiceMockImpl) MockM00() *gsmock.Mocker00 {
@@ -189,7 +189,7 @@ func (impl *ServiceMockImpl) M01() *Response {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M01"); ok {
 		return gsmock.Unbox1[*Response](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.M01")
 }
 
 func (impl *ServiceMockImpl) MockM01() *gsmock.Mocker01[*Response] {
@@ -202,7 +202,7 @@ func (impl *ServiceMockImpl) M10(r0 *exp.Request) {
 	if _, ok := gsmock.Invoke(impl.r, t, "M10", r0); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.M10")
 }
 
 func (impl *ServiceMockImpl) MockM10() *gsmock.Mocker10[*exp.Request] {
@@ -215,7 +215,7 @@ func (impl *ServiceMockImpl) M11(r0 *exp.Request) *Response {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M11", r0); ok {
 		return gsmock.Unbox1[*Response](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.M11")
 }
 
 func (impl *ServiceMockImpl) MockM11() *gsmock.Mocker11[*exp.Request, *Response] {
@@ -228,7 +228,7 @@ func (impl *ServiceMockImpl) M02() (*Response, bool) {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M02"); ok {
 		return gsmock.Unbox2[*Response, bool](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.M02")
 }
 
 func (impl *ServiceMockImpl) MockM02() *gsmock.Mocker02[*Response, bool] {
@@ -241,7 +241,7 @@ func (impl *ServiceMockImpl) M12(r0 *exp.Request) (*Response, bool) {
 	if ret, ok := gsmock.Invoke(impl.r, t, "M12", r0); ok {
 		return gsmock.Unbox2[*Response, bool](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.M12")
 }
 
 func (impl *ServiceMockImpl) MockM12() *gsmock.Mocker12[*exp.Request, *Response, bool] {
@@ -254,7 +254,7 @@ func (impl *ServiceMockImpl) M22(ctx context.Context, req map[string]*exp.Reques
 	if ret, ok := gsmock.Invoke(impl.r, t, "M22", ctx, req); ok {
 		return gsmock.Unbox2[*Response, bool](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.M22")
 }
 
 func (impl *ServiceMockImpl) MockM22() *gsmock.Mocker22[context.Context, map[string]*exp.Request, *Response, bool] {
@@ -267,7 +267,7 @@ func (impl *ServiceMockImpl) Printf(format string, args ...any) {
 	if _, ok := gsmock.Invoke(impl.r, t, "Printf", format, args); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Service.Printf")
 }
 
 func (impl *ServiceMockImpl) MockPrintf() *gsmock.Mocker20[string, []any] {

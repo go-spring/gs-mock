@@ -88,7 +88,7 @@ func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}(){
 	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker00 {
@@ -101,7 +101,7 @@ func (impl *{{.i.Name}}MockImpl) {{.m.Name}}(){
 	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker00 {
@@ -121,7 +121,7 @@ func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}()({{.m.Resul
 	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
 		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker0{{.m.ResultCount}}[{{.m.ResultTypes}}] {
@@ -134,7 +134,7 @@ func (impl *{{.i.Name}}MockImpl) {{.m.Name}}()({{.m.ResultTypes}}){
 	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
 		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker0{{.m.ResultCount}}[{{.m.ResultTypes}}] {
@@ -154,7 +154,7 @@ func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}({{.m.Params}
 	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}0[{{.m.ParamTypes}}] {
@@ -167,7 +167,7 @@ func (impl *{{.i.Name}}MockImpl) {{.m.Name}}({{.m.Params}}){
 	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
 		return
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}0[{{.m.ParamTypes}}] {
@@ -187,7 +187,7 @@ func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}({{.m.Params}
 	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
 		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}{{.m.ResultCount}}[{{.m.ParamTypes}}, {{.m.ResultTypes}}] {
@@ -200,7 +200,7 @@ func (impl *{{.i.Name}}MockImpl) {{.m.Name}}({{.m.Params}})({{.m.ResultTypes}}){
 	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
 		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
 }
 
 func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}{{.m.ResultCount}}[{{.m.ParamTypes}}, {{.m.ResultTypes}}] {

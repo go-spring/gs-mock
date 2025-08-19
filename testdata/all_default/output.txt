@@ -25,7 +25,7 @@ func (impl *CloserMockImpl) Close() error {
 	if ret, ok := gsmock.Invoke(impl.r, t, "Close"); ok {
 		return gsmock.Unbox1[error](ret)
 	}
-	panic("no mock code matched")
+	panic("no mock code matched for Closer.Close")
 }
 
 func (impl *CloserMockImpl) MockClose() *gsmock.Mocker01[error] {

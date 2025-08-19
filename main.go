@@ -39,7 +39,7 @@ import (
 var stdOut io.Writer = os.Stdout
 
 // ToolVersion is the version of the mock generation tool.
-const ToolVersion = "v0.0.4"
+const ToolVersion = "v0.0.5"
 
 // flagVar holds the command-line flag values.
 var flagVar struct {
@@ -134,12 +134,12 @@ func run(param runParam) {
 		"Package":     packageName,
 		"Imports":     h.String(),
 	}); err != nil {
-		panic(err)
+		panic(fmt.Errorf("error executing template(header): %w", err))
 	}
 
 	for _, i := range interfaces {
 		if err := tmplInterface.Execute(s, i); err != nil {
-			panic(err)
+			panic(fmt.Errorf("error executing template(interface): %w", err))
 		}
 		for _, m := range i.Methods {
 			tmpl := getTmplMethod(m.ParamCount, m.ResultCount)
@@ -147,7 +147,7 @@ func run(param runParam) {
 				"i": i,
 				"m": m,
 			}); err != nil {
-				panic(err)
+				panic(fmt.Errorf("error executing template(method): %w", err))
 			}
 		}
 	}
@@ -155,19 +155,19 @@ func run(param runParam) {
 	// Format the generated source code.
 	b, err := format.Source(s.Bytes())
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("error formatting source code: %w", err))
 	}
 
 	// Output to file or stdout.
 	switch {
 	case param.outputFile == "":
 		if _, err = stdOut.Write(b); err != nil {
-			panic(err)
+			panic(fmt.Errorf("error writing to stdout: %w", err))
 		}
 	default:
 		outputFile := filepath.Join(param.sourceDir, param.outputFile)
 		if err = os.WriteFile(outputFile, b, os.ModePerm); err != nil {
-			panic(err)
+			panic(fmt.Errorf("error writing to file(%s): %w", outputFile, err))
 		}
 	}
 }
@@ -234,7 +234,7 @@ type Method struct {
 func scanDir(dir string, ctx scanContext, pkgs map[string]string) []Interface {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("error reading directory: %w", err))
 	}
 	var ret []Interface
 	for _, entry := range entries {
@@ -258,7 +258,7 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 	mode := parser.AllErrors
 	node, err := parser.ParseFile(token.NewFileSet(), file, nil, mode)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("error parsing file(%s): %w", file, err))
 	}
 
 	needImports := make(map[string]string)

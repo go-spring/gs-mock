@@ -113,17 +113,18 @@ func main() {
 				"cvtParams":   strings.Join(cvtParams, ", "),
 			}
 			if err := getTemplate(i, j).Execute(s, data); err != nil {
-				panic(err)
+				panic(fmt.Errorf("error executing template(%s): %w", mockerName, err))
 			}
 		}
 	}
 	b, err := format.Source(s.Bytes())
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("error formatting source code: %w", err))
 	}
-	err = os.WriteFile("../../gsmock/mocker.go", b, os.ModePerm)
+	const fileName = "../../gsmock/mocker.go"
+	err = os.WriteFile(fileName, b, os.ModePerm)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("error writing file(%s): %w", fileName, err))
 	}
 }
 
