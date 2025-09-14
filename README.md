@@ -2,6 +2,8 @@
 
 [English](README.md) | [中文](README_CN.md)
 
+> The project has been officially released, welcome to use!
+
 **mock** is a modern, type-safe mocking library for the Go programming language, fully supporting generic programming.
 It provides a simple and easy-to-use interface that helps developers easily create and manage mock objects, thereby
 improving the quality and efficiency of unit testing. The library is designed to address the lack of type safety and the
