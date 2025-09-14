@@ -1,4 +1,4 @@
-# mock
+# gs-mock
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -10,8 +10,8 @@ mocking 工具存在的类型安全性不足和使用复杂性问题。
 
 - **类型安全**：利用 Go 1.18+ 的泛型特性，确保编译时的安全性，避免运行时类型错误
 - **多种 Mock 模式**：
-    - `Handle` 模式：直接处理函数调用
-    - `When/Return` 模式：基于条件的模拟返回
+  - `Handle` 模式：直接处理函数调用
+  - `When/Return` 模式：基于条件的模拟返回
 - **灵活的方法匹配**：支持不同数量和类型的参数及返回值（最多支持5个参数和5个返回值）
 - **上下文支持**：提供与 context 包的集成，方便在分布式系统中进行测试
 - **自动重置功能**：Manager 提供 Reset 方法，可轻松重置所有模拟器到初始状态
@@ -59,6 +59,8 @@ type Service interface {
 //go:generate gs mock -o src_mock.go -i '!RepositoryV2,Repository'
 ```
 
+> 提示：`gsmock` 支持最多 5 个参数和 5 个返回值，超过限制会 panic
+
 ## 使用示例
 
 以下是一个简单的使用示例：
@@ -72,7 +74,7 @@ import (
 	"testing"
 
 	"github.com/go-spring/gs-mock/gsmock"
-	"github.com/go-spring/gs-mock/internal/assert"
+	"github.com/go-spring/spring-base/testing/assert"
 )
 
 type Trace struct {

@@ -22,13 +22,13 @@ import (
 	"regexp"
 )
 
-// T is the minimum interface of *testing.T.
+// T is the minimal interface that *testing.T satisfies.
 type T interface {
 	Helper()
-	Error(args ...interface{})
+	Errorf(format string, args ...any)
 }
 
-// isNil reports v is nil, but will not panic.
+// isNil reports whether the given reflect.Value is nil.
 func isNil(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Chan,
@@ -44,52 +44,70 @@ func isNil(v reflect.Value) bool {
 	}
 }
 
-// Nil assertion failed when got is not nil.
-func Nil(t T, got interface{}) {
+// Nil asserts that got is nil.
+// It fails if got is not nil.
+//
+// Why not just use `got == nil`?
+// Because in Go, typed nils behave differently:
+//
+//	a := (*int)(nil)   // type is *int
+//	b := (any)(nil)    // type is <nil>
+//
+// a == b is false, even though both are nil in a sense.
+func Nil(t T, got any) {
 	t.Helper()
-	// Why can't we use got==nil to judge？Because if
-	// a := (*int)(nil)        // %T == *int
-	// b := (interface{})(nil) // %T == <nil>
-	// then a==b is false, because they are different types.
 	if !isNil(reflect.ValueOf(got)) {
-		t.Error(fmt.Sprintf("got (%T) %v but expect nil", got, got))
+		t.Errorf("got (%T) %v but expect nil", got, got)
 	}
 }
 
-// Equal assertion failed when got and expect are not `deeply equal`.
-func Equal(t T, got interface{}, expect interface{}) {
+// Equal asserts that got and expect are deeply equal.
+// It fails if they are not equal according to reflect.DeepEqual.
+func Equal(t T, got any, expect any) {
 	t.Helper()
 	if !reflect.DeepEqual(got, expect) {
-		t.Error(fmt.Sprintf("got (%T) %v but expect (%T) %v", got, got, expect, expect))
+		t.Errorf("got (%T) %v but expect (%T) %v", got, got, expect, expect)
 	}
 }
 
-func recovery(fn func()) (str string) {
+// recovery runs fn and captures any panic.
+// If fn panics, it returns the panic message string and recovered=true.
+// If fn does not panic, it returns an empty string and recovered=false.
+func recovery(fn func()) (str string, recovered bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			str = fmt.Sprint(r)
+			recovered = true
 		}
 	}()
 	fn()
-	return "<<SUCCESS>>"
+	return "", false
 }
 
-// Panic assertion failed when fn doesn't panic or not match expr expression.
+// Panic asserts that fn panics.
+// If fn does not panic, it fails.
+// If expr is non-empty, it must be a valid regexp that matches the panic message.
 func Panic(t T, fn func(), expr string) {
 	t.Helper()
-	str := recovery(fn)
-	if str == "<<SUCCESS>>" {
-		t.Error("did not panic")
+	if str, ok := recovery(fn); !ok {
+		t.Errorf("did not panic")
 	} else {
 		matches(t, str, expr)
 	}
 }
 
+// matches asserts that got matches the given regular expression expr.
+// If expr is empty, it fails.
+// If expr is invalid or does not match, it fails.
 func matches(t T, got string, expr string) {
 	t.Helper()
+	if expr == "" {
+		t.Errorf("empty pattern")
+		return
+	}
 	if ok, err := regexp.MatchString(expr, got); err != nil {
-		t.Error("invalid pattern")
+		t.Errorf("invalid pattern")
 	} else if !ok {
-		t.Error(fmt.Sprintf("got %q which does not match %q", got, expr))
+		t.Errorf("got %q which does not match %q", got, expr)
 	}
 }

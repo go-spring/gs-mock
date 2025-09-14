@@ -38,10 +38,12 @@ type Response struct {
 	Message string
 }
 
+// Client is a sample client type for testing context-based mocking.
 type Client struct{}
 
 var clientType = reflect.TypeFor[Client]()
 
+// Get is a method of Client that can be mocked. It returns a Response and an error.
 func (c *Client) Get(ctx context.Context, req *Request, trace *Trace) (*Response, error) {
 	if ret, ok := gsmock.InvokeContext(ctx, clientType, "Get", ctx, req, trace); ok {
 		return gsmock.Unbox2[*Response, error](ret)
@@ -57,7 +59,7 @@ func MockGet(r *gsmock.Manager) *gsmock.Mocker32[context.Context, *Request, *Tra
 func TestMockWithContext(t *testing.T) {
 	var c Client
 
-	// Test case: Unmocked
+	// Test case: Unmocked - should return default value
 	{
 		resp, err := c.Get(t.Context(), &Request{}, &Trace{})
 		assert.Nil(t, err)
@@ -67,7 +69,7 @@ func TestMockWithContext(t *testing.T) {
 	r := gsmock.NewManager()
 	ctx := r.BindTo(t.Context())
 
-	// Test case: When && Return
+	// Test case: When && Return - should return mocked value when condition is met
 	{
 		r.Reset()
 		MockGet(r).
@@ -83,7 +85,7 @@ func TestMockWithContext(t *testing.T) {
 		assert.Equal(t, resp.Message, "1:abc")
 	}
 
-	// Test case: Handle
+	// Test case: Handle - should handle all calls with the provided function
 	{
 		r.Reset()
 		MockGet(r).
@@ -96,7 +98,7 @@ func TestMockWithContext(t *testing.T) {
 		assert.Equal(t, resp.Message, "4:xyz")
 	}
 
-	// Test case: Invalid Handle
+	// Test case: Invalid Handle - should fall back to default implementation when handle is nil
 	{
 		r.Reset()
 		MockGet(r).Handle(nil)
@@ -107,6 +109,7 @@ func TestMockWithContext(t *testing.T) {
 	}
 }
 
+// ClientInterface is an interface for testing non-context based mocking.
 type ClientInterface interface {
 	Query(req *Request, trace *Trace) (*Response, error)
 }
@@ -143,7 +146,7 @@ func TestMockNoContext(t *testing.T) {
 	mc := NewMockClient(r)
 	c = mc
 
-	// Test case: When && Return
+	// Test case: When && Return - should return mocked value when condition is met
 	{
 		r.Reset()
 		mc.MockQuery().
@@ -159,7 +162,7 @@ func TestMockNoContext(t *testing.T) {
 		assert.Equal(t, resp.Message, "1:abc")
 	}
 
-	// Test case: Handle
+	// Test case: Handle - should handle all calls with the provided function
 	{
 		r.Reset()
 		mc.MockQuery().
@@ -172,7 +175,7 @@ func TestMockNoContext(t *testing.T) {
 		assert.Equal(t, resp.Message, "4:xyz")
 	}
 
-	// Test case: Invalid Handle
+	// Test case: Invalid Handle - should panic when handle is nil and no other mock matches
 	{
 		r.Reset()
 		mc.MockQuery().Handle(nil)

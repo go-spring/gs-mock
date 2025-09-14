@@ -1,4 +1,4 @@
-# mock
+# gs-mock
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -65,6 +65,8 @@ exclude it).
 //go:generate gs mock -o src_mock.go -i '!RepositoryV2,Repository'
 ```
 
+> Tip: `gsmock` supports up to 5 parameters and 5 return values, exceeding this limit will cause a panic
+
 ## Usage Example
 
 Below is a simple usage example:
@@ -78,7 +80,7 @@ import (
 	"testing"
 
 	"github.com/go-spring/gs-mock/gsmock"
-	"github.com/go-spring/gs-mock/internal/assert"
+    "github.com/go-spring/spring-base/testing/assert"
 )
 
 type Trace struct {

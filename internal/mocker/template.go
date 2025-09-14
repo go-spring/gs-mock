@@ -21,7 +21,7 @@ import (
 )
 
 // mocker00Tmpl for no request parameters, returns nothing.
-var mocker00Tmpl = template.Must(template.New("mocker").Parse(`
+var mocker00Tmpl = template.Must(template.New("mocker00").Parse(`
 /******************************** Mocker00 ***********************************/
 
 type Mocker00 struct {
@@ -79,13 +79,13 @@ func (m *Invoker00) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *Invoker00) Handle(params []interface{}) []interface{} {
+func (m *Invoker00) Handle(params []any) []any {
 	m.fnHandle({{.cvtParams}})
-	return []interface{}{}
+	return []any{}
 }
 
 // When checks if the condition function evaluates to true.
-func (m *Invoker00) When(params []interface{}) bool {
+func (m *Invoker00) When(params []any) bool {
 	if m.fnWhen == nil {
 		return false
 	}
@@ -93,9 +93,9 @@ func (m *Invoker00) When(params []interface{}) bool {
 }
 
 // Return provides predefined response and error values.
-func (m *Invoker00) Return(params []interface{}) []interface{} {
+func (m *Invoker00) Return(params []any) []any {
 	m.fnReturn()
-	return []interface{}{}
+	return []any{}
 }
 
 // NewMocker00 creates a new Mocker00 instance.
@@ -108,7 +108,7 @@ func NewMocker00(r *Manager, typ reflect.Type, method string) *Mocker00 {
 `))
 
 // mocker0NTmpl for no request parameters, returns N values.
-var mocker0NTmpl = template.Must(template.New("mocker").Parse(`
+var mocker0NTmpl = template.Must(template.New("mocker0N").Parse(`
 /******************************** {{.mockerName}} ***********************************/
 
 type {{.mockerName}}[{{.resp}} any] struct {
@@ -166,13 +166,13 @@ func (m *{{.invokerName}}[{{.resp}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.resp}}]) Handle(params []interface{}) []interface{} {
+func (m *{{.invokerName}}[{{.resp}}]) Handle(params []any) []any {
 	{{.respOnlyArg}} := m.fnHandle({{.cvtParams}})
-	return []interface{}{ {{.respOnlyArg}}}
+	return []any{ {{.respOnlyArg}}}
 }
 
 // When checks if the condition function evaluates to true.
-func (m *{{.invokerName}}[{{.resp}}]) When(params []interface{}) bool {
+func (m *{{.invokerName}}[{{.resp}}]) When(params []any) bool {
 	if m.fnWhen == nil {
 		return false
 	}
@@ -180,9 +180,9 @@ func (m *{{.invokerName}}[{{.resp}}]) When(params []interface{}) bool {
 }
 
 // Return provides predefined response and error values.
-func (m *{{.invokerName}}[{{.resp}}]) Return(params []interface{}) []interface{} {
+func (m *{{.invokerName}}[{{.resp}}]) Return(params []any) []any {
 	{{.respOnlyArg}} := m.fnReturn()
-	return []interface{}{ {{.respOnlyArg}}}
+	return []any{ {{.respOnlyArg}}}
 }
 
 // New{{.mockerName}} creates a new {{.mockerName}} instance.
@@ -195,7 +195,7 @@ func New{{.mockerName}}[{{.resp}} any](r *Manager, typ reflect.Type, method stri
 `))
 
 // mockerN0Tmpl for N request parameters, returns nothing.
-var mockerN0Tmpl = template.Must(template.New("mocker").Parse(`
+var mockerN0Tmpl = template.Must(template.New("mockerN0").Parse(`
 /******************************** {{.mockerName}} ***********************************/
 
 type {{.mockerName}}[{{.req}} any] struct {
@@ -253,13 +253,13 @@ func (m *{{.invokerName}}[{{.req}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.req}}]) Handle(params []interface{}) []interface{} {
+func (m *{{.invokerName}}[{{.req}}]) Handle(params []any) []any {
 	m.fnHandle({{.cvtParams}})
-	return []interface{}{}
+	return []any{}
 }
 
 // When checks if the condition function evaluates to true.
-func (m *{{.invokerName}}[{{.req}}]) When(params []interface{}) bool {
+func (m *{{.invokerName}}[{{.req}}]) When(params []any) bool {
 	if m.fnWhen == nil {
 		return false
 	}
@@ -267,9 +267,9 @@ func (m *{{.invokerName}}[{{.req}}]) When(params []interface{}) bool {
 }
 
 // Return provides predefined response and error values.
-func (m *{{.invokerName}}[{{.req}}]) Return(params []interface{}) []interface{} {
+func (m *{{.invokerName}}[{{.req}}]) Return(params []any) []any {
 	m.fnReturn()
-	return []interface{}{}
+	return []any{}
 }
 
 // New{{.mockerName}} creates a new {{.mockerName}} instance.
@@ -282,7 +282,7 @@ func New{{.mockerName}}[{{.req}} any](r *Manager, typ reflect.Type, method strin
 `))
 
 // mockerNNTmpl for N request parameters, returns N values.
-var mockerNNTmpl = template.Must(template.New("mocker").Parse(`
+var mockerNNTmpl = template.Must(template.New("mockerNN").Parse(`
 /******************************** {{.mockerName}} ***********************************/
 
 type {{.mockerName}}[{{.req}} any, {{.resp}} any] struct {
@@ -340,13 +340,13 @@ func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Mode() Mode {
 }
 
 // Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Handle(params []interface{}) []interface{} {
+func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Handle(params []any) []any {
 	{{.respOnlyArg}} := m.fnHandle({{.cvtParams}})
-	return []interface{}{ {{.respOnlyArg}}}
+	return []any{ {{.respOnlyArg}}}
 }
 
 // When checks if the condition function evaluates to true.
-func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) When(params []interface{}) bool {
+func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) When(params []any) bool {
 	if m.fnWhen == nil {
 		return false
 	}
@@ -354,9 +354,9 @@ func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) When(params []interface{}) bool 
 }
 
 // Return provides predefined response and error values.
-func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Return(params []interface{}) []interface{} {
+func (m *{{.invokerName}}[{{.req}}, {{.resp}}]) Return(params []any) []any {
 	{{.respOnlyArg}} := m.fnReturn()
-	return []interface{}{ {{.respOnlyArg}}}
+	return []any{ {{.respOnlyArg}}}
 }
 
 // New{{.mockerName}} creates a new {{.mockerName}} instance.

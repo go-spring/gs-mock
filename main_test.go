@@ -26,18 +26,22 @@ import (
 
 func TestMockgen(t *testing.T) {
 
+	// Test default generation for all interfaces in a sample directory
 	t.Run("all_default", func(t *testing.T) {
 		old := stdOut
 		stdOut = bytes.NewBuffer(nil)
 		defer func() { stdOut = old }()
+
 		run(runParam{
 			sourceDir: "./testdata/all_default",
 		})
+
 		b, err := os.ReadFile("./testdata/all_default/output.txt")
 		assert.Nil(t, err)
 		assert.Equal(t, stdOut.(*bytes.Buffer).String(), string(b))
 	})
 
+	// Test package name conflict scenario
 	t.Run("conflict_pkg_name", func(t *testing.T) {
 		assert.Panic(t, func() {
 			run(runParam{
@@ -46,6 +50,7 @@ func TestMockgen(t *testing.T) {
 		}, "import package name conflict: stdio, io")
 	})
 
+	// Test exceeding maximum allowed input parameters
 	t.Run("error_input_params", func(t *testing.T) {
 		assert.Panic(t, func() {
 			run(runParam{
@@ -54,6 +59,7 @@ func TestMockgen(t *testing.T) {
 		}, "have more than 5 parameters")
 	})
 
+	// Test exceeding maximum allowed return values
 	t.Run("error_return_params", func(t *testing.T) {
 		assert.Panic(t, func() {
 			run(runParam{
@@ -62,6 +68,7 @@ func TestMockgen(t *testing.T) {
 		}, "have more than 5 results")
 	})
 
+	// Test successful generation with interface filtering
 	t.Run("success", func(t *testing.T) {
 		run(runParam{
 			sourceDir:      "example",
