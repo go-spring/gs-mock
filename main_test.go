@@ -65,7 +65,7 @@ func TestMockgen(t *testing.T) {
 			run(runParam{
 				sourceDir: "./testdata/error_return_params",
 			})
-		}, "have more than 5 results")
+		}, "have more than 4 results")
 	})
 
 	// Test successful generation with interface filtering

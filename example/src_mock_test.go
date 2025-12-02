@@ -19,7 +19,9 @@ package example
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"testing"
 
 	exp "github.com/go-spring/gs-mock/example/inner"
@@ -36,7 +38,7 @@ func TestRepositoryMockImpl_FindByID(t *testing.T) {
 		_, _ = s.FindByID("1")
 	}, "no mock code matched")
 
-	s.MockFindByID().Handle(func(s string) (ItemType, error) {
+	s.MockFindByID().Handle(func(r *RepositoryMockImpl[ItemType, *http.Request], s string) (ItemType, error) {
 		return ItemType(666), nil
 	})
 
@@ -44,7 +46,7 @@ func TestRepositoryMockImpl_FindByID(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, v, ItemType(666))
 
-	s.MockFindByID().Handle(func(s string) (ItemType, error) {
+	s.MockFindByID().Handle(func(r *RepositoryMockImpl[ItemType, *http.Request], s string) (ItemType, error) {
 		return ItemType(666), nil
 	})
 
@@ -60,12 +62,12 @@ func TestRepositoryMockImpl_Save(t *testing.T) {
 		_ = s.Save(ItemType(666))
 	}, "no mock code matched")
 
-	s.MockSave().Handle(func(v ItemType) error {
-		return nil
+	s.MockSave().Handle(func(r *RepositoryMockImpl[ItemType, *http.Request], v ItemType) error {
+		return errors.New("error")
 	})
 
 	err := s.Save(ItemType(666))
-	assert.Nil(t, err)
+	assert.Equal(t, err.Error(), "error")
 }
 
 func TestGenericServiceMockImpl_M00(t *testing.T) {
@@ -86,7 +88,7 @@ func TestGenericServiceMockImpl_M01(t *testing.T) {
 		s.M01()
 	}, "no mock code matched")
 
-	s.MockM01().Handle(func() int {
+	s.MockM01().Handle(func(g *GenericServiceMockImpl[string, int]) int {
 		return 5
 	})
 
@@ -112,7 +114,7 @@ func TestGenericServiceMockImpl_M11(t *testing.T) {
 		s.M11("")
 	}, "no mock code matched")
 
-	s.MockM11().Handle(func(s string) int {
+	s.MockM11().Handle(func(g *GenericServiceMockImpl[string, int], s string) int {
 		return 5
 	})
 
@@ -127,7 +129,7 @@ func TestGenericServiceMockImpl_M02(t *testing.T) {
 		s.M02()
 	}, "no mock code matched")
 
-	s.MockM02().Handle(func() (int, bool) {
+	s.MockM02().Handle(func(g *GenericServiceMockImpl[string, int]) (int, bool) {
 		return 5, false
 	})
 
@@ -143,7 +145,7 @@ func TestGenericServiceMockImpl_M12(t *testing.T) {
 		s.M12("")
 	}, "no mock code matched")
 
-	s.MockM12().Handle(func(s string) (int, bool) {
+	s.MockM12().Handle(func(g *GenericServiceMockImpl[string, int], s string) (int, bool) {
 		return 5, false
 	})
 
@@ -155,13 +157,13 @@ func TestGenericServiceMockImpl_M12(t *testing.T) {
 func TestGenericServiceMockImpl_M22(t *testing.T) {
 	r := gsmock.NewManager()
 	s := NewGenericServiceMockImpl[string, int](r)
-	ctx := r.BindTo(t.Context())
+	ctx := r.WithManager(t.Context())
 
 	assert.Panic(t, func() {
 		s.M22(ctx, map[string]string{})
 	}, "no mock code matched")
 
-	s.MockM22().Handle(func(ctx context.Context, m map[string]string) (*Response, bool) {
+	s.MockM22().Handle(func(g *GenericServiceMockImpl[string, int], ctx context.Context, m map[string]string) (*Response, bool) {
 		return &Response{Value: 5}, false
 	})
 
@@ -178,7 +180,7 @@ func TestGenericServiceMockImpl_Print(t *testing.T) {
 	}, "no mock code matched")
 
 	var buf bytes.Buffer
-	s.MockPrintf().Handle(func(format string, args []any) {
+	s.MockPrintf().Handle(func(g *GenericServiceMockImpl[string, int], format string, args []any) {
 		buf.WriteString(fmt.Sprintf(format, args...))
 	})
 
@@ -204,7 +206,7 @@ func TestServiceMockImpl_M01(t *testing.T) {
 		s.M01()
 	}, "no mock code matched")
 
-	s.MockM01().Handle(func() *Response {
+	s.MockM01().Handle(func(impl *ServiceMockImpl) *Response {
 		return &Response{Value: 5}
 	})
 
@@ -230,7 +232,7 @@ func TestServiceMockImpl_M11(t *testing.T) {
 		s.M11(&exp.Request{})
 	}, "no mock code matched")
 
-	s.MockM11().Handle(func(req *exp.Request) *Response {
+	s.MockM11().Handle(func(impl *ServiceMockImpl, req *exp.Request) *Response {
 		return &Response{Value: 5}
 	})
 
@@ -245,7 +247,7 @@ func TestServiceMockImpl_M02(t *testing.T) {
 		s.M02()
 	}, "no mock code matched")
 
-	s.MockM02().Handle(func() (*Response, bool) {
+	s.MockM02().Handle(func(impl *ServiceMockImpl) (*Response, bool) {
 		return &Response{Value: 5}, false
 	})
 
@@ -261,7 +263,7 @@ func TestServiceMockImpl_M12(t *testing.T) {
 		s.M12(&exp.Request{})
 	}, "no mock code matched")
 
-	s.MockM12().Handle(func(req *exp.Request) (*Response, bool) {
+	s.MockM12().Handle(func(impl *ServiceMockImpl, req *exp.Request) (*Response, bool) {
 		return &Response{Value: 5}, false
 	})
 
@@ -273,13 +275,13 @@ func TestServiceMockImpl_M12(t *testing.T) {
 func TestServiceMockImpl_M22(t *testing.T) {
 	r := gsmock.NewManager()
 	s := NewServiceMockImpl(r)
-	ctx := r.BindTo(t.Context())
+	ctx := r.WithManager(t.Context())
 
 	assert.Panic(t, func() {
 		s.M22(ctx, map[string]*exp.Request{})
 	}, "no mock code matched")
 
-	s.MockM22().Handle(func(ctx context.Context, m map[string]*exp.Request) (*Response, bool) {
+	s.MockM22().Handle(func(impl *ServiceMockImpl, ctx context.Context, m map[string]*exp.Request) (*Response, bool) {
 		return &Response{Value: 5}, false
 	})
 
@@ -296,7 +298,7 @@ func TestServiceMockImpl_Print(t *testing.T) {
 	}, "no mock code matched")
 
 	var buf bytes.Buffer
-	s.MockPrintf().Handle(func(format string, args []any) {
+	s.MockPrintf().Handle(func(impl *ServiceMockImpl, format string, args []any) {
 		buf.WriteString(fmt.Sprintf(format, args...))
 	})
 

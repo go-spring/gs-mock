@@ -41,7 +41,7 @@ import (
 var stdOut io.Writer = os.Stdout
 
 // ToolVersion specifies the version of this mock generation tool.
-const ToolVersion = "v0.0.5"
+const ToolVersion = "v0.0.6"
 
 // flagVar holds the command-line flag values for output file and interface selection.
 var flagVar struct {
@@ -99,7 +99,6 @@ func run(param runParam) {
 
 	// Collect necessary imports for generated mocks
 	imports := make(map[string]string)
-	imports["reflect"] = "reflect"
 	imports["gsmock"] = "github.com/go-spring/gs-mock/gsmock"
 	for _, m := range interfaces {
 		maps.Copy(imports, m.Imports)
@@ -145,7 +144,7 @@ func run(param runParam) {
 			panic(fmt.Errorf("error executing template(interface): %w", err))
 		}
 		for _, m := range i.Methods {
-			tmpl := getTmplMethod(m.ParamCount, m.ResultCount)
+			tmpl := getMethodTemplate(m.ResultCount)
 			if err := tmpl.Execute(s, map[string]any{
 				"i": i,
 				"m": m,
@@ -224,6 +223,7 @@ type Interface struct {
 // Method describes a single method within an interface.
 type Method struct {
 	Name        string // Method name
+	Var         string // "Var" if the method has variadic parameters
 	Params      string // Method parameters as string (e.g., "a int, b string")
 	ParamNames  string // Comma-separated parameter names only
 	ParamTypes  string // Comma-separated parameter types only
@@ -355,6 +355,7 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 				resultCount := 0
 
 				var (
+					varText    string
 					params     []string
 					paramNames []string
 					paramTypes []string
@@ -373,7 +374,8 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 						typeText, pkgNames := getTypeText(param.Type)
 						for _, paramName := range tempNames {
 							if strings.HasPrefix(typeText, "...") {
-								paramTypes = append(paramTypes, "[]"+typeText[3:])
+								varText = "Var"
+								paramTypes = append(paramTypes, typeText[3:])
 							} else {
 								paramTypes = append(paramTypes, typeText)
 							}
@@ -385,8 +387,8 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 					}
 				}
 
-				if paramCount > gsmock.MaxParamCount {
-					panic(fmt.Sprintf("have more than %d parameters", gsmock.MaxParamCount))
+				if N := gsmock.MaxParamCount - 1; paramCount > N {
+					panic(fmt.Sprintf("have more than %d parameters", N))
 				}
 
 				var resultTypes []string
@@ -414,13 +416,20 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 					panic(fmt.Sprintf("have more than %d results", gsmock.MaxResultCount))
 				}
 
+				// To keep the template simple, optionally add a trailing comma
+				strParamTypes := strings.Join(paramTypes, ", ")
+				if strParamTypes != "" {
+					strParamTypes += ", "
+				}
+
 				methods = append(methods, Method{
 					Name:        methodName,
+					Var:         varText,
 					Params:      strings.Join(params, ", "),
 					ParamNames:  strings.Join(paramNames, ", "),
-					ParamTypes:  strings.Join(paramTypes, ", "),
+					ParamTypes:  strParamTypes,
+					ParamCount:  paramCount + 1, // Add 1 to include the receiver
 					ResultTypes: strings.Join(resultTypes, ", "),
-					ParamCount:  paramCount,
 					ResultCount: resultCount,
 				})
 			}

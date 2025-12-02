@@ -33,201 +33,126 @@ import (
 )`))
 
 // tmplInterface defines the template for generating a mock implementation
-// of an interface. It supports both generic (type-parameterized) and
-// non-generic interfaces. Each generated mock embeds the original interface(s)
-// and includes a reference to the mock manager.
+// of an interface. It supports both generic and non-generic interfaces.
 var tmplInterface = template.Must(template.New("Interface").Parse(`
-{{- if gt (len .TypeParams) 0 }}
-// {{.Name}}MockImpl is a generated mock implementation of the {{.Name}} interface
-// with type parameters [{{.TypeParams}}].
-type {{.Name}}MockImpl[{{.TypeParams}}] struct {
-	{{.EmbedInterfaces}}
-	r *gsmock.Manager
-}
-
-// New{{.Name}}MockImpl creates a new mock instance for {{.Name}} with the given
-// gsmock.Manager and initializes the embedded interfaces.
-func New{{.Name}}MockImpl[{{.TypeParams}}](r *gsmock.Manager) *{{.Name}}MockImpl[{{.TypeParamNames}}] {
-	return &{{.Name}}MockImpl[{{.TypeParamNames}}]{r: r}
-}
+{{if gt (len .TypeParams) 0 }}
+	// {{.Name}}MockImpl is a generated mock implementation of the {{.Name}} interface
+	// with type parameters [{{.TypeParams}}].
+	type {{.Name}}MockImpl[{{.TypeParams}}] struct {
+		{{.EmbedInterfaces}}
+		r *gsmock.Manager
+	}
+	
+	// New{{.Name}}MockImpl creates a new mock instance for {{.Name}} with the given
+	// gsmock.Manager and initializes the embedded interfaces.
+	func New{{.Name}}MockImpl[{{.TypeParams}}](r *gsmock.Manager) *{{.Name}}MockImpl[{{.TypeParamNames}}] {
+		return &{{.Name}}MockImpl[{{.TypeParamNames}}]{r: r}
+	}
 {{- else}}
-// {{.Name}}MockImpl is a generated mock implementation of the {{.Name}} interface.
-// It embeds the original interfaces and provides methods to register mock behaviors.
-type {{.Name}}MockImpl struct {
-	{{.EmbedInterfaces}}
-	r *gsmock.Manager
-}
-
-// New{{.Name}}MockImpl creates a new mock instance for {{.Name}} with the given
-// gsmock.Manager and initializes the embedded interfaces.
-func New{{.Name}}MockImpl(r *gsmock.Manager) *{{.Name}}MockImpl {
-	return &{{.Name}}MockImpl{r: r}
-}
+	// {{.Name}}MockImpl is a generated mock implementation of the {{.Name}} interface.
+	// It embeds the original interfaces and provides methods to register mock behaviors.
+	type {{.Name}}MockImpl struct {
+		{{.EmbedInterfaces}}
+		r *gsmock.Manager
+	}
+	
+	// New{{.Name}}MockImpl creates a new mock instance for {{.Name}} with the given
+	// gsmock.Manager and initializes the embedded interfaces.
+	func New{{.Name}}MockImpl(r *gsmock.Manager) *{{.Name}}MockImpl {
+		return &{{.Name}}MockImpl{r: r}
+	}
 {{- end}}
 `))
 
-// getTmplMethod selects the appropriate method template based on
-// the number of parameters and return values of a method.
-func getTmplMethod(paramCount int, resultCount int) *template.Template {
-	if paramCount == 0 {
-		if resultCount == 0 {
-			return tmplMethod00
-		} else {
-			return tmplMethod0N
-		}
-	} else {
-		if resultCount == 0 {
-			return tmplMethodN0
-		} else {
-			return tmplMethodNN
-		}
+// getMethodTemplate selects the correct method template based on the
+// number of return values for the method.
+func getMethodTemplate(resultCount int) *template.Template {
+	if resultCount == 0 {
+		return tmplMethodN0
 	}
+	return tmplMethodNN
 }
-
-// tmplMethod00 defines a template for methods with no parameters and no return values.
-// It generates the method implementation and a corresponding MockXXX() method
-// for registering mocks.
-var tmplMethod00 = template.Must(template.New("Method00").Parse(`
-{{if gt (len .i.TypeParams) 0 }}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-// Panics if no mock is registered.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}(){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
-		return
-	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a Mocker00 instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker00 {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	return gsmock.NewMocker00(impl.r, t, "{{.m.Name}}")
-}
-{{- else}}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-// Panics if no mock is registered.
-func (impl *{{.i.Name}}MockImpl) {{.m.Name}}(){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
-		return
-	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a Mocker00 instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker00 {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	return gsmock.NewMocker00(impl.r, t, "{{.m.Name}}")
-}
-{{- end}}
-`))
-
-// tmplMethod0N defines a template for methods with no parameters but N return values.
-// It generates the method implementation and a corresponding MockXXX() registration method.
-var tmplMethod0N = template.Must(template.New("Method0N").Parse(`
-{{if gt (len .i.TypeParams) 0 }}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}()({{.m.ResultTypes}}){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
-		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
-	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a Mocker0N instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker0{{.m.ResultCount}}[{{.m.ResultTypes}}] {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	return gsmock.NewMocker0{{.m.ResultCount}}[{{.m.ResultTypes}}](impl.r, t, "{{.m.Name}}")
-}
-{{- else}}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-func (impl *{{.i.Name}}MockImpl) {{.m.Name}}()({{.m.ResultTypes}}){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}"); ok {
-		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
-	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a Mocker0N instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker0{{.m.ResultCount}}[{{.m.ResultTypes}}] {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	return gsmock.NewMocker0{{.m.ResultCount}}[{{.m.ResultTypes}}](impl.r, t, "{{.m.Name}}")
-}
-{{- end}}
-`))
 
 // tmplMethodN0 defines a template for methods with N parameters and no return values.
 // It generates the method implementation and a corresponding MockXXX() registration method.
 var tmplMethodN0 = template.Must(template.New("MethodN0").Parse(`
 {{if gt (len .i.TypeParams) 0 }}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}({{.m.Params}}){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
-		return
+	//go:noinline
+	func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) func{{.m.Name}}() func(impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}], {{.m.Params}}){
+		return (*{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]).{{.m.Name}}
 	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a MockerN0 instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}0[{{.m.ParamTypes}}] {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	return gsmock.NewMocker{{.m.ParamCount}}0[{{.m.ParamTypes}}](impl.r, t, "{{.m.Name}}")
-}
+	
+	// {{.m.Name}} executes the mocked {{.m.Name}} method.
+	func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}({{.m.Params}}){
+		if _, ok := gsmock.Invoke(impl.r, impl.func{{.m.Name}}(), impl, {{.m.ParamNames}}); ok {
+			return
+		}
+		panic("no mock code matched for {{.i.Name}}MockImpl.{{.m.Name}}")
+	}
+	
+	// Mock{{.m.Name}} returns a {{.m.Var}}Mocker{{.m.ParamCount}}0 instance to register mock behavior for {{.m.Name}}.
+	func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.{{.m.Var}}Mocker{{.m.ParamCount}}0[*{{.i.Name}}MockImpl[{{.i.TypeParamNames}}], {{.m.ParamTypes}}] {
+		return gsmock.{{.m.Var}}Mock{{.m.ParamCount}}0(impl.func{{.m.Name}}(), impl.r)
+	}
 {{- else}}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-func (impl *{{.i.Name}}MockImpl) {{.m.Name}}({{.m.Params}}){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	if _, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
-		return
+	//go:noinline
+	func (impl *{{.i.Name}}MockImpl) func{{.m.Name}}() func(impl *{{.i.Name}}MockImpl, {{.m.Params}}){
+		return (*{{.i.Name}}MockImpl).{{.m.Name}}
 	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a MockerN0 instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}0[{{.m.ParamTypes}}] {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	return gsmock.NewMocker{{.m.ParamCount}}0[{{.m.ParamTypes}}](impl.r, t, "{{.m.Name}}")
-}
-{{- end}}
+	
+	// {{.m.Name}} executes the mocked {{.m.Name}} method.
+	func (impl *{{.i.Name}}MockImpl) {{.m.Name}}({{.m.Params}}){
+		if _, ok := gsmock.Invoke(impl.r, impl.func{{.m.Name}}(), impl, {{.m.ParamNames}}); ok {
+			return
+		}
+		panic("no mock code matched for {{.i.Name}}MockImpl.{{.m.Name}}")
+	}
+	
+	// Mock{{.m.Name}} returns a {{.m.Var}}Mocker{{.m.ParamCount}}0 instance to register mock behavior for {{.m.Name}}.
+	func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.{{.m.Var}}Mocker{{.m.ParamCount}}0[*{{.i.Name}}MockImpl, {{.m.ParamTypes}}] {
+		return gsmock.{{.m.Var}}Mock{{.m.ParamCount}}0(impl.func{{.m.Name}}(), impl.r)
+	}
+	{{- end}}
 `))
 
 // tmplMethodNN defines a template for methods with N parameters and N return values.
 // It generates the method implementation and a corresponding MockXXX() registration method.
 var tmplMethodNN = template.Must(template.New("MethodNN").Parse(`
 {{if gt (len .i.TypeParams) 0 }}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}({{.m.Params}})({{.m.ResultTypes}}){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
-		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
+	//go:noinline
+	func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) func{{.m.Name}}() func(impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}], {{.m.Params}})({{.m.ResultTypes}}){
+		return (*{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]).{{.m.Name}}
 	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a MockerNN instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}{{.m.ResultCount}}[{{.m.ParamTypes}}, {{.m.ResultTypes}}] {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]]()
-	return gsmock.NewMocker{{.m.ParamCount}}{{.m.ResultCount}}[{{.m.ParamTypes}}, {{.m.ResultTypes}}](impl.r, t, "{{.m.Name}}")
-}
+	
+	// {{.m.Name}} executes the mocked {{.m.Name}} method.
+	func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) {{.m.Name}}({{.m.Params}})({{.m.ResultTypes}}){
+		if ret, ok := gsmock.Invoke(impl.r, impl.func{{.m.Name}}(), impl, {{.m.ParamNames}}); ok {
+			return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
+		}
+		panic("no mock code matched for {{.i.Name}}MockImpl.{{.m.Name}}")
+	}
+	
+	// Mock{{.m.Name}} returns a {{.m.Var}}Mocker{{.m.ParamCount}}{{.m.ResultCount}} instance to register mock behavior for {{.m.Name}}.
+	func (impl *{{.i.Name}}MockImpl[{{.i.TypeParamNames}}]) Mock{{.m.Name}}() *gsmock.{{.m.Var}}Mocker{{.m.ParamCount}}{{.m.ResultCount}}[*{{.i.Name}}MockImpl[{{.i.TypeParamNames}}], {{.m.ParamTypes}} {{.m.ResultTypes}}] {
+		return gsmock.{{.m.Var}}Mock{{.m.ParamCount}}{{.m.ResultCount}}(impl.func{{.m.Name}}(), impl.r)
+	}
 {{- else}}
-// {{.m.Name}} executes the mocked {{.m.Name}} method.
-// with {{.m.ParamCount}} parameters and {{.m.ResultCount}} return values.
-func (impl *{{.i.Name}}MockImpl) {{.m.Name}}({{.m.Params}})({{.m.ResultTypes}}){
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	if ret, ok := gsmock.Invoke(impl.r, t, "{{.m.Name}}", {{.m.ParamNames}}); ok {
-		return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
+	//go:noinline
+	func (impl *{{.i.Name}}MockImpl) func{{.m.Name}}() func(impl *{{.i.Name}}MockImpl, {{.m.Params}})({{.m.ResultTypes}}){
+		return (*{{.i.Name}}MockImpl).{{.m.Name}}
 	}
-	panic("no mock code matched for {{.i.Name}}.{{.m.Name}}")
-}
-
-// Mock{{.m.Name}} returns a MockerNN instance to register mock behavior for {{.m.Name}}.
-func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.Mocker{{.m.ParamCount}}{{.m.ResultCount}}[{{.m.ParamTypes}}, {{.m.ResultTypes}}] {
-	t := reflect.TypeFor[{{.i.Name}}MockImpl]()
-	return gsmock.NewMocker{{.m.ParamCount}}{{.m.ResultCount}}[{{.m.ParamTypes}}, {{.m.ResultTypes}}](impl.r, t, "{{.m.Name}}")
-}
+	
+	// {{.m.Name}} executes the mocked {{.m.Name}} method.
+	func (impl *{{.i.Name}}MockImpl) {{.m.Name}}({{.m.Params}})({{.m.ResultTypes}}){
+		if ret, ok := gsmock.Invoke(impl.r, impl.func{{.m.Name}}(), impl, {{.m.ParamNames}}); ok {
+			return gsmock.Unbox{{.m.ResultCount}}[{{.m.ResultTypes}}](ret)
+		}
+		panic("no mock code matched for {{.i.Name}}MockImpl.{{.m.Name}}")
+	}
+	
+	// Mock{{.m.Name}} returns a {{.m.Var}}Mocker{{.m.ParamCount}}{{.m.ResultCount}} instance to register mock behavior for {{.m.Name}}.
+	func (impl *{{.i.Name}}MockImpl) Mock{{.m.Name}}() *gsmock.{{.m.Var}}Mocker{{.m.ParamCount}}{{.m.ResultCount}}[*{{.i.Name}}MockImpl, {{.m.ParamTypes}} {{.m.ResultTypes}}] {
+		return gsmock.{{.m.Var}}Mock{{.m.ParamCount}}{{.m.ResultCount}}(impl.func{{.m.Name}}(), impl.r)
+	}
 {{- end}}
 `))

@@ -19,7 +19,6 @@ package gsmock_test
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"testing"
 
 	"github.com/go-spring/gs-mock/gsmock"
@@ -38,25 +37,72 @@ type Response struct {
 	Message string
 }
 
-// Client is a sample client type for testing context-based mocking.
-type Client struct{}
-
-var clientType = reflect.TypeFor[Client]()
-
-// Get is a method of Client that can be mocked. It returns a Response and an error.
-func (c *Client) Get(ctx context.Context, req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := gsmock.InvokeContext(ctx, clientType, "Get", ctx, req, trace); ok {
-		return gsmock.Unbox2[*Response, error](ret)
-	}
+// Get is a sample function that can be mocked by context.Context.
+func Get(ctx context.Context, req *Request, trace *Trace) (*Response, error) {
 	return &Response{Message: "9:xxx"}, nil
 }
 
-// MockGet registers a mock implementation for the Get method.
-func MockGet(r *gsmock.Manager) *gsmock.Mocker32[context.Context, *Request, *Trace, *Response, error] {
-	return gsmock.NewMocker32[context.Context, *Request, *Trace, *Response, error](r, clientType, "Get")
+func TestFuncMock(t *testing.T) {
+
+	// Test case: Unmocked - should return default value
+	{
+		resp, err := Get(t.Context(), &Request{}, &Trace{})
+		assert.Nil(t, err)
+		assert.Equal(t, resp.Message, "9:xxx")
+	}
+
+	r := gsmock.NewManager()
+	ctx := r.WithManager(t.Context())
+
+	// Test case: When && Return - should return mocked value when condition is met
+	{
+		r.Reset()
+		gsmock.Mock32(Get, r).
+			When(func(ctx context.Context, req *Request, trace *Trace) bool {
+				return req.Token == "1:abc"
+			}).
+			Return(func() (resp *Response, err error) {
+				return &Response{Message: "1:abc"}, nil
+			})
+
+		resp, err := Get(ctx, &Request{Token: "1:abc"}, &Trace{})
+		assert.Nil(t, err)
+		assert.Equal(t, resp.Message, "1:abc")
+	}
+
+	// Test case: Handle - should handle all calls with the provided function
+	{
+		r.Reset()
+		gsmock.Mock32(Get, r).
+			Handle(func(ctx context.Context, req *Request, trace *Trace) (resp *Response, err error) {
+				return &Response{Message: "4:xyz"}, nil
+			})
+
+		resp, err := Get(ctx, &Request{Token: "4:xyz"}, &Trace{})
+		assert.Nil(t, err)
+		assert.Equal(t, resp.Message, "4:xyz")
+	}
+
+	// Test case: Invalid Handle - should fall back to default implementation when handle is nil
+	{
+		r.Reset()
+		gsmock.Mock32(Get, r).Handle(nil)
+
+		resp, err := Get(ctx, &Request{}, &Trace{})
+		assert.Nil(t, err)
+		assert.Equal(t, resp.Message, "9:xxx")
+	}
 }
 
-func TestMockWithContext(t *testing.T) {
+// Client is a sample client type for testing context-based mocking.
+type Client struct{}
+
+// Get is a method of Client that can be mocked by context.Context.
+func (c *Client) Get(ctx context.Context, req *Request, trace *Trace) (*Response, error) {
+	return &Response{Message: "9:xxx"}, nil
+}
+
+func TestMethodMock(t *testing.T) {
 	var c Client
 
 	// Test case: Unmocked - should return default value
@@ -67,13 +113,13 @@ func TestMockWithContext(t *testing.T) {
 	}
 
 	r := gsmock.NewManager()
-	ctx := r.BindTo(t.Context())
+	ctx := r.WithManager(t.Context())
 
 	// Test case: When && Return - should return mocked value when condition is met
 	{
 		r.Reset()
-		MockGet(r).
-			When(func(ctx context.Context, req *Request, trace *Trace) bool {
+		gsmock.Mock42((*Client).Get, r).
+			When(func(c *Client, ctx context.Context, req *Request, trace *Trace) bool {
 				return req.Token == "1:abc"
 			}).
 			Return(func() (resp *Response, err error) {
@@ -88,8 +134,8 @@ func TestMockWithContext(t *testing.T) {
 	// Test case: Handle - should handle all calls with the provided function
 	{
 		r.Reset()
-		MockGet(r).
-			Handle(func(ctx context.Context, req *Request, trace *Trace) (resp *Response, err error) {
+		gsmock.Mock42((*Client).Get, r).
+			Handle(func(c *Client, ctx context.Context, req *Request, trace *Trace) (resp *Response, err error) {
 				return &Response{Message: "4:xyz"}, nil
 			})
 
@@ -101,7 +147,7 @@ func TestMockWithContext(t *testing.T) {
 	// Test case: Invalid Handle - should fall back to default implementation when handle is nil
 	{
 		r.Reset()
-		MockGet(r).Handle(nil)
+		gsmock.Mock42((*Client).Get, r).Handle(nil)
 
 		resp, err := c.Get(ctx, &Request{}, &Trace{})
 		assert.Nil(t, err)
@@ -119,8 +165,6 @@ type MockClient struct {
 	r *gsmock.Manager
 }
 
-var mockClientType = reflect.TypeFor[MockClient]()
-
 // NewMockClient creates a new instance of MockClient.
 func NewMockClient(r *gsmock.Manager) *MockClient {
 	return &MockClient{r}
@@ -128,18 +172,18 @@ func NewMockClient(r *gsmock.Manager) *MockClient {
 
 // Query mocks the Query method by invoking a registered mock implementation.
 func (c *MockClient) Query(req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := gsmock.Invoke(c.r, mockClientType, "Query", req, trace); ok {
+	if ret, ok := gsmock.Invoke(c.r, (*MockClient).Query, c, req, trace); ok {
 		return gsmock.Unbox2[*Response, error](ret)
 	}
-	panic(fmt.Sprintf("no mock code matched for %s.%s", mockClientType.Name(), "Query"))
+	panic(fmt.Sprintf("no mock code matched for %s.%s", "MockClient", "Query"))
 }
 
 // MockQuery registers a mock implementation for the Query method.
-func (c *MockClient) MockQuery() *gsmock.Mocker22[*Request, *Trace, *Response, error] {
-	return gsmock.NewMocker22[*Request, *Trace, *Response, error](c.r, mockClientType, "Query")
+func (c *MockClient) MockQuery() *gsmock.Mocker32[*MockClient, *Request, *Trace, *Response, error] {
+	return gsmock.Mock32((*MockClient).Query, c.r)
 }
 
-func TestMockNoContext(t *testing.T) {
+func TestInterfaceMock(t *testing.T) {
 	r := gsmock.NewManager()
 
 	var c ClientInterface
@@ -150,7 +194,7 @@ func TestMockNoContext(t *testing.T) {
 	{
 		r.Reset()
 		mc.MockQuery().
-			When(func(req *Request, trace *Trace) bool {
+			When(func(c *MockClient, req *Request, trace *Trace) bool {
 				return req.Token == "1:abc"
 			}).
 			Return(func() (resp *Response, err error) {
@@ -166,7 +210,7 @@ func TestMockNoContext(t *testing.T) {
 	{
 		r.Reset()
 		mc.MockQuery().
-			Handle(func(req *Request, trace *Trace) (resp *Response, err error) {
+			Handle(func(c *MockClient, req *Request, trace *Trace) (resp *Response, err error) {
 				return &Response{Message: "4:xyz"}, nil
 			})
 

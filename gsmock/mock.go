@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"testing"
+	"runtime"
 )
 
 // Mode represents the mocking mode of an Invoker.
@@ -39,81 +39,70 @@ type Invoker interface {
 	Mode() Mode
 	// When determines if the current mock applies to the given parameters.
 	When(params []any) bool
-	// Return returns mock values for the given parameters.
-	Return(params []any) []any
+	// Return returns the mock values.
+	Return() []any
 	// Handle executes the custom handler function and returns its results.
 	Handle(params []any) []any
 }
 
-// mockerKey is used as a key in the map to identify mockers by type and method.
-type mockerKey struct {
-	typ    reflect.Type
-	method string
-}
-
-// Manager manages a collection of mockers for different types and methods.
+// Manager manages a collection of mockers for top-level functions,
+// using function identifiers as map keys.
 type Manager struct {
-	mockers map[mockerKey][]Invoker
+	mockers map[string][]Invoker
 }
 
 // NewManager creates and returns a new Manager instance.
 func NewManager() *Manager {
 	return &Manager{
-		mockers: make(map[mockerKey][]Invoker),
+		mockers: make(map[string][]Invoker),
 	}
 }
 
 // Reset clears all mockers in the Manager.
 func (r *Manager) Reset() {
-	r.mockers = make(map[mockerKey][]Invoker)
+	r.mockers = make(map[string][]Invoker)
 }
 
 var managerKey int
 
-// getManager retrieves the Manager instance from the context.
-// Returns nil if no Manager is found.
-func getManager(ctx context.Context) *Manager {
-	if r, ok := ctx.Value(&managerKey).(*Manager); ok {
-		return r
-	}
-	return nil
-}
-
-// BindTo returns a new context with the Manager attached to it.
-func (r *Manager) BindTo(ctx context.Context) context.Context {
+// WithManager returns a new context with the Manager attached.
+func (r *Manager) WithManager(ctx context.Context) context.Context {
 	return context.WithValue(ctx, &managerKey, r)
 }
 
-// getMockers retrieves all mockers registered for a given type and method.
-func (r *Manager) getMockers(typ reflect.Type, method string) []Invoker {
-	return r.mockers[mockerKey{typ, method}]
+// GetFuncID returns a unique identifier string for a function.
+func GetFuncID(f any) string {
+	v := reflect.ValueOf(f)
+	e := runtime.FuncForPC(v.Pointer())
+	return e.Name() + ":" + v.Type().String()
 }
 
-// addMocker registers a new Invoker for a specific type and method.
-func (r *Manager) addMocker(typ reflect.Type, method string, i Invoker) {
-	k := mockerKey{typ, method}
+// addMocker registers a new Invoker for a specific function.
+func (r *Manager) addMocker(f any, i Invoker) {
+	k := GetFuncID(f)
 	r.mockers[k] = append(r.mockers[k], i)
 }
 
-// Invoke finds a matching Invoker for the given type and method, and calls it based on the mocking mode.
-// Returns the result slice and a boolean indicating if a mock was applied.
-func Invoke(r *Manager, typ reflect.Type, method string, params ...any) ([]any, bool) {
-	if r == nil || !testing.Testing() {
-		return nil, false
-	}
-	mockers := r.getMockers(typ, method)
+// Invoke searches for a matching Invoker for the given function and parameters,
+// executes it based on its mocking mode, and returns the result slice along with
+// a boolean indicating whether a mock was applied.
+// The function `f` is usually a top-level function or a method with a receiver.
+// It cannot be an instance method.
+// If `f` is a method with a receiver, the first element of `params` must be the receiver.
+func Invoke(r *Manager, f any, params ...any) ([]any, bool) {
+	k := GetFuncID(f)
 	var defaultHandler Invoker
-	for _, f := range mockers {
-		switch f.Mode() {
+	for _, m := range r.mockers[k] {
+		switch m.Mode() {
 		case ModeHandle:
-			// Panic if multiple Handle mocks exist for the same method.
+			// Panic if multiple Handle mocks exist for the same function.
 			if defaultHandler != nil {
-				panic(fmt.Sprintf("found multiple Handle functions for %s.%s", typ, method))
+				panic(fmt.Sprintf("found multiple Handle functions for %s", k))
 			}
-			defaultHandler = f
+			defaultHandler = m
 		case ModeWhenReturn:
-			if f.When(params) {
-				ret := f.Return(params)
+			if m.When(params) {
+				ret := m.Return()
 				return ret, true
 			}
 		default: // for linter
@@ -126,12 +115,15 @@ func Invoke(r *Manager, typ reflect.Type, method string, params ...any) ([]any, 
 	return nil, false
 }
 
-// InvokeContext is a convenience function that invokes a mock using a context to retrieve the Manager.
-func InvokeContext(ctx context.Context, typ reflect.Type, method string, params ...any) ([]any, bool) {
-	if !testing.Testing() {
-		return nil, false
+// InvokeContext retrieves the Manager from the context and invokes the mock.
+// The function `f` is usually a top-level function or a method with a receiver.
+// It cannot be an instance method.
+// If `f` is a method with a receiver, the first element of `params` must be the receiver.
+func InvokeContext(ctx context.Context, f any, params ...any) ([]any, bool) {
+	if r, ok := ctx.Value(&managerKey).(*Manager); ok {
+		return Invoke(r, f, params...)
 	}
-	return Invoke(getManager(ctx), typ, method, params...)
+	return nil, false
 }
 
 // Unbox1 extracts a single return value from a slice of interfaces.
@@ -139,7 +131,7 @@ func Unbox1[R1 any](ret []any) (r1 R1) {
 	if len(ret) == 1 {
 		r1, _ = ret[0].(R1)
 	} else {
-		panic(fmt.Sprintf("Warning: expected 1 return value, but got %d", len(ret)))
+		panic(fmt.Sprintf("expected 1 return value, but got %d", len(ret)))
 	}
 	return
 }
@@ -150,7 +142,7 @@ func Unbox2[R1, R2 any](ret []any) (r1 R1, r2 R2) {
 		r1, _ = ret[0].(R1)
 		r2, _ = ret[1].(R2)
 	} else {
-		panic(fmt.Sprintf("Warning: expected 2 return values, but got %d", len(ret)))
+		panic(fmt.Sprintf("expected 2 return values, but got %d", len(ret)))
 	}
 	return
 }
@@ -162,7 +154,7 @@ func Unbox3[R1, R2, R3 any](ret []any) (r1 R1, r2 R2, r3 R3) {
 		r2, _ = ret[1].(R2)
 		r3, _ = ret[2].(R3)
 	} else {
-		panic(fmt.Sprintf("Warning: expected 3 return values, but got %d", len(ret)))
+		panic(fmt.Sprintf("expected 3 return values, but got %d", len(ret)))
 	}
 	return
 }
@@ -175,7 +167,7 @@ func Unbox4[R1, R2, R3, R4 any](ret []any) (r1 R1, r2 R2, r3 R3, r4 R4) {
 		r3, _ = ret[2].(R3)
 		r4, _ = ret[3].(R4)
 	} else {
-		panic(fmt.Sprintf("Warning: expected 4 return values, but got %d", len(ret)))
+		panic(fmt.Sprintf("expected 4 return values, but got %d", len(ret)))
 	}
 	return
 }
@@ -189,7 +181,7 @@ func Unbox5[R1, R2, R3, R4, R5 any](ret []any) (r1 R1, r2 R2, r3 R3, r4 R4, r5 R
 		r4, _ = ret[3].(R4)
 		r5, _ = ret[4].(R5)
 	} else {
-		panic(fmt.Sprintf("Warning: expected 5 return values, but got %d", len(ret)))
+		panic(fmt.Sprintf("expected 5 return values, but got %d", len(ret)))
 	}
 	return
 }
