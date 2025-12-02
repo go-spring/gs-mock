@@ -4,238 +4,149 @@
 
 > 该项目已经正式发布，欢迎使用！
 
-mock 是一个现代化的、类型安全的 Go 语言 mocking 库，完全支持泛型编程。它提供了简单易用的接口，
-可以帮助开发者轻松创建和管理模拟对象，从而提高单元测试的质量和效率。该库旨在解决 Go 语言中传统
-mocking 工具存在的类型安全性不足和使用复杂性问题。
+`gs-mock` 是一个现代、类型安全的 Go mock 库，全面支持泛型。
+它解决了传统 Go mock 工具在类型安全和使用复杂性上的不足，
+同时通过 `context.Context` 天然支持并发测试。
+无论接口、普通函数还是结构体方法，都可以轻松 mock，
+非常适合微服务项目的单元测试。
 
-## 主要特性
+## 特性
 
-- **类型安全**：利用 Go 1.18+ 的泛型特性，确保编译时的安全性，避免运行时类型错误
-- **多种 Mock 模式**：
-  - `Handle` 模式：直接处理函数调用
-  - `When/Return` 模式：基于条件的模拟返回
-- **灵活的方法匹配**：支持不同数量和类型的参数及返回值（最多支持5个参数和5个返回值）
-- **上下文支持**：提供与 context 包的集成，方便在分布式系统中进行测试
-- **自动重置功能**：Manager 提供 Reset 方法，可轻松重置所有模拟器到初始状态
-- **详细的错误信息**：当没有匹配的 mock 代码或存在多个匹配时，提供清晰的错误提示
+* **类型安全 & 泛型支持**\
+  支持泛型函数和接口，IDE 提供自动类型补全，提高开发效率
+* **多种 Mock 模式**
+    * `Handle` 模式：在单个回调中处理所有 mock 逻辑
+    * `When/Return` 模式：根据条件执行对应的返回逻辑
+* **多参数与多返回值**\
+  支持最多 5 个参数和 4 个返回值，满足绝大多数函数签名需求
+* **接口与结构体方法 Mock**
+    * 接口：通过代码生成自动生成 mock
+    * 普通函数 & 结构体方法：通过 `context.Context` 传递 mock，避免使用接口
+* **并发测试支持**\
+  通过 `context.Context` 链路确保并发场景下的 mock 安全
+* **简化 API 体验**\
+  与官方 `gomock` 用法类似，同时 API 更加简洁易用
 
-## 安装工具
+## 安装
 
-**gs-mock** 是一个用于生成 Go mock 代码的工具，也是 gs 工具集中的一员。你可以通过以下方式安装它：
+单独安装：
+
+```bash
+go install github.com/go-spring/gs-mock@latest
+```
+
+通过 `gs` 工具集安装：
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/go-spring/gs/HEAD/install.sh)"
 ```
 
-### 基本用法
+## 快速开始
+
+### 接口 Mock
 
 1. 定义接口
 
-首先，在你的项目中定义需要 mock 的接口。例如，创建一个名为 service.go 的文件，并添加如下代码：
-
 ```go
-package main
-
 type Service interface {
-	Save(r1, r2, r3, r4, r5, r6 int)
+    Do(n int) int
 }
 ```
 
 2. 生成 Mock 代码
 
-然后在 service.go 文件中加入 go:generate 指令，即可生成 mock 代码：
-
-```go
-//go:generate gs mock
-```
-
-你需要指定一个输出文件名，例如 service_mock.go，否则会输出到控制台上。
-
 ```go
 //go:generate gs mock -o src_mock.go
 ```
 
-你还可以指定哪些接口生成 mock，哪些接口不生成 mock (在接口名前面加!即可)。
+> 在接口文件开头添加上述指令，即可为当前目录（包）下的所有接口生成 mock 代码。\
+> 如果只需要为特定接口生成，可以使用 `-i` 参数，接口名前加 `!` 表示排除。
 
 ```go
 //go:generate gs mock -o src_mock.go -i '!RepositoryV2,Repository'
 ```
 
-> 提示：`gsmock` 支持最多 5 个参数和 5 个返回值，超过限制会 panic
-
-## 使用示例
-
-以下是一个简单的使用示例：
+3. 使用 Mock 代码
 
 ```go
-package mock_test
+r := gsmock.NewManager()
+s := NewServiceMockImpl(r)
 
-import (
-	"context"
-	"reflect"
-	"testing"
+// Handle 模式
+s.MockDo().Handle(func(impl *ServiceMockImpl, n int) int {
+    if n%2 == 0 {
+        return n * 2
+    }
+    return n + 1
+})
 
-	"github.com/go-spring/gs-mock/gsmock"
-	"github.com/go-spring/spring-base/testing/assert"
-)
-
-type Trace struct {
-	TraceId string
-}
-
-type Request struct {
-	Token string
-}
-
-type Response struct {
-	Message string
-}
-
-type Client struct{}
-
-var clientType = reflect.TypeFor[Client]()
-
-func (c *Client) Get(ctx context.Context, req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := gsmock.InvokeContext(ctx, clientType, "Get", ctx, req, trace); ok {
-		return gsmock.Unbox2[*Response, error](ret)
-	}
-	return &Response{Message: "9:xxx"}, nil
-}
-
-// MockGet registers a mock implementation for the Get method.
-func MockGet(r *gsmock.Manager) *gsmock.Mocker32[context.Context, *Request, *Trace, *Response, error] {
-	return gsmock.NewMocker32[context.Context, *Request, *Trace, *Response, error](r, clientType, "Get")
-}
-
-func TestMockWithContext(t *testing.T) {
-	var c Client
-
-	// Test case: Unmocked
-	{
-		resp, err := c.Get(t.Context(), &Request{}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "9:xxx")
-	}
-
-	r := gsmock.NewManager()
-	ctx := r.BindTo(t.Context())
-
-	// Test case: When && Return
-	{
-		r.Reset()
-		MockGet(r).
-			When(func(ctx context.Context, req *Request, trace *Trace) bool {
-				return req.Token == "1:abc"
-			}).
-			Return(func() (resp *Response, err error) {
-				return &Response{Message: "1:abc"}, nil
-			})
-
-		resp, err := c.Get(ctx, &Request{Token: "1:abc"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "1:abc")
-	}
-
-	// Test case: Handle
-	{
-		r.Reset()
-		MockGet(r).
-			Handle(func(ctx context.Context, req *Request, trace *Trace) (resp *Response, err error) {
-				return &Response{Message: "4:xyz"}, nil
-			})
-
-		resp, err := c.Get(ctx, &Request{Token: "4:xyz"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "4:xyz")
-	}
-
-	// Test case: Invalid Handle
-	{
-		r.Reset()
-		MockGet(r).Handle(nil)
-
-		resp, err := c.Get(ctx, &Request{}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "9:xxx")
-	}
-}
-
-type ClientInterface interface {
-	Query(req *Request, trace *Trace) (*Response, error)
-}
-
-// MockClient is a mock implementation of ClientInterface.
-type MockClient struct {
-	r *gsmock.Manager
-}
-
-var mockClientType = reflect.TypeFor[MockClient]()
-
-// NewMockClient creates a new instance of MockClient.
-func NewMockClient(r *gsmock.Manager) *MockClient {
-	return &MockClient{r}
-}
-
-// Query mocks the Query method by invoking a registered mock implementation.
-func (c *MockClient) Query(req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := gsmock.Invoke(c.r, mockClientType, "Query", req, trace); ok {
-		return gsmock.Unbox2[*Response, error](ret)
-	}
-	panic("mock error")
-}
-
-// MockQuery registers a mock implementation for the Query method.
-func (c *MockClient) MockQuery() *gsmock.Mocker22[*Request, *Trace, *Response, error] {
-	return gsmock.NewMocker22[*Request, *Trace, *Response, error](c.r, mockClientType, "Query")
-}
-
-func TestMockNoContext(t *testing.T) {
-	r := gsmock.NewManager()
-
-	var c ClientInterface
-	mc := NewMockClient(r)
-	c = mc
-
-	// Test case: When && Return
-	{
-		r.Reset()
-		mc.MockQuery().
-			When(func(req *Request, trace *Trace) bool {
-				return req.Token == "1:abc"
-			}).
-			Return(func() (resp *Response, err error) {
-				return &Response{Message: "1:abc"}, nil
-			})
-
-		resp, err := c.Query(&Request{Token: "1:abc"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "1:abc")
-	}
-
-	// Test case: Handle
-	{
-		r.Reset()
-		mc.MockQuery().
-			Handle(func(req *Request, trace *Trace) (resp *Response, err error) {
-				return &Response{Message: "4:xyz"}, nil
-			})
-
-		resp, err := c.Query(&Request{Token: "4:xyz"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "4:xyz")
-	}
-
-	// Test case: Invalid Handle
-	{
-		r.Reset()
-		mc.MockQuery().Handle(nil)
-
-		assert.Panic(t, func() {
-			_, _ = c.Query(&Request{}, &Trace{})
-		}, "mock error")
-	}
-}
+fmt.Println(s.Do(1)) // 2
+fmt.Println(s.Do(2)) // 4
 ```
+
+```go
+r.Reset()
+
+// When/Return 模式
+s.MockDo().When(func(impl *ServiceMockImpl, n int) bool {
+    return n%2 == 0
+}).ReturnValue(2)
+
+// When/Return 模式
+s.MockDo().When(func(impl *ServiceMockImpl, n int) bool {
+    return n%2 == 1
+}).ReturnValue(1)
+
+fmt.Println(s.Do(1)) // 1
+fmt.Println(s.Do(2)) // 2
+```
+
+### 函数 Mock
+
+1. 定义普通函数
+
+```go
+//go:noinline // 防止函数被内联
+func Do(ctx context.Context, n int) int { return n }
+```
+
+2. mock 普通函数
+
+```go
+r := gsmock.NewManager()
+ctx := r.WithManager(context.TODO())
+
+gsmock.Mock21(Do, r).Handle(func(ctx context.Context, n int) int {
+    return n * 2
+})
+
+fmt.Println(Do(ctx, 1)) // 2
+```
+
+### 方法 Mock
+
+1. 创建一个结构体
+
+```go
+type Service struct{ m int }
+func (s *Service) Do(ctx context.Context, n int) int { return n }
+```
+
+2. mock 结构体方法
+
+```go
+r := gsmock.NewManager()
+ctx := r.WithManager(context.TODO())
+
+gsmock.Mock31((*Service).Do, r).Handle(func(s *Service, ctx context.Context, n int) int {
+    return n + s.m
+})
+
+fmt.Println((&Service{m: 1}).Do(ctx, 1)) // 2
+fmt.Println((&Service{m: 2}).Do(ctx, 1)) // 3
+```
+
+> ⚠️ 执行 go test 时添加 `-gcflags="all=-N -l"`，防止方法被内联优化。
 
 ## 许可证
 

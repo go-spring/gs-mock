@@ -4,244 +4,149 @@
 
 > The project has been officially released, welcome to use!
 
-**mock** is a modern, type-safe mocking library for the Go programming language, fully supporting generic programming.
-It provides a simple and easy-to-use interface that helps developers easily create and manage mock objects, thereby
-improving the quality and efficiency of unit testing. The library is designed to address the lack of type safety and the
-complexity of traditional mocking tools in Go.
+`gs-mock` is a modern, type-safe Go mock library with full support for generics.
+It solves the shortcomings of traditional Go mocking tools in type safety and complexity,
+and naturally supports concurrent testing through `context.Context`.
+Whether it’s interfaces, regular functions, or struct methods,
+everything can be mocked easily—making it ideal for unit tests in microservice projects.
 
-## Key Features
+## Features
 
-* **Type Safety**: Utilizes Go 1.18+ generics to ensure compile-time safety and avoid runtime type errors
-* **Multiple Mocking Modes**:
-    * `Handle` Mode: Directly handle function calls
-    * `When/Return` Mode: Conditional mock returns
-* **Flexible Method Matching**: Supports different numbers and types of parameters and return values (up to 5 parameters
-  and 5 return values)
-* **Context Support**: Provides integration with the `context` package, making it easier to test in distributed systems
-* **Auto Reset Functionality**: The `Manager` provides a `Reset` method to easily reset all mockers to their initial
-  state
-* **Detailed Error Messages**: Offers clear error prompts when no matching mock code is found or when multiple matches
-  exist
+* **Type-Safe & Generic Support**\
+  Supports generic functions and interfaces, with IDE auto-completion for improved development experience
+* **Multiple Mocking Modes**
+    * `Handle` mode: handle all mock logic in a single callback
+    * `When/Return` mode: execute different return logic based on conditions
+* **Multiple Parameters & Return Values**\
+  Supports up to 5 parameters and 4 return values, enough for most function signatures
+* **Interface & Struct Method Mocking**
+    * Interfaces: mock code is generated automatically
+    * Regular functions & struct methods: mocked via `context.Context`, avoiding the need for interface abstraction
+* **Concurrency Test Support**\
+  Mock behavior is bound to the context chain, ensuring safe concurrent mocking
+* **Simplified API**\
+  API is similar to `gomock` but cleaner and easier to use
 
-## Installation Tool
+## Installation
 
-**gs-mock** is a tool used to generate Go mock code, and one member of gs. You can install it with the following command:
+Install directly:
+
+```bash
+go install github.com/go-spring/gs-mock@latest
+```
+
+Install via the `gs` toolkit:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/go-spring/gs/HEAD/install.sh)"
 ```
 
-### Basic Usage
+## Quick Start
 
-1. **Define an Interface**
+### Interface Mocking
 
-First, define the interface you want to mock in your project. For example, create a file named `service.go` and add the
-following code:
+1. Define an interface
 
 ```go
-package main
-
 type Service interface {
-	Save(r1, r2, r3, r4, r5, r6 int)
+    Do(n int) int
 }
 ```
 
-2. **Generate Mock Code**
-
-Then, add a `go:generate` directive to the `service.go` file to generate the mock code:
-
-```go
-//go:generate gs mock
-```
-
-You need to specify an output filename, such as `service_mock.go`, otherwise the output will be printed to the console.
+2. Generate mock code
 
 ```go
 //go:generate gs mock -o src_mock.go
 ```
 
-You can also specify which interfaces to generate mocks for and which to exclude (prefix the interface name with `!` to
-exclude it).
+> Add the above directive at the top of the interface file to generate mock code for all interfaces in the package.\
+> If you only need to generate mocks for specific interfaces, use `-i`.
+> Prefixing an interface name with `!` means exclusion.
 
 ```go
 //go:generate gs mock -o src_mock.go -i '!RepositoryV2,Repository'
 ```
 
-> Tip: `gsmock` supports up to 5 parameters and 5 return values, exceeding this limit will cause a panic
-
-## Usage Example
-
-Below is a simple usage example:
+3. Use the generated mock
 
 ```go
-package mock_test
+r := gsmock.NewManager()
+s := NewServiceMockImpl(r)
 
-import (
-	"context"
-	"reflect"
-	"testing"
+// Handle mode
+s.MockDo().Handle(func (impl *ServiceMockImpl, n int) int {
+    if n%2 == 0 {
+        return n * 2
+    }
+    return n + 1
+})
 
-	"github.com/go-spring/gs-mock/gsmock"
-    "github.com/go-spring/spring-base/testing/assert"
-)
-
-type Trace struct {
-	TraceId string
-}
-
-type Request struct {
-	Token string
-}
-
-type Response struct {
-	Message string
-}
-
-type Client struct{}
-
-var clientType = reflect.TypeFor[Client]()
-
-func (c *Client) Get(ctx context.Context, req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := gsmock.InvokeContext(ctx, clientType, "Get", ctx, req, trace); ok {
-		return gsmock.Unbox2[*Response, error](ret)
-	}
-	return &Response{Message: "9:xxx"}, nil
-}
-
-// MockGet registers a mock implementation for the Get method.
-func MockGet(r *gsmock.Manager) *gsmock.Mocker32[context.Context, *Request, *Trace, *Response, error] {
-	return gsmock.NewMocker32[context.Context, *Request, *Trace, *Response, error](r, clientType, "Get")
-}
-
-func TestMockWithContext(t *testing.T) {
-	var c Client
-
-	// Test case: Unmocked
-	{
-		resp, err := c.Get(t.Context(), &Request{}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "9:xxx")
-	}
-
-	r := gsmock.NewManager()
-	ctx := r.BindTo(t.Context())
-
-	// Test case: When && Return
-	{
-		r.Reset()
-		MockGet(r).
-			When(func(ctx context.Context, req *Request, trace *Trace) bool {
-				return req.Token == "1:abc"
-			}).
-			Return(func() (resp *Response, err error) {
-				return &Response{Message: "1:abc"}, nil
-			})
-
-		resp, err := c.Get(ctx, &Request{Token: "1:abc"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "1:abc")
-	}
-
-	// Test case: Handle
-	{
-		r.Reset()
-		MockGet(r).
-			Handle(func(ctx context.Context, req *Request, trace *Trace) (resp *Response, err error) {
-				return &Response{Message: "4:xyz"}, nil
-			})
-
-		resp, err := c.Get(ctx, &Request{Token: "4:xyz"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "4:xyz")
-	}
-
-	// Test case: Invalid Handle
-	{
-		r.Reset()
-		MockGet(r).Handle(nil)
-
-		resp, err := c.Get(ctx, &Request{}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "9:xxx")
-	}
-}
-
-type ClientInterface interface {
-	Query(req *Request, trace *Trace) (*Response, error)
-}
-
-// MockClient is a mock implementation of ClientInterface.
-type MockClient struct {
-	r *gsmock.Manager
-}
-
-var mockClientType = reflect.TypeFor[MockClient]()
-
-// NewMockClient creates a new instance of MockClient.
-func NewMockClient(r *gsmock.Manager) *MockClient {
-	return &MockClient{r}
-}
-
-// Query mocks the Query method by invoking a registered mock implementation.
-func (c *MockClient) Query(req *Request, trace *Trace) (*Response, error) {
-	if ret, ok := gsmock.Invoke(c.r, mockClientType, "Query", req, trace); ok {
-		return gsmock.Unbox2[*Response, error](ret)
-	}
-	panic("mock error")
-}
-
-// MockQuery registers a mock implementation for the Query method.
-func (c *MockClient) MockQuery() *gsmock.Mocker22[*Request, *Trace, *Response, error] {
-	return gsmock.NewMocker22[*Request, *Trace, *Response, error](c.r, mockClientType, "Query")
-}
-
-func TestMockNoContext(t *testing.T) {
-	r := gsmock.NewManager()
-
-	var c ClientInterface
-	mc := NewMockClient(r)
-	c = mc
-
-	// Test case: When && Return
-	{
-		r.Reset()
-		mc.MockQuery().
-			When(func(req *Request, trace *Trace) bool {
-				return req.Token == "1:abc"
-			}).
-			Return(func() (resp *Response, err error) {
-				return &Response{Message: "1:abc"}, nil
-			})
-
-		resp, err := c.Query(&Request{Token: "1:abc"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "1:abc")
-	}
-
-	// Test case: Handle
-	{
-		r.Reset()
-		mc.MockQuery().
-			Handle(func(req *Request, trace *Trace) (resp *Response, err error) {
-				return &Response{Message: "4:xyz"}, nil
-			})
-
-		resp, err := c.Query(&Request{Token: "4:xyz"}, &Trace{})
-		assert.Nil(t, err)
-		assert.Equal(t, resp.Message, "4:xyz")
-	}
-
-	// Test case: Invalid Handle
-	{
-		r.Reset()
-		mc.MockQuery().Handle(nil)
-
-		assert.Panic(t, func() {
-			_, _ = c.Query(&Request{}, &Trace{})
-		}, "mock error")
-	}
-}
+fmt.Println(s.Do(1)) // 2
+fmt.Println(s.Do(2)) // 4
 ```
+
+```go
+r.Reset()
+
+// When/Return mode
+s.MockDo().When(func (impl *ServiceMockImpl, n int) bool {
+    return n%2 == 0
+}).ReturnValue(2)
+
+s.MockDo().When(func (impl *ServiceMockImpl, n int) bool {
+    return n%2 == 1
+}).ReturnValue(1)
+
+fmt.Println(s.Do(1)) // 1
+fmt.Println(s.Do(2)) // 2
+```
+
+### Function Mocking
+
+1. Define a regular function
+
+```go
+//go:noinline // prevent inline optimization
+func Do(ctx context.Context, n int) int { return n }
+```
+
+2. Mock the function
+
+```go
+r := gsmock.NewManager()
+ctx := r.WithManager(context.TODO())
+
+gsmock.Mock21(Do, r).Handle(func (ctx context.Context, n int) int {
+    return n * 2
+})
+
+fmt.Println(Do(ctx, 1)) // 2
+```
+
+### Method Mocking
+
+1. Define a struct
+
+```go
+type Service struct{ m int }
+func (s *Service) Do(ctx context.Context, n int) int { return n }
+```
+
+2. Mock the struct method
+
+```go
+r := gsmock.NewManager()
+ctx := r.WithManager(context.TODO())
+
+gsmock.Mock31((*Service).Do, r).Handle(func (s *Service, ctx context.Context, n int) int {
+    return n + s.m
+})
+
+fmt.Println((&Service{m: 1}).Do(ctx, 1)) // 2
+fmt.Println((&Service{m: 2}).Do(ctx, 1)) // 3
+```
+
+> ⚠️ When running `go test`, add `-gcflags="all=-N -l"` to prevent method inlining.
 
 ## License
 
