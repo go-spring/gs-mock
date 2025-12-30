@@ -1,5 +1,13 @@
 # gs-mock
 
+<div>
+   <img src="https://img.shields.io/github/license/go-spring/gs-mock" alt="license"/>
+   <a href="https://codecov.io/gh/go-spring/gs-mock" > 
+      <img src="https://codecov.io/gh/go-spring/gs-mock/branch/main/graph/badge.svg?token=SX7CV1T0O8" alt="test-coverage"/>
+   </a>
+   <a href="https://deepwiki.com/go-spring/gs-mock"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</div>
+
 [English](README.md) | [中文](README_CN.md)
 
 > 该项目已经正式发布，欢迎使用！

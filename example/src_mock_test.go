@@ -230,7 +230,7 @@ func TestGenericServiceMockImpl_Printf(t *testing.T) {
 
 	var buf bytes.Buffer
 	s.MockPrintf().Handle(func(format string, args []any) {
-		buf.WriteString(fmt.Sprintf(format, args...))
+		_, _ = fmt.Fprintf(&buf, format, args...)
 	})
 
 	// Test variadic parameter method mock
@@ -356,7 +356,7 @@ func TestServiceMockImpl_Printf(t *testing.T) {
 
 	var buf bytes.Buffer
 	s1.MockPrintf().Handle(func(format string, args []any) {
-		buf.WriteString(fmt.Sprintf(format, args...))
+		_, _ = fmt.Fprintf(&buf, format, args...)
 	})
 	s2.MockPrintf().Handle(func(format string, args []any) {
 		buf.WriteString("abc")

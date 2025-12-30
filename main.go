@@ -112,9 +112,9 @@ func run(param runConfig) {
 	for pkgName, pkgPath := range imports {
 		ss := strings.Split(pkgPath, "/")
 		if pkgName == ss[len(ss)-1] {
-			h.WriteString(fmt.Sprintf("\t\"%s\"\n", pkgPath))
+			_, _ = fmt.Fprintf(h, "\t\"%s\"\n", pkgPath)
 		} else {
-			h.WriteString(fmt.Sprintf("\t%s \"%s\"\n", pkgName, pkgPath))
+			_, _ = fmt.Fprintf(h, "\t%s \"%s\"\n", pkgName, pkgPath)
 		}
 	}
 
@@ -161,8 +161,8 @@ func run(param runConfig) {
 	}
 
 	// Output generated code to file or stdout
-	switch {
-	case param.OutputFile == "":
+	switch param.OutputFile {
+	case "":
 		if _, err = stdOut.Write(b); err != nil {
 			panic(fmt.Errorf("error writing to stdout: %w", err))
 		}

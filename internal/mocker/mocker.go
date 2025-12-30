@@ -62,12 +62,12 @@ func main() {
 	)
 
 	// Write these constants into the generated file.
-	s.WriteString(fmt.Sprintf(`
+	_, _ = fmt.Fprintf(s, `
 	const (
 		MaxParamCount  = %d
 		MaxResultCount = %d
 	)
-	`, MaxParamCount, MaxResultCount))
+	`, MaxParamCount, MaxResultCount)
 
 	for i := 0; i <= MaxParamCount; i++ {
 		for j := 0; j <= MaxResultCount; j++ {
