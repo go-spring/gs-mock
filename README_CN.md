@@ -49,7 +49,8 @@ go install github.com/go-spring/gs-mock@latest
 
 ```go
 type Service interface {
-    Do(n int) int
+    Do(n int, s string) (int, error)
+    Format(s string, args ...any) string
 }
 ```
 
@@ -73,32 +74,33 @@ r := gsmock.NewManager()
 s := NewServiceMockImpl(r)
 
 // Handle 模式
-s.MockDo().Handle(func(impl *ServiceMockImpl, n int) int {
+s.MockDo().Handle(func(impl *ServiceMockImpl, n int, s string) (int, error) {
     if n%2 == 0 {
-        return n * 2
+        return n * 2, nil
     }
-    return n + 1
+    return n + 1, errors.New("error")
 })
 
-fmt.Println(s.Do(1)) // 2
-fmt.Println(s.Do(2)) // 4
+fmt.Println(s.Do(1, "abc")) // 2 error
+fmt.Println(s.Do(2, "abc")) // 4 <nil>
 ```
 
 ```go
-r.Reset()
+r := gsmock.NewManager()
+s := NewServiceMockImpl(r)
 
 // When/Return 模式
-s.MockDo().When(func(impl *ServiceMockImpl, n int) bool {
-    return n%2 == 0
-}).ReturnValue(2)
+s.MockFormat().When(func(impl *ServiceMockImpl, s string, args []any) bool {
+    return args[0] == "abc"
+}).ReturnValue("abc")
 
 // When/Return 模式
-s.MockDo().When(func(impl *ServiceMockImpl, n int) bool {
-    return n%2 == 1
-}).ReturnValue(1)
+s.MockFormat().When(func(impl *ServiceMockImpl, s string, args []any) bool {
+    return args[0] == "123"
+}).ReturnValue("123")
 
-fmt.Println(s.Do(1)) // 1
-fmt.Println(s.Do(2)) // 2
+fmt.Println(s.Format("", "abc", "123")) // abc
+fmt.Println(s.Format("", "123", "abc")) // 123
 ```
 
 ### 函数 Mock

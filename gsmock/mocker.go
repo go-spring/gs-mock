@@ -3,30 +3,781 @@
 package gsmock
 
 const (
-	MaxParamCount  = 6
+	MaxParamCount  = 7
 	MaxResultCount = 4
 )
 
+/******************************** Mocker00 ***********************************/
+
+// Mocker00 provides a configurable mock for the target function.
+type Mocker00 struct {
+	fnHandle func()
+	fnWhen   func() bool
+	fnReturn func()
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker00) Handle(fn func()) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker00) When(fn func() bool) *Mocker00 {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker00) Return(fn func()) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker00) ReturnValue() {
+	m.Return(func() {})
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker00) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Invoker00 implements Invoker for Mocker00.
+type Invoker00 struct {
+	*Mocker00
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker00) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		m.fnHandle()
+		return []any{}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
+	}
+	return nil, false
+}
+
+// Func00 creates a new Mocker00 and registers it with the Manager.
+func Func00(f func(), r *Manager) *Mocker00 {
+	PatchOnce(f)
+	m := &Mocker00{}
+	i := &Invoker00{Mocker00: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method00 creates a new Mocker00 for mocking a method on a receiver.
+func Method00(receiver any, f func(), r *Manager) *Mocker00 {
+	m := &Mocker00{}
+	i := &Invoker00{Mocker00: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker00 ***********************************/
+
+// VarMocker00 provides a configurable mock for the target function.
+type VarMocker00 struct {
+	fnHandle func()
+	fnWhen   func() bool
+	fnReturn func()
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker00) Handle(fn func()) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker00) When(fn func() bool) *VarMocker00 {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker00) Return(fn func()) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker00) ReturnValue() {
+	m.Return(func() {})
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker00) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// VarInvoker00 implements Invoker for VarMocker00.
+type VarInvoker00 struct {
+	*VarMocker00
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker00) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		m.fnHandle()
+		return []any{}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc00 creates a new VarMocker00 and registers it with the Manager.
+func VarFunc00(f func(), r *Manager) *VarMocker00 {
+	PatchOnce(f)
+	m := &VarMocker00{}
+	i := &VarInvoker00{VarMocker00: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod00 creates a new VarMocker00 for mocking a method on a receiver.
+func VarMethod00(receiver any, f func(), r *Manager) *VarMocker00 {
+	m := &VarMocker00{}
+	i := &VarInvoker00{VarMocker00: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker01 ***********************************/
+
+// Mocker01 provides a configurable mock for the target function.
+type Mocker01[R1 any] struct {
+	fnHandle func() R1
+	fnWhen   func() bool
+	fnReturn func() R1
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker01[R1]) Handle(fn func() R1) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker01[R1]) When(fn func() bool) *Mocker01[R1] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker01[R1]) Return(fn func() R1) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker01[R1]) ReturnValue(r1 R1) {
+	m.Return(func() R1 { return r1 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker01[R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Invoker01 implements Invoker for Mocker01.
+type Invoker01[R1 any] struct {
+	*Mocker01[R1]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker01[R1]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1 := m.fnHandle()
+		return []any{r1}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
+	}
+	return nil, false
+}
+
+// Func01 creates a new Mocker01 and registers it with the Manager.
+func Func01[R1 any](f func() R1, r *Manager) *Mocker01[R1] {
+	PatchOnce(f)
+	m := &Mocker01[R1]{}
+	i := &Invoker01[R1]{Mocker01: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method01 creates a new Mocker01 for mocking a method on a receiver.
+func Method01[R1 any](receiver any, f func() R1, r *Manager) *Mocker01[R1] {
+	m := &Mocker01[R1]{}
+	i := &Invoker01[R1]{Mocker01: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker01 ***********************************/
+
+// VarMocker01 provides a configurable mock for the target function.
+type VarMocker01[R1 any] struct {
+	fnHandle func() R1
+	fnWhen   func() bool
+	fnReturn func() R1
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker01[R1]) Handle(fn func() R1) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker01[R1]) When(fn func() bool) *VarMocker01[R1] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker01[R1]) Return(fn func() R1) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker01[R1]) ReturnValue(r1 R1) {
+	m.Return(func() R1 { return r1 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker01[R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// VarInvoker01 implements Invoker for VarMocker01.
+type VarInvoker01[R1 any] struct {
+	*VarMocker01[R1]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker01[R1]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1 := m.fnHandle()
+		return []any{r1}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc01 creates a new VarMocker01 and registers it with the Manager.
+func VarFunc01[R1 any](f func() R1, r *Manager) *VarMocker01[R1] {
+	PatchOnce(f)
+	m := &VarMocker01[R1]{}
+	i := &VarInvoker01[R1]{VarMocker01: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod01 creates a new VarMocker01 for mocking a method on a receiver.
+func VarMethod01[R1 any](receiver any, f func() R1, r *Manager) *VarMocker01[R1] {
+	m := &VarMocker01[R1]{}
+	i := &VarInvoker01[R1]{VarMocker01: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker02 ***********************************/
+
+// Mocker02 provides a configurable mock for the target function.
+type Mocker02[R1, R2 any] struct {
+	fnHandle func() (R1, R2)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker02[R1, R2]) Handle(fn func() (R1, R2)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker02[R1, R2]) When(fn func() bool) *Mocker02[R1, R2] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker02[R1, R2]) Return(fn func() (R1, R2)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker02[R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.Return(func() (R1, R2) { return r1, r2 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker02[R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Invoker02 implements Invoker for Mocker02.
+type Invoker02[R1, R2 any] struct {
+	*Mocker02[R1, R2]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker02[R1, R2]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2 := m.fnHandle()
+		return []any{r1, r2}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
+	}
+	return nil, false
+}
+
+// Func02 creates a new Mocker02 and registers it with the Manager.
+func Func02[R1, R2 any](f func() (R1, R2), r *Manager) *Mocker02[R1, R2] {
+	PatchOnce(f)
+	m := &Mocker02[R1, R2]{}
+	i := &Invoker02[R1, R2]{Mocker02: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method02 creates a new Mocker02 for mocking a method on a receiver.
+func Method02[R1, R2 any](receiver any, f func() (R1, R2), r *Manager) *Mocker02[R1, R2] {
+	m := &Mocker02[R1, R2]{}
+	i := &Invoker02[R1, R2]{Mocker02: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker02 ***********************************/
+
+// VarMocker02 provides a configurable mock for the target function.
+type VarMocker02[R1, R2 any] struct {
+	fnHandle func() (R1, R2)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker02[R1, R2]) Handle(fn func() (R1, R2)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker02[R1, R2]) When(fn func() bool) *VarMocker02[R1, R2] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker02[R1, R2]) Return(fn func() (R1, R2)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker02[R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.Return(func() (R1, R2) { return r1, r2 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker02[R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// VarInvoker02 implements Invoker for VarMocker02.
+type VarInvoker02[R1, R2 any] struct {
+	*VarMocker02[R1, R2]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker02[R1, R2]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2 := m.fnHandle()
+		return []any{r1, r2}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc02 creates a new VarMocker02 and registers it with the Manager.
+func VarFunc02[R1, R2 any](f func() (R1, R2), r *Manager) *VarMocker02[R1, R2] {
+	PatchOnce(f)
+	m := &VarMocker02[R1, R2]{}
+	i := &VarInvoker02[R1, R2]{VarMocker02: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod02 creates a new VarMocker02 for mocking a method on a receiver.
+func VarMethod02[R1, R2 any](receiver any, f func() (R1, R2), r *Manager) *VarMocker02[R1, R2] {
+	m := &VarMocker02[R1, R2]{}
+	i := &VarInvoker02[R1, R2]{VarMocker02: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker03 ***********************************/
+
+// Mocker03 provides a configurable mock for the target function.
+type Mocker03[R1, R2, R3 any] struct {
+	fnHandle func() (R1, R2, R3)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2, R3)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker03[R1, R2, R3]) Handle(fn func() (R1, R2, R3)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker03[R1, R2, R3]) When(fn func() bool) *Mocker03[R1, R2, R3] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker03[R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker03[R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker03[R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Invoker03 implements Invoker for Mocker03.
+type Invoker03[R1, R2, R3 any] struct {
+	*Mocker03[R1, R2, R3]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker03[R1, R2, R3]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3 := m.fnHandle()
+		return []any{r1, r2, r3}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
+	}
+	return nil, false
+}
+
+// Func03 creates a new Mocker03 and registers it with the Manager.
+func Func03[R1, R2, R3 any](f func() (R1, R2, R3), r *Manager) *Mocker03[R1, R2, R3] {
+	PatchOnce(f)
+	m := &Mocker03[R1, R2, R3]{}
+	i := &Invoker03[R1, R2, R3]{Mocker03: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method03 creates a new Mocker03 for mocking a method on a receiver.
+func Method03[R1, R2, R3 any](receiver any, f func() (R1, R2, R3), r *Manager) *Mocker03[R1, R2, R3] {
+	m := &Mocker03[R1, R2, R3]{}
+	i := &Invoker03[R1, R2, R3]{Mocker03: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker03 ***********************************/
+
+// VarMocker03 provides a configurable mock for the target function.
+type VarMocker03[R1, R2, R3 any] struct {
+	fnHandle func() (R1, R2, R3)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2, R3)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker03[R1, R2, R3]) Handle(fn func() (R1, R2, R3)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker03[R1, R2, R3]) When(fn func() bool) *VarMocker03[R1, R2, R3] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker03[R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker03[R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker03[R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// VarInvoker03 implements Invoker for VarMocker03.
+type VarInvoker03[R1, R2, R3 any] struct {
+	*VarMocker03[R1, R2, R3]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker03[R1, R2, R3]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3 := m.fnHandle()
+		return []any{r1, r2, r3}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc03 creates a new VarMocker03 and registers it with the Manager.
+func VarFunc03[R1, R2, R3 any](f func() (R1, R2, R3), r *Manager) *VarMocker03[R1, R2, R3] {
+	PatchOnce(f)
+	m := &VarMocker03[R1, R2, R3]{}
+	i := &VarInvoker03[R1, R2, R3]{VarMocker03: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod03 creates a new VarMocker03 for mocking a method on a receiver.
+func VarMethod03[R1, R2, R3 any](receiver any, f func() (R1, R2, R3), r *Manager) *VarMocker03[R1, R2, R3] {
+	m := &VarMocker03[R1, R2, R3]{}
+	i := &VarInvoker03[R1, R2, R3]{VarMocker03: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker04 ***********************************/
+
+// Mocker04 provides a configurable mock for the target function.
+type Mocker04[R1, R2, R3, R4 any] struct {
+	fnHandle func() (R1, R2, R3, R4)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2, R3, R4)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker04[R1, R2, R3, R4]) Handle(fn func() (R1, R2, R3, R4)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker04[R1, R2, R3, R4]) When(fn func() bool) *Mocker04[R1, R2, R3, R4] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker04[R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker04[R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker04[R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Invoker04 implements Invoker for Mocker04.
+type Invoker04[R1, R2, R3, R4 any] struct {
+	*Mocker04[R1, R2, R3, R4]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker04[R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3, r4 := m.fnHandle()
+		return []any{r1, r2, r3, r4}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
+	}
+	return nil, false
+}
+
+// Func04 creates a new Mocker04 and registers it with the Manager.
+func Func04[R1, R2, R3, R4 any](f func() (R1, R2, R3, R4), r *Manager) *Mocker04[R1, R2, R3, R4] {
+	PatchOnce(f)
+	m := &Mocker04[R1, R2, R3, R4]{}
+	i := &Invoker04[R1, R2, R3, R4]{Mocker04: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method04 creates a new Mocker04 for mocking a method on a receiver.
+func Method04[R1, R2, R3, R4 any](receiver any, f func() (R1, R2, R3, R4), r *Manager) *Mocker04[R1, R2, R3, R4] {
+	m := &Mocker04[R1, R2, R3, R4]{}
+	i := &Invoker04[R1, R2, R3, R4]{Mocker04: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker04 ***********************************/
+
+// VarMocker04 provides a configurable mock for the target function.
+type VarMocker04[R1, R2, R3, R4 any] struct {
+	fnHandle func() (R1, R2, R3, R4)
+	fnWhen   func() bool
+	fnReturn func() (R1, R2, R3, R4)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker04[R1, R2, R3, R4]) Handle(fn func() (R1, R2, R3, R4)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker04[R1, R2, R3, R4]) When(fn func() bool) *VarMocker04[R1, R2, R3, R4] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker04[R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func() bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker04[R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker04[R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// VarInvoker04 implements Invoker for VarMocker04.
+type VarInvoker04[R1, R2, R3, R4 any] struct {
+	*VarMocker04[R1, R2, R3, R4]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker04[R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3, r4 := m.fnHandle()
+		return []any{r1, r2, r3, r4}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc04 creates a new VarMocker04 and registers it with the Manager.
+func VarFunc04[R1, R2, R3, R4 any](f func() (R1, R2, R3, R4), r *Manager) *VarMocker04[R1, R2, R3, R4] {
+	PatchOnce(f)
+	m := &VarMocker04[R1, R2, R3, R4]{}
+	i := &VarInvoker04[R1, R2, R3, R4]{VarMocker04: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod04 creates a new VarMocker04 for mocking a method on a receiver.
+func VarMethod04[R1, R2, R3, R4 any](receiver any, f func() (R1, R2, R3, R4), r *Manager) *VarMocker04[R1, R2, R3, R4] {
+	m := &VarMocker04[R1, R2, R3, R4]{}
+	i := &VarInvoker04[R1, R2, R3, R4]{VarMocker04: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
 /******************************** Mocker10 ***********************************/
 
+// Mocker10 provides a configurable mock for the target function.
 type Mocker10[T1 any] struct {
 	fnHandle func(T1)
 	fnWhen   func(T1) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker10[T1]) Handle(fn func(T1)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker10[T1]) When(fn func(T1) bool) *Mocker10[T1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker10[T1]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1) bool { return true }
@@ -34,78 +785,74 @@ func (m *Mocker10[T1]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker10[T1]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker10[T1]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// Invoker10 is an Invoker implementation for Mocker10.
+// Invoker10 implements Invoker for Mocker10.
 type Invoker10[T1 any] struct {
 	*Mocker10[T1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker10[T1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker10[T1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker10[T1]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker10[T1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker10[T1]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// Mock10 creates a new Mocker10 instance.
-func Mock10[T1 any](f func(T1), r *Manager) *Mocker10[T1] {
+// Func10 creates a new Mocker10 and registers it with the Manager.
+func Func10[T1 any](f func(T1), r *Manager) *Mocker10[T1] {
 	PatchOnce(f)
 	m := &Mocker10[T1]{}
 	i := &Invoker10[T1]{Mocker10: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method10 creates a new Mocker10 for mocking a method on a receiver.
+func Method10[T1 any](receiver any, f func(T1), r *Manager) *Mocker10[T1] {
+	m := &Mocker10[T1]{}
+	i := &Invoker10[T1]{Mocker10: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker10 ***********************************/
 
+// VarMocker10 provides a configurable mock for the target function.
 type VarMocker10[T1 any] struct {
 	fnHandle func([]T1)
 	fnWhen   func([]T1) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker10[T1]) Handle(fn func([]T1)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker10[T1]) When(fn func([]T1) bool) *VarMocker10[T1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker10[T1]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func([]T1) bool { return true }
@@ -113,78 +860,74 @@ func (m *VarMocker10[T1]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker10[T1]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker10[T1]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// VarInvoker10 is an Invoker implementation for VarMocker10.
+// VarInvoker10 implements Invoker for VarMocker10.
 type VarInvoker10[T1 any] struct {
 	*VarMocker10[T1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker10[T1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker10[T1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].([]T1))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker10[T1]) Handle(params []any) []any {
-	m.fnHandle(params[0].([]T1))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker10[T1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].([]T1)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].([]T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker10[T1]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// VarMock10 creates a new VarMocker10 instance.
-func VarMock10[T1 any](f func(...T1), r *Manager) *VarMocker10[T1] {
+// VarFunc10 creates a new VarMocker10 and registers it with the Manager.
+func VarFunc10[T1 any](f func(...T1), r *Manager) *VarMocker10[T1] {
 	PatchOnce(f)
 	m := &VarMocker10[T1]{}
 	i := &VarInvoker10[T1]{VarMocker10: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod10 creates a new VarMocker10 for mocking a method on a receiver.
+func VarMethod10[T1 any](receiver any, f func(...T1), r *Manager) *VarMocker10[T1] {
+	m := &VarMocker10[T1]{}
+	i := &VarInvoker10[T1]{VarMocker10: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker11 ***********************************/
 
+// Mocker11 provides a configurable mock for the target function.
 type Mocker11[T1 any, R1 any] struct {
 	fnHandle func(T1) R1
 	fnWhen   func(T1) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker11[T1, R1]) Handle(fn func(T1) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker11[T1, R1]) When(fn func(T1) bool) *Mocker11[T1, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker11[T1, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1) bool { return true }
@@ -192,78 +935,74 @@ func (m *Mocker11[T1, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker11[T1, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker11[T1, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// Invoker11 is an Invoker implementation for Mocker11.
+// Invoker11 implements Invoker for Mocker11.
 type Invoker11[T1 any, R1 any] struct {
 	*Mocker11[T1, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker11[T1, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker11[T1, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker11[T1, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker11[T1, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker11[T1, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// Mock11 creates a new Mocker11 instance.
-func Mock11[T1 any, R1 any](f func(T1) R1, r *Manager) *Mocker11[T1, R1] {
+// Func11 creates a new Mocker11 and registers it with the Manager.
+func Func11[T1 any, R1 any](f func(T1) R1, r *Manager) *Mocker11[T1, R1] {
 	PatchOnce(f)
 	m := &Mocker11[T1, R1]{}
 	i := &Invoker11[T1, R1]{Mocker11: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method11 creates a new Mocker11 for mocking a method on a receiver.
+func Method11[T1 any, R1 any](receiver any, f func(T1) R1, r *Manager) *Mocker11[T1, R1] {
+	m := &Mocker11[T1, R1]{}
+	i := &Invoker11[T1, R1]{Mocker11: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker11 ***********************************/
 
+// VarMocker11 provides a configurable mock for the target function.
 type VarMocker11[T1 any, R1 any] struct {
 	fnHandle func([]T1) R1
 	fnWhen   func([]T1) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker11[T1, R1]) Handle(fn func([]T1) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker11[T1, R1]) When(fn func([]T1) bool) *VarMocker11[T1, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker11[T1, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func([]T1) bool { return true }
@@ -271,78 +1010,74 @@ func (m *VarMocker11[T1, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker11[T1, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker11[T1, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// VarInvoker11 is an Invoker implementation for VarMocker11.
+// VarInvoker11 implements Invoker for VarMocker11.
 type VarInvoker11[T1 any, R1 any] struct {
 	*VarMocker11[T1, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker11[T1, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker11[T1, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].([]T1))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker11[T1, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].([]T1))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker11[T1, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].([]T1)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].([]T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker11[T1, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// VarMock11 creates a new VarMocker11 instance.
-func VarMock11[T1 any, R1 any](f func(...T1) R1, r *Manager) *VarMocker11[T1, R1] {
+// VarFunc11 creates a new VarMocker11 and registers it with the Manager.
+func VarFunc11[T1 any, R1 any](f func(...T1) R1, r *Manager) *VarMocker11[T1, R1] {
 	PatchOnce(f)
 	m := &VarMocker11[T1, R1]{}
 	i := &VarInvoker11[T1, R1]{VarMocker11: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod11 creates a new VarMocker11 for mocking a method on a receiver.
+func VarMethod11[T1 any, R1 any](receiver any, f func(...T1) R1, r *Manager) *VarMocker11[T1, R1] {
+	m := &VarMocker11[T1, R1]{}
+	i := &VarInvoker11[T1, R1]{VarMocker11: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker12 ***********************************/
 
+// Mocker12 provides a configurable mock for the target function.
 type Mocker12[T1 any, R1, R2 any] struct {
 	fnHandle func(T1) (R1, R2)
 	fnWhen   func(T1) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker12[T1, R1, R2]) Handle(fn func(T1) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker12[T1, R1, R2]) When(fn func(T1) bool) *Mocker12[T1, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker12[T1, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1) bool { return true }
@@ -350,78 +1085,74 @@ func (m *Mocker12[T1, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker12[T1, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker12[T1, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// Invoker12 is an Invoker implementation for Mocker12.
+// Invoker12 implements Invoker for Mocker12.
 type Invoker12[T1 any, R1, R2 any] struct {
 	*Mocker12[T1, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker12[T1, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker12[T1, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker12[T1, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker12[T1, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker12[T1, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// Mock12 creates a new Mocker12 instance.
-func Mock12[T1 any, R1, R2 any](f func(T1) (R1, R2), r *Manager) *Mocker12[T1, R1, R2] {
+// Func12 creates a new Mocker12 and registers it with the Manager.
+func Func12[T1 any, R1, R2 any](f func(T1) (R1, R2), r *Manager) *Mocker12[T1, R1, R2] {
 	PatchOnce(f)
 	m := &Mocker12[T1, R1, R2]{}
 	i := &Invoker12[T1, R1, R2]{Mocker12: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method12 creates a new Mocker12 for mocking a method on a receiver.
+func Method12[T1 any, R1, R2 any](receiver any, f func(T1) (R1, R2), r *Manager) *Mocker12[T1, R1, R2] {
+	m := &Mocker12[T1, R1, R2]{}
+	i := &Invoker12[T1, R1, R2]{Mocker12: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker12 ***********************************/
 
+// VarMocker12 provides a configurable mock for the target function.
 type VarMocker12[T1 any, R1, R2 any] struct {
 	fnHandle func([]T1) (R1, R2)
 	fnWhen   func([]T1) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker12[T1, R1, R2]) Handle(fn func([]T1) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker12[T1, R1, R2]) When(fn func([]T1) bool) *VarMocker12[T1, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker12[T1, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func([]T1) bool { return true }
@@ -429,78 +1160,74 @@ func (m *VarMocker12[T1, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker12[T1, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker12[T1, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// VarInvoker12 is an Invoker implementation for VarMocker12.
+// VarInvoker12 implements Invoker for VarMocker12.
 type VarInvoker12[T1 any, R1, R2 any] struct {
 	*VarMocker12[T1, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker12[T1, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker12[T1, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].([]T1))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker12[T1, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].([]T1))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker12[T1, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].([]T1)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].([]T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker12[T1, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// VarMock12 creates a new VarMocker12 instance.
-func VarMock12[T1 any, R1, R2 any](f func(...T1) (R1, R2), r *Manager) *VarMocker12[T1, R1, R2] {
+// VarFunc12 creates a new VarMocker12 and registers it with the Manager.
+func VarFunc12[T1 any, R1, R2 any](f func(...T1) (R1, R2), r *Manager) *VarMocker12[T1, R1, R2] {
 	PatchOnce(f)
 	m := &VarMocker12[T1, R1, R2]{}
 	i := &VarInvoker12[T1, R1, R2]{VarMocker12: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod12 creates a new VarMocker12 for mocking a method on a receiver.
+func VarMethod12[T1 any, R1, R2 any](receiver any, f func(...T1) (R1, R2), r *Manager) *VarMocker12[T1, R1, R2] {
+	m := &VarMocker12[T1, R1, R2]{}
+	i := &VarInvoker12[T1, R1, R2]{VarMocker12: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker13 ***********************************/
 
+// Mocker13 provides a configurable mock for the target function.
 type Mocker13[T1 any, R1, R2, R3 any] struct {
 	fnHandle func(T1) (R1, R2, R3)
 	fnWhen   func(T1) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker13[T1, R1, R2, R3]) Handle(fn func(T1) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker13[T1, R1, R2, R3]) When(fn func(T1) bool) *Mocker13[T1, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker13[T1, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1) bool { return true }
@@ -508,78 +1235,74 @@ func (m *Mocker13[T1, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker13[T1, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker13[T1, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// Invoker13 is an Invoker implementation for Mocker13.
+// Invoker13 implements Invoker for Mocker13.
 type Invoker13[T1 any, R1, R2, R3 any] struct {
 	*Mocker13[T1, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker13[T1, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker13[T1, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker13[T1, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker13[T1, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker13[T1, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// Mock13 creates a new Mocker13 instance.
-func Mock13[T1 any, R1, R2, R3 any](f func(T1) (R1, R2, R3), r *Manager) *Mocker13[T1, R1, R2, R3] {
+// Func13 creates a new Mocker13 and registers it with the Manager.
+func Func13[T1 any, R1, R2, R3 any](f func(T1) (R1, R2, R3), r *Manager) *Mocker13[T1, R1, R2, R3] {
 	PatchOnce(f)
 	m := &Mocker13[T1, R1, R2, R3]{}
 	i := &Invoker13[T1, R1, R2, R3]{Mocker13: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method13 creates a new Mocker13 for mocking a method on a receiver.
+func Method13[T1 any, R1, R2, R3 any](receiver any, f func(T1) (R1, R2, R3), r *Manager) *Mocker13[T1, R1, R2, R3] {
+	m := &Mocker13[T1, R1, R2, R3]{}
+	i := &Invoker13[T1, R1, R2, R3]{Mocker13: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker13 ***********************************/
 
+// VarMocker13 provides a configurable mock for the target function.
 type VarMocker13[T1 any, R1, R2, R3 any] struct {
 	fnHandle func([]T1) (R1, R2, R3)
 	fnWhen   func([]T1) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker13[T1, R1, R2, R3]) Handle(fn func([]T1) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker13[T1, R1, R2, R3]) When(fn func([]T1) bool) *VarMocker13[T1, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker13[T1, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func([]T1) bool { return true }
@@ -587,78 +1310,74 @@ func (m *VarMocker13[T1, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker13[T1, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker13[T1, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// VarInvoker13 is an Invoker implementation for VarMocker13.
+// VarInvoker13 implements Invoker for VarMocker13.
 type VarInvoker13[T1 any, R1, R2, R3 any] struct {
 	*VarMocker13[T1, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker13[T1, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker13[T1, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].([]T1))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker13[T1, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].([]T1))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker13[T1, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].([]T1)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].([]T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker13[T1, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// VarMock13 creates a new VarMocker13 instance.
-func VarMock13[T1 any, R1, R2, R3 any](f func(...T1) (R1, R2, R3), r *Manager) *VarMocker13[T1, R1, R2, R3] {
+// VarFunc13 creates a new VarMocker13 and registers it with the Manager.
+func VarFunc13[T1 any, R1, R2, R3 any](f func(...T1) (R1, R2, R3), r *Manager) *VarMocker13[T1, R1, R2, R3] {
 	PatchOnce(f)
 	m := &VarMocker13[T1, R1, R2, R3]{}
 	i := &VarInvoker13[T1, R1, R2, R3]{VarMocker13: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod13 creates a new VarMocker13 for mocking a method on a receiver.
+func VarMethod13[T1 any, R1, R2, R3 any](receiver any, f func(...T1) (R1, R2, R3), r *Manager) *VarMocker13[T1, R1, R2, R3] {
+	m := &VarMocker13[T1, R1, R2, R3]{}
+	i := &VarInvoker13[T1, R1, R2, R3]{VarMocker13: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker14 ***********************************/
 
+// Mocker14 provides a configurable mock for the target function.
 type Mocker14[T1 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1) (R1, R2, R3, R4)
 	fnWhen   func(T1) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker14[T1, R1, R2, R3, R4]) Handle(fn func(T1) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker14[T1, R1, R2, R3, R4]) When(fn func(T1) bool) *Mocker14[T1, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker14[T1, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1) bool { return true }
@@ -666,78 +1385,74 @@ func (m *Mocker14[T1, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker14[T1, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker14[T1, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// Invoker14 is an Invoker implementation for Mocker14.
+// Invoker14 implements Invoker for Mocker14.
 type Invoker14[T1 any, R1, R2, R3, R4 any] struct {
 	*Mocker14[T1, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker14[T1, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker14[T1, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker14[T1, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker14[T1, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker14[T1, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// Mock14 creates a new Mocker14 instance.
-func Mock14[T1 any, R1, R2, R3, R4 any](f func(T1) (R1, R2, R3, R4), r *Manager) *Mocker14[T1, R1, R2, R3, R4] {
+// Func14 creates a new Mocker14 and registers it with the Manager.
+func Func14[T1 any, R1, R2, R3, R4 any](f func(T1) (R1, R2, R3, R4), r *Manager) *Mocker14[T1, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &Mocker14[T1, R1, R2, R3, R4]{}
 	i := &Invoker14[T1, R1, R2, R3, R4]{Mocker14: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method14 creates a new Mocker14 for mocking a method on a receiver.
+func Method14[T1 any, R1, R2, R3, R4 any](receiver any, f func(T1) (R1, R2, R3, R4), r *Manager) *Mocker14[T1, R1, R2, R3, R4] {
+	m := &Mocker14[T1, R1, R2, R3, R4]{}
+	i := &Invoker14[T1, R1, R2, R3, R4]{Mocker14: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker14 ***********************************/
 
+// VarMocker14 provides a configurable mock for the target function.
 type VarMocker14[T1 any, R1, R2, R3, R4 any] struct {
 	fnHandle func([]T1) (R1, R2, R3, R4)
 	fnWhen   func([]T1) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker14[T1, R1, R2, R3, R4]) Handle(fn func([]T1) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker14[T1, R1, R2, R3, R4]) When(fn func([]T1) bool) *VarMocker14[T1, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker14[T1, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func([]T1) bool { return true }
@@ -745,78 +1460,74 @@ func (m *VarMocker14[T1, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker14[T1, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker14[T1, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// VarInvoker14 is an Invoker implementation for VarMocker14.
+// VarInvoker14 implements Invoker for VarMocker14.
 type VarInvoker14[T1 any, R1, R2, R3, R4 any] struct {
 	*VarMocker14[T1, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker14[T1, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker14[T1, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].([]T1))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker14[T1, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].([]T1))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker14[T1, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].([]T1)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].([]T1))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker14[T1, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// VarMock14 creates a new VarMocker14 instance.
-func VarMock14[T1 any, R1, R2, R3, R4 any](f func(...T1) (R1, R2, R3, R4), r *Manager) *VarMocker14[T1, R1, R2, R3, R4] {
+// VarFunc14 creates a new VarMocker14 and registers it with the Manager.
+func VarFunc14[T1 any, R1, R2, R3, R4 any](f func(...T1) (R1, R2, R3, R4), r *Manager) *VarMocker14[T1, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &VarMocker14[T1, R1, R2, R3, R4]{}
 	i := &VarInvoker14[T1, R1, R2, R3, R4]{VarMocker14: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod14 creates a new VarMocker14 for mocking a method on a receiver.
+func VarMethod14[T1 any, R1, R2, R3, R4 any](receiver any, f func(...T1) (R1, R2, R3, R4), r *Manager) *VarMocker14[T1, R1, R2, R3, R4] {
+	m := &VarMocker14[T1, R1, R2, R3, R4]{}
+	i := &VarInvoker14[T1, R1, R2, R3, R4]{VarMocker14: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker20 ***********************************/
 
+// Mocker20 provides a configurable mock for the target function.
 type Mocker20[T1, T2 any] struct {
 	fnHandle func(T1, T2)
 	fnWhen   func(T1, T2) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker20[T1, T2]) Handle(fn func(T1, T2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker20[T1, T2]) When(fn func(T1, T2) bool) *Mocker20[T1, T2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker20[T1, T2]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2) bool { return true }
@@ -824,78 +1535,74 @@ func (m *Mocker20[T1, T2]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker20[T1, T2]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker20[T1, T2]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// Invoker20 is an Invoker implementation for Mocker20.
+// Invoker20 implements Invoker for Mocker20.
 type Invoker20[T1, T2 any] struct {
 	*Mocker20[T1, T2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker20[T1, T2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker20[T1, T2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker20[T1, T2]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker20[T1, T2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker20[T1, T2]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// Mock20 creates a new Mocker20 instance.
-func Mock20[T1, T2 any](f func(T1, T2), r *Manager) *Mocker20[T1, T2] {
+// Func20 creates a new Mocker20 and registers it with the Manager.
+func Func20[T1, T2 any](f func(T1, T2), r *Manager) *Mocker20[T1, T2] {
 	PatchOnce(f)
 	m := &Mocker20[T1, T2]{}
 	i := &Invoker20[T1, T2]{Mocker20: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method20 creates a new Mocker20 for mocking a method on a receiver.
+func Method20[T1, T2 any](receiver any, f func(T1, T2), r *Manager) *Mocker20[T1, T2] {
+	m := &Mocker20[T1, T2]{}
+	i := &Invoker20[T1, T2]{Mocker20: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker20 ***********************************/
 
+// VarMocker20 provides a configurable mock for the target function.
 type VarMocker20[T1, T2 any] struct {
 	fnHandle func(T1, []T2)
 	fnWhen   func(T1, []T2) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker20[T1, T2]) Handle(fn func(T1, []T2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker20[T1, T2]) When(fn func(T1, []T2) bool) *VarMocker20[T1, T2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker20[T1, T2]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, []T2) bool { return true }
@@ -903,78 +1610,74 @@ func (m *VarMocker20[T1, T2]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker20[T1, T2]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker20[T1, T2]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// VarInvoker20 is an Invoker implementation for VarMocker20.
+// VarInvoker20 implements Invoker for VarMocker20.
 type VarInvoker20[T1, T2 any] struct {
 	*VarMocker20[T1, T2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker20[T1, T2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker20[T1, T2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].([]T2))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker20[T1, T2]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].([]T2))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker20[T1, T2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].([]T2)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].([]T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker20[T1, T2]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// VarMock20 creates a new VarMocker20 instance.
-func VarMock20[T1, T2 any](f func(T1, ...T2), r *Manager) *VarMocker20[T1, T2] {
+// VarFunc20 creates a new VarMocker20 and registers it with the Manager.
+func VarFunc20[T1, T2 any](f func(T1, ...T2), r *Manager) *VarMocker20[T1, T2] {
 	PatchOnce(f)
 	m := &VarMocker20[T1, T2]{}
 	i := &VarInvoker20[T1, T2]{VarMocker20: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod20 creates a new VarMocker20 for mocking a method on a receiver.
+func VarMethod20[T1, T2 any](receiver any, f func(T1, ...T2), r *Manager) *VarMocker20[T1, T2] {
+	m := &VarMocker20[T1, T2]{}
+	i := &VarInvoker20[T1, T2]{VarMocker20: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker21 ***********************************/
 
+// Mocker21 provides a configurable mock for the target function.
 type Mocker21[T1, T2 any, R1 any] struct {
 	fnHandle func(T1, T2) R1
 	fnWhen   func(T1, T2) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker21[T1, T2, R1]) Handle(fn func(T1, T2) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker21[T1, T2, R1]) When(fn func(T1, T2) bool) *Mocker21[T1, T2, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker21[T1, T2, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2) bool { return true }
@@ -982,78 +1685,74 @@ func (m *Mocker21[T1, T2, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker21[T1, T2, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker21[T1, T2, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// Invoker21 is an Invoker implementation for Mocker21.
+// Invoker21 implements Invoker for Mocker21.
 type Invoker21[T1, T2 any, R1 any] struct {
 	*Mocker21[T1, T2, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker21[T1, T2, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker21[T1, T2, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker21[T1, T2, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker21[T1, T2, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker21[T1, T2, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// Mock21 creates a new Mocker21 instance.
-func Mock21[T1, T2 any, R1 any](f func(T1, T2) R1, r *Manager) *Mocker21[T1, T2, R1] {
+// Func21 creates a new Mocker21 and registers it with the Manager.
+func Func21[T1, T2 any, R1 any](f func(T1, T2) R1, r *Manager) *Mocker21[T1, T2, R1] {
 	PatchOnce(f)
 	m := &Mocker21[T1, T2, R1]{}
 	i := &Invoker21[T1, T2, R1]{Mocker21: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method21 creates a new Mocker21 for mocking a method on a receiver.
+func Method21[T1, T2 any, R1 any](receiver any, f func(T1, T2) R1, r *Manager) *Mocker21[T1, T2, R1] {
+	m := &Mocker21[T1, T2, R1]{}
+	i := &Invoker21[T1, T2, R1]{Mocker21: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker21 ***********************************/
 
+// VarMocker21 provides a configurable mock for the target function.
 type VarMocker21[T1, T2 any, R1 any] struct {
 	fnHandle func(T1, []T2) R1
 	fnWhen   func(T1, []T2) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker21[T1, T2, R1]) Handle(fn func(T1, []T2) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker21[T1, T2, R1]) When(fn func(T1, []T2) bool) *VarMocker21[T1, T2, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker21[T1, T2, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, []T2) bool { return true }
@@ -1061,78 +1760,74 @@ func (m *VarMocker21[T1, T2, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker21[T1, T2, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker21[T1, T2, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// VarInvoker21 is an Invoker implementation for VarMocker21.
+// VarInvoker21 implements Invoker for VarMocker21.
 type VarInvoker21[T1, T2 any, R1 any] struct {
 	*VarMocker21[T1, T2, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker21[T1, T2, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker21[T1, T2, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].([]T2))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker21[T1, T2, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].([]T2))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker21[T1, T2, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].([]T2)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].([]T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker21[T1, T2, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// VarMock21 creates a new VarMocker21 instance.
-func VarMock21[T1, T2 any, R1 any](f func(T1, ...T2) R1, r *Manager) *VarMocker21[T1, T2, R1] {
+// VarFunc21 creates a new VarMocker21 and registers it with the Manager.
+func VarFunc21[T1, T2 any, R1 any](f func(T1, ...T2) R1, r *Manager) *VarMocker21[T1, T2, R1] {
 	PatchOnce(f)
 	m := &VarMocker21[T1, T2, R1]{}
 	i := &VarInvoker21[T1, T2, R1]{VarMocker21: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod21 creates a new VarMocker21 for mocking a method on a receiver.
+func VarMethod21[T1, T2 any, R1 any](receiver any, f func(T1, ...T2) R1, r *Manager) *VarMocker21[T1, T2, R1] {
+	m := &VarMocker21[T1, T2, R1]{}
+	i := &VarInvoker21[T1, T2, R1]{VarMocker21: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker22 ***********************************/
 
+// Mocker22 provides a configurable mock for the target function.
 type Mocker22[T1, T2 any, R1, R2 any] struct {
 	fnHandle func(T1, T2) (R1, R2)
 	fnWhen   func(T1, T2) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker22[T1, T2, R1, R2]) Handle(fn func(T1, T2) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker22[T1, T2, R1, R2]) When(fn func(T1, T2) bool) *Mocker22[T1, T2, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker22[T1, T2, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2) bool { return true }
@@ -1140,78 +1835,74 @@ func (m *Mocker22[T1, T2, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker22[T1, T2, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker22[T1, T2, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// Invoker22 is an Invoker implementation for Mocker22.
+// Invoker22 implements Invoker for Mocker22.
 type Invoker22[T1, T2 any, R1, R2 any] struct {
 	*Mocker22[T1, T2, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker22[T1, T2, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker22[T1, T2, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker22[T1, T2, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker22[T1, T2, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker22[T1, T2, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// Mock22 creates a new Mocker22 instance.
-func Mock22[T1, T2 any, R1, R2 any](f func(T1, T2) (R1, R2), r *Manager) *Mocker22[T1, T2, R1, R2] {
+// Func22 creates a new Mocker22 and registers it with the Manager.
+func Func22[T1, T2 any, R1, R2 any](f func(T1, T2) (R1, R2), r *Manager) *Mocker22[T1, T2, R1, R2] {
 	PatchOnce(f)
 	m := &Mocker22[T1, T2, R1, R2]{}
 	i := &Invoker22[T1, T2, R1, R2]{Mocker22: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method22 creates a new Mocker22 for mocking a method on a receiver.
+func Method22[T1, T2 any, R1, R2 any](receiver any, f func(T1, T2) (R1, R2), r *Manager) *Mocker22[T1, T2, R1, R2] {
+	m := &Mocker22[T1, T2, R1, R2]{}
+	i := &Invoker22[T1, T2, R1, R2]{Mocker22: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker22 ***********************************/
 
+// VarMocker22 provides a configurable mock for the target function.
 type VarMocker22[T1, T2 any, R1, R2 any] struct {
 	fnHandle func(T1, []T2) (R1, R2)
 	fnWhen   func(T1, []T2) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker22[T1, T2, R1, R2]) Handle(fn func(T1, []T2) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker22[T1, T2, R1, R2]) When(fn func(T1, []T2) bool) *VarMocker22[T1, T2, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker22[T1, T2, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, []T2) bool { return true }
@@ -1219,78 +1910,74 @@ func (m *VarMocker22[T1, T2, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker22[T1, T2, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker22[T1, T2, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// VarInvoker22 is an Invoker implementation for VarMocker22.
+// VarInvoker22 implements Invoker for VarMocker22.
 type VarInvoker22[T1, T2 any, R1, R2 any] struct {
 	*VarMocker22[T1, T2, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker22[T1, T2, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker22[T1, T2, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].([]T2))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker22[T1, T2, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].([]T2))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker22[T1, T2, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].([]T2)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].([]T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker22[T1, T2, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// VarMock22 creates a new VarMocker22 instance.
-func VarMock22[T1, T2 any, R1, R2 any](f func(T1, ...T2) (R1, R2), r *Manager) *VarMocker22[T1, T2, R1, R2] {
+// VarFunc22 creates a new VarMocker22 and registers it with the Manager.
+func VarFunc22[T1, T2 any, R1, R2 any](f func(T1, ...T2) (R1, R2), r *Manager) *VarMocker22[T1, T2, R1, R2] {
 	PatchOnce(f)
 	m := &VarMocker22[T1, T2, R1, R2]{}
 	i := &VarInvoker22[T1, T2, R1, R2]{VarMocker22: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod22 creates a new VarMocker22 for mocking a method on a receiver.
+func VarMethod22[T1, T2 any, R1, R2 any](receiver any, f func(T1, ...T2) (R1, R2), r *Manager) *VarMocker22[T1, T2, R1, R2] {
+	m := &VarMocker22[T1, T2, R1, R2]{}
+	i := &VarInvoker22[T1, T2, R1, R2]{VarMocker22: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker23 ***********************************/
 
+// Mocker23 provides a configurable mock for the target function.
 type Mocker23[T1, T2 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2) (R1, R2, R3)
 	fnWhen   func(T1, T2) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker23[T1, T2, R1, R2, R3]) Handle(fn func(T1, T2) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker23[T1, T2, R1, R2, R3]) When(fn func(T1, T2) bool) *Mocker23[T1, T2, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker23[T1, T2, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2) bool { return true }
@@ -1298,78 +1985,74 @@ func (m *Mocker23[T1, T2, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker23[T1, T2, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker23[T1, T2, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// Invoker23 is an Invoker implementation for Mocker23.
+// Invoker23 implements Invoker for Mocker23.
 type Invoker23[T1, T2 any, R1, R2, R3 any] struct {
 	*Mocker23[T1, T2, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker23[T1, T2, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker23[T1, T2, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker23[T1, T2, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker23[T1, T2, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker23[T1, T2, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// Mock23 creates a new Mocker23 instance.
-func Mock23[T1, T2 any, R1, R2, R3 any](f func(T1, T2) (R1, R2, R3), r *Manager) *Mocker23[T1, T2, R1, R2, R3] {
+// Func23 creates a new Mocker23 and registers it with the Manager.
+func Func23[T1, T2 any, R1, R2, R3 any](f func(T1, T2) (R1, R2, R3), r *Manager) *Mocker23[T1, T2, R1, R2, R3] {
 	PatchOnce(f)
 	m := &Mocker23[T1, T2, R1, R2, R3]{}
 	i := &Invoker23[T1, T2, R1, R2, R3]{Mocker23: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method23 creates a new Mocker23 for mocking a method on a receiver.
+func Method23[T1, T2 any, R1, R2, R3 any](receiver any, f func(T1, T2) (R1, R2, R3), r *Manager) *Mocker23[T1, T2, R1, R2, R3] {
+	m := &Mocker23[T1, T2, R1, R2, R3]{}
+	i := &Invoker23[T1, T2, R1, R2, R3]{Mocker23: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker23 ***********************************/
 
+// VarMocker23 provides a configurable mock for the target function.
 type VarMocker23[T1, T2 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, []T2) (R1, R2, R3)
 	fnWhen   func(T1, []T2) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker23[T1, T2, R1, R2, R3]) Handle(fn func(T1, []T2) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker23[T1, T2, R1, R2, R3]) When(fn func(T1, []T2) bool) *VarMocker23[T1, T2, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker23[T1, T2, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, []T2) bool { return true }
@@ -1377,78 +2060,74 @@ func (m *VarMocker23[T1, T2, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker23[T1, T2, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker23[T1, T2, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// VarInvoker23 is an Invoker implementation for VarMocker23.
+// VarInvoker23 implements Invoker for VarMocker23.
 type VarInvoker23[T1, T2 any, R1, R2, R3 any] struct {
 	*VarMocker23[T1, T2, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker23[T1, T2, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker23[T1, T2, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].([]T2))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker23[T1, T2, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].([]T2))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker23[T1, T2, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].([]T2)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].([]T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker23[T1, T2, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// VarMock23 creates a new VarMocker23 instance.
-func VarMock23[T1, T2 any, R1, R2, R3 any](f func(T1, ...T2) (R1, R2, R3), r *Manager) *VarMocker23[T1, T2, R1, R2, R3] {
+// VarFunc23 creates a new VarMocker23 and registers it with the Manager.
+func VarFunc23[T1, T2 any, R1, R2, R3 any](f func(T1, ...T2) (R1, R2, R3), r *Manager) *VarMocker23[T1, T2, R1, R2, R3] {
 	PatchOnce(f)
 	m := &VarMocker23[T1, T2, R1, R2, R3]{}
 	i := &VarInvoker23[T1, T2, R1, R2, R3]{VarMocker23: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod23 creates a new VarMocker23 for mocking a method on a receiver.
+func VarMethod23[T1, T2 any, R1, R2, R3 any](receiver any, f func(T1, ...T2) (R1, R2, R3), r *Manager) *VarMocker23[T1, T2, R1, R2, R3] {
+	m := &VarMocker23[T1, T2, R1, R2, R3]{}
+	i := &VarInvoker23[T1, T2, R1, R2, R3]{VarMocker23: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker24 ***********************************/
 
+// Mocker24 provides a configurable mock for the target function.
 type Mocker24[T1, T2 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Handle(fn func(T1, T2) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker24[T1, T2, R1, R2, R3, R4]) When(fn func(T1, T2) bool) *Mocker24[T1, T2, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2) bool { return true }
@@ -1456,78 +2135,74 @@ func (m *Mocker24[T1, T2, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker24[T1, T2, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker24[T1, T2, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// Invoker24 is an Invoker implementation for Mocker24.
+// Invoker24 implements Invoker for Mocker24.
 type Invoker24[T1, T2 any, R1, R2, R3, R4 any] struct {
 	*Mocker24[T1, T2, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker24[T1, T2, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker24[T1, T2, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// Mock24 creates a new Mocker24 instance.
-func Mock24[T1, T2 any, R1, R2, R3, R4 any](f func(T1, T2) (R1, R2, R3, R4), r *Manager) *Mocker24[T1, T2, R1, R2, R3, R4] {
+// Func24 creates a new Mocker24 and registers it with the Manager.
+func Func24[T1, T2 any, R1, R2, R3, R4 any](f func(T1, T2) (R1, R2, R3, R4), r *Manager) *Mocker24[T1, T2, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &Mocker24[T1, T2, R1, R2, R3, R4]{}
 	i := &Invoker24[T1, T2, R1, R2, R3, R4]{Mocker24: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method24 creates a new Mocker24 for mocking a method on a receiver.
+func Method24[T1, T2 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2) (R1, R2, R3, R4), r *Manager) *Mocker24[T1, T2, R1, R2, R3, R4] {
+	m := &Mocker24[T1, T2, R1, R2, R3, R4]{}
+	i := &Invoker24[T1, T2, R1, R2, R3, R4]{Mocker24: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker24 ***********************************/
 
+// VarMocker24 provides a configurable mock for the target function.
 type VarMocker24[T1, T2 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, []T2) (R1, R2, R3, R4)
 	fnWhen   func(T1, []T2) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker24[T1, T2, R1, R2, R3, R4]) Handle(fn func(T1, []T2) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker24[T1, T2, R1, R2, R3, R4]) When(fn func(T1, []T2) bool) *VarMocker24[T1, T2, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker24[T1, T2, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, []T2) bool { return true }
@@ -1535,78 +2210,74 @@ func (m *VarMocker24[T1, T2, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4))
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker24[T1, T2, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker24[T1, T2, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// VarInvoker24 is an Invoker implementation for VarMocker24.
+// VarInvoker24 implements Invoker for VarMocker24.
 type VarInvoker24[T1, T2 any, R1, R2, R3, R4 any] struct {
 	*VarMocker24[T1, T2, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker24[T1, T2, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker24[T1, T2, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].([]T2))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker24[T1, T2, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].([]T2))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker24[T1, T2, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].([]T2)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].([]T2))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker24[T1, T2, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// VarMock24 creates a new VarMocker24 instance.
-func VarMock24[T1, T2 any, R1, R2, R3, R4 any](f func(T1, ...T2) (R1, R2, R3, R4), r *Manager) *VarMocker24[T1, T2, R1, R2, R3, R4] {
+// VarFunc24 creates a new VarMocker24 and registers it with the Manager.
+func VarFunc24[T1, T2 any, R1, R2, R3, R4 any](f func(T1, ...T2) (R1, R2, R3, R4), r *Manager) *VarMocker24[T1, T2, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &VarMocker24[T1, T2, R1, R2, R3, R4]{}
 	i := &VarInvoker24[T1, T2, R1, R2, R3, R4]{VarMocker24: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod24 creates a new VarMocker24 for mocking a method on a receiver.
+func VarMethod24[T1, T2 any, R1, R2, R3, R4 any](receiver any, f func(T1, ...T2) (R1, R2, R3, R4), r *Manager) *VarMocker24[T1, T2, R1, R2, R3, R4] {
+	m := &VarMocker24[T1, T2, R1, R2, R3, R4]{}
+	i := &VarInvoker24[T1, T2, R1, R2, R3, R4]{VarMocker24: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker30 ***********************************/
 
+// Mocker30 provides a configurable mock for the target function.
 type Mocker30[T1, T2, T3 any] struct {
 	fnHandle func(T1, T2, T3)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker30[T1, T2, T3]) Handle(fn func(T1, T2, T3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker30[T1, T2, T3]) When(fn func(T1, T2, T3) bool) *Mocker30[T1, T2, T3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker30[T1, T2, T3]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3) bool { return true }
@@ -1614,78 +2285,74 @@ func (m *Mocker30[T1, T2, T3]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker30[T1, T2, T3]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker30[T1, T2, T3]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// Invoker30 is an Invoker implementation for Mocker30.
+// Invoker30 implements Invoker for Mocker30.
 type Invoker30[T1, T2, T3 any] struct {
 	*Mocker30[T1, T2, T3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker30[T1, T2, T3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker30[T1, T2, T3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker30[T1, T2, T3]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker30[T1, T2, T3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker30[T1, T2, T3]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// Mock30 creates a new Mocker30 instance.
-func Mock30[T1, T2, T3 any](f func(T1, T2, T3), r *Manager) *Mocker30[T1, T2, T3] {
+// Func30 creates a new Mocker30 and registers it with the Manager.
+func Func30[T1, T2, T3 any](f func(T1, T2, T3), r *Manager) *Mocker30[T1, T2, T3] {
 	PatchOnce(f)
 	m := &Mocker30[T1, T2, T3]{}
 	i := &Invoker30[T1, T2, T3]{Mocker30: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method30 creates a new Mocker30 for mocking a method on a receiver.
+func Method30[T1, T2, T3 any](receiver any, f func(T1, T2, T3), r *Manager) *Mocker30[T1, T2, T3] {
+	m := &Mocker30[T1, T2, T3]{}
+	i := &Invoker30[T1, T2, T3]{Mocker30: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker30 ***********************************/
 
+// VarMocker30 provides a configurable mock for the target function.
 type VarMocker30[T1, T2, T3 any] struct {
 	fnHandle func(T1, T2, []T3)
 	fnWhen   func(T1, T2, []T3) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker30[T1, T2, T3]) Handle(fn func(T1, T2, []T3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker30[T1, T2, T3]) When(fn func(T1, T2, []T3) bool) *VarMocker30[T1, T2, T3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker30[T1, T2, T3]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, []T3) bool { return true }
@@ -1693,78 +2360,74 @@ func (m *VarMocker30[T1, T2, T3]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker30[T1, T2, T3]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker30[T1, T2, T3]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// VarInvoker30 is an Invoker implementation for VarMocker30.
+// VarInvoker30 implements Invoker for VarMocker30.
 type VarInvoker30[T1, T2, T3 any] struct {
 	*VarMocker30[T1, T2, T3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker30[T1, T2, T3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker30[T1, T2, T3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker30[T1, T2, T3]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker30[T1, T2, T3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker30[T1, T2, T3]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// VarMock30 creates a new VarMocker30 instance.
-func VarMock30[T1, T2, T3 any](f func(T1, T2, ...T3), r *Manager) *VarMocker30[T1, T2, T3] {
+// VarFunc30 creates a new VarMocker30 and registers it with the Manager.
+func VarFunc30[T1, T2, T3 any](f func(T1, T2, ...T3), r *Manager) *VarMocker30[T1, T2, T3] {
 	PatchOnce(f)
 	m := &VarMocker30[T1, T2, T3]{}
 	i := &VarInvoker30[T1, T2, T3]{VarMocker30: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod30 creates a new VarMocker30 for mocking a method on a receiver.
+func VarMethod30[T1, T2, T3 any](receiver any, f func(T1, T2, ...T3), r *Manager) *VarMocker30[T1, T2, T3] {
+	m := &VarMocker30[T1, T2, T3]{}
+	i := &VarInvoker30[T1, T2, T3]{VarMocker30: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker31 ***********************************/
 
+// Mocker31 provides a configurable mock for the target function.
 type Mocker31[T1, T2, T3 any, R1 any] struct {
 	fnHandle func(T1, T2, T3) R1
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker31[T1, T2, T3, R1]) Handle(fn func(T1, T2, T3) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker31[T1, T2, T3, R1]) When(fn func(T1, T2, T3) bool) *Mocker31[T1, T2, T3, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker31[T1, T2, T3, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3) bool { return true }
@@ -1772,78 +2435,74 @@ func (m *Mocker31[T1, T2, T3, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker31[T1, T2, T3, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker31[T1, T2, T3, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// Invoker31 is an Invoker implementation for Mocker31.
+// Invoker31 implements Invoker for Mocker31.
 type Invoker31[T1, T2, T3 any, R1 any] struct {
 	*Mocker31[T1, T2, T3, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker31[T1, T2, T3, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker31[T1, T2, T3, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker31[T1, T2, T3, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker31[T1, T2, T3, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker31[T1, T2, T3, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// Mock31 creates a new Mocker31 instance.
-func Mock31[T1, T2, T3 any, R1 any](f func(T1, T2, T3) R1, r *Manager) *Mocker31[T1, T2, T3, R1] {
+// Func31 creates a new Mocker31 and registers it with the Manager.
+func Func31[T1, T2, T3 any, R1 any](f func(T1, T2, T3) R1, r *Manager) *Mocker31[T1, T2, T3, R1] {
 	PatchOnce(f)
 	m := &Mocker31[T1, T2, T3, R1]{}
 	i := &Invoker31[T1, T2, T3, R1]{Mocker31: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method31 creates a new Mocker31 for mocking a method on a receiver.
+func Method31[T1, T2, T3 any, R1 any](receiver any, f func(T1, T2, T3) R1, r *Manager) *Mocker31[T1, T2, T3, R1] {
+	m := &Mocker31[T1, T2, T3, R1]{}
+	i := &Invoker31[T1, T2, T3, R1]{Mocker31: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker31 ***********************************/
 
+// VarMocker31 provides a configurable mock for the target function.
 type VarMocker31[T1, T2, T3 any, R1 any] struct {
 	fnHandle func(T1, T2, []T3) R1
 	fnWhen   func(T1, T2, []T3) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker31[T1, T2, T3, R1]) Handle(fn func(T1, T2, []T3) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker31[T1, T2, T3, R1]) When(fn func(T1, T2, []T3) bool) *VarMocker31[T1, T2, T3, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker31[T1, T2, T3, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, []T3) bool { return true }
@@ -1851,78 +2510,74 @@ func (m *VarMocker31[T1, T2, T3, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker31[T1, T2, T3, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker31[T1, T2, T3, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// VarInvoker31 is an Invoker implementation for VarMocker31.
+// VarInvoker31 implements Invoker for VarMocker31.
 type VarInvoker31[T1, T2, T3 any, R1 any] struct {
 	*VarMocker31[T1, T2, T3, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker31[T1, T2, T3, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker31[T1, T2, T3, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker31[T1, T2, T3, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker31[T1, T2, T3, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker31[T1, T2, T3, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// VarMock31 creates a new VarMocker31 instance.
-func VarMock31[T1, T2, T3 any, R1 any](f func(T1, T2, ...T3) R1, r *Manager) *VarMocker31[T1, T2, T3, R1] {
+// VarFunc31 creates a new VarMocker31 and registers it with the Manager.
+func VarFunc31[T1, T2, T3 any, R1 any](f func(T1, T2, ...T3) R1, r *Manager) *VarMocker31[T1, T2, T3, R1] {
 	PatchOnce(f)
 	m := &VarMocker31[T1, T2, T3, R1]{}
 	i := &VarInvoker31[T1, T2, T3, R1]{VarMocker31: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod31 creates a new VarMocker31 for mocking a method on a receiver.
+func VarMethod31[T1, T2, T3 any, R1 any](receiver any, f func(T1, T2, ...T3) R1, r *Manager) *VarMocker31[T1, T2, T3, R1] {
+	m := &VarMocker31[T1, T2, T3, R1]{}
+	i := &VarInvoker31[T1, T2, T3, R1]{VarMocker31: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker32 ***********************************/
 
+// Mocker32 provides a configurable mock for the target function.
 type Mocker32[T1, T2, T3 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, T3) (R1, R2)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker32[T1, T2, T3, R1, R2]) Handle(fn func(T1, T2, T3) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker32[T1, T2, T3, R1, R2]) When(fn func(T1, T2, T3) bool) *Mocker32[T1, T2, T3, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker32[T1, T2, T3, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3) bool { return true }
@@ -1930,78 +2585,74 @@ func (m *Mocker32[T1, T2, T3, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker32[T1, T2, T3, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker32[T1, T2, T3, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// Invoker32 is an Invoker implementation for Mocker32.
+// Invoker32 implements Invoker for Mocker32.
 type Invoker32[T1, T2, T3 any, R1, R2 any] struct {
 	*Mocker32[T1, T2, T3, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker32[T1, T2, T3, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker32[T1, T2, T3, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker32[T1, T2, T3, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker32[T1, T2, T3, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker32[T1, T2, T3, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// Mock32 creates a new Mocker32 instance.
-func Mock32[T1, T2, T3 any, R1, R2 any](f func(T1, T2, T3) (R1, R2), r *Manager) *Mocker32[T1, T2, T3, R1, R2] {
+// Func32 creates a new Mocker32 and registers it with the Manager.
+func Func32[T1, T2, T3 any, R1, R2 any](f func(T1, T2, T3) (R1, R2), r *Manager) *Mocker32[T1, T2, T3, R1, R2] {
 	PatchOnce(f)
 	m := &Mocker32[T1, T2, T3, R1, R2]{}
 	i := &Invoker32[T1, T2, T3, R1, R2]{Mocker32: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method32 creates a new Mocker32 for mocking a method on a receiver.
+func Method32[T1, T2, T3 any, R1, R2 any](receiver any, f func(T1, T2, T3) (R1, R2), r *Manager) *Mocker32[T1, T2, T3, R1, R2] {
+	m := &Mocker32[T1, T2, T3, R1, R2]{}
+	i := &Invoker32[T1, T2, T3, R1, R2]{Mocker32: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker32 ***********************************/
 
+// VarMocker32 provides a configurable mock for the target function.
 type VarMocker32[T1, T2, T3 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, []T3) (R1, R2)
 	fnWhen   func(T1, T2, []T3) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker32[T1, T2, T3, R1, R2]) Handle(fn func(T1, T2, []T3) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker32[T1, T2, T3, R1, R2]) When(fn func(T1, T2, []T3) bool) *VarMocker32[T1, T2, T3, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker32[T1, T2, T3, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, []T3) bool { return true }
@@ -2009,78 +2660,74 @@ func (m *VarMocker32[T1, T2, T3, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker32[T1, T2, T3, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker32[T1, T2, T3, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// VarInvoker32 is an Invoker implementation for VarMocker32.
+// VarInvoker32 implements Invoker for VarMocker32.
 type VarInvoker32[T1, T2, T3 any, R1, R2 any] struct {
 	*VarMocker32[T1, T2, T3, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker32[T1, T2, T3, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker32[T1, T2, T3, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker32[T1, T2, T3, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker32[T1, T2, T3, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker32[T1, T2, T3, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// VarMock32 creates a new VarMocker32 instance.
-func VarMock32[T1, T2, T3 any, R1, R2 any](f func(T1, T2, ...T3) (R1, R2), r *Manager) *VarMocker32[T1, T2, T3, R1, R2] {
+// VarFunc32 creates a new VarMocker32 and registers it with the Manager.
+func VarFunc32[T1, T2, T3 any, R1, R2 any](f func(T1, T2, ...T3) (R1, R2), r *Manager) *VarMocker32[T1, T2, T3, R1, R2] {
 	PatchOnce(f)
 	m := &VarMocker32[T1, T2, T3, R1, R2]{}
 	i := &VarInvoker32[T1, T2, T3, R1, R2]{VarMocker32: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod32 creates a new VarMocker32 for mocking a method on a receiver.
+func VarMethod32[T1, T2, T3 any, R1, R2 any](receiver any, f func(T1, T2, ...T3) (R1, R2), r *Manager) *VarMocker32[T1, T2, T3, R1, R2] {
+	m := &VarMocker32[T1, T2, T3, R1, R2]{}
+	i := &VarInvoker32[T1, T2, T3, R1, R2]{VarMocker32: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker33 ***********************************/
 
+// Mocker33 provides a configurable mock for the target function.
 type Mocker33[T1, T2, T3 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, T3) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Handle(fn func(T1, T2, T3) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) When(fn func(T1, T2, T3) bool) *Mocker33[T1, T2, T3, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3) bool { return true }
@@ -2088,78 +2735,74 @@ func (m *Mocker33[T1, T2, T3, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker33[T1, T2, T3, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// Invoker33 is an Invoker implementation for Mocker33.
+// Invoker33 implements Invoker for Mocker33.
 type Invoker33[T1, T2, T3 any, R1, R2, R3 any] struct {
 	*Mocker33[T1, T2, T3, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker33[T1, T2, T3, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker33[T1, T2, T3, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// Mock33 creates a new Mocker33 instance.
-func Mock33[T1, T2, T3 any, R1, R2, R3 any](f func(T1, T2, T3) (R1, R2, R3), r *Manager) *Mocker33[T1, T2, T3, R1, R2, R3] {
+// Func33 creates a new Mocker33 and registers it with the Manager.
+func Func33[T1, T2, T3 any, R1, R2, R3 any](f func(T1, T2, T3) (R1, R2, R3), r *Manager) *Mocker33[T1, T2, T3, R1, R2, R3] {
 	PatchOnce(f)
 	m := &Mocker33[T1, T2, T3, R1, R2, R3]{}
 	i := &Invoker33[T1, T2, T3, R1, R2, R3]{Mocker33: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method33 creates a new Mocker33 for mocking a method on a receiver.
+func Method33[T1, T2, T3 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3) (R1, R2, R3), r *Manager) *Mocker33[T1, T2, T3, R1, R2, R3] {
+	m := &Mocker33[T1, T2, T3, R1, R2, R3]{}
+	i := &Invoker33[T1, T2, T3, R1, R2, R3]{Mocker33: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker33 ***********************************/
 
+// VarMocker33 provides a configurable mock for the target function.
 type VarMocker33[T1, T2, T3 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, []T3) (R1, R2, R3)
 	fnWhen   func(T1, T2, []T3) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker33[T1, T2, T3, R1, R2, R3]) Handle(fn func(T1, T2, []T3) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker33[T1, T2, T3, R1, R2, R3]) When(fn func(T1, T2, []T3) bool) *VarMocker33[T1, T2, T3, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker33[T1, T2, T3, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, []T3) bool { return true }
@@ -2167,78 +2810,74 @@ func (m *VarMocker33[T1, T2, T3, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker33[T1, T2, T3, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker33[T1, T2, T3, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// VarInvoker33 is an Invoker implementation for VarMocker33.
+// VarInvoker33 implements Invoker for VarMocker33.
 type VarInvoker33[T1, T2, T3 any, R1, R2, R3 any] struct {
 	*VarMocker33[T1, T2, T3, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker33[T1, T2, T3, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker33[T1, T2, T3, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker33[T1, T2, T3, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker33[T1, T2, T3, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker33[T1, T2, T3, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// VarMock33 creates a new VarMocker33 instance.
-func VarMock33[T1, T2, T3 any, R1, R2, R3 any](f func(T1, T2, ...T3) (R1, R2, R3), r *Manager) *VarMocker33[T1, T2, T3, R1, R2, R3] {
+// VarFunc33 creates a new VarMocker33 and registers it with the Manager.
+func VarFunc33[T1, T2, T3 any, R1, R2, R3 any](f func(T1, T2, ...T3) (R1, R2, R3), r *Manager) *VarMocker33[T1, T2, T3, R1, R2, R3] {
 	PatchOnce(f)
 	m := &VarMocker33[T1, T2, T3, R1, R2, R3]{}
 	i := &VarInvoker33[T1, T2, T3, R1, R2, R3]{VarMocker33: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod33 creates a new VarMocker33 for mocking a method on a receiver.
+func VarMethod33[T1, T2, T3 any, R1, R2, R3 any](receiver any, f func(T1, T2, ...T3) (R1, R2, R3), r *Manager) *VarMocker33[T1, T2, T3, R1, R2, R3] {
+	m := &VarMocker33[T1, T2, T3, R1, R2, R3]{}
+	i := &VarInvoker33[T1, T2, T3, R1, R2, R3]{VarMocker33: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker34 ***********************************/
 
+// Mocker34 provides a configurable mock for the target function.
 type Mocker34[T1, T2, T3 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, T3) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) When(fn func(T1, T2, T3) bool) *Mocker34[T1, T2, T3, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3) bool { return true }
@@ -2246,78 +2885,74 @@ func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker34[T1, T2, T3, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// Invoker34 is an Invoker implementation for Mocker34.
+// Invoker34 implements Invoker for Mocker34.
 type Invoker34[T1, T2, T3 any, R1, R2, R3, R4 any] struct {
 	*Mocker34[T1, T2, T3, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker34[T1, T2, T3, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// Mock34 creates a new Mocker34 instance.
-func Mock34[T1, T2, T3 any, R1, R2, R3, R4 any](f func(T1, T2, T3) (R1, R2, R3, R4), r *Manager) *Mocker34[T1, T2, T3, R1, R2, R3, R4] {
+// Func34 creates a new Mocker34 and registers it with the Manager.
+func Func34[T1, T2, T3 any, R1, R2, R3, R4 any](f func(T1, T2, T3) (R1, R2, R3, R4), r *Manager) *Mocker34[T1, T2, T3, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &Mocker34[T1, T2, T3, R1, R2, R3, R4]{}
 	i := &Invoker34[T1, T2, T3, R1, R2, R3, R4]{Mocker34: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method34 creates a new Mocker34 for mocking a method on a receiver.
+func Method34[T1, T2, T3 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3) (R1, R2, R3, R4), r *Manager) *Mocker34[T1, T2, T3, R1, R2, R3, R4] {
+	m := &Mocker34[T1, T2, T3, R1, R2, R3, R4]{}
+	i := &Invoker34[T1, T2, T3, R1, R2, R3, R4]{Mocker34: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker34 ***********************************/
 
+// VarMocker34 provides a configurable mock for the target function.
 type VarMocker34[T1, T2, T3 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, []T3) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, []T3) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker34[T1, T2, T3, R1, R2, R3, R4]) Handle(fn func(T1, T2, []T3) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker34[T1, T2, T3, R1, R2, R3, R4]) When(fn func(T1, T2, []T3) bool) *VarMocker34[T1, T2, T3, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker34[T1, T2, T3, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, []T3) bool { return true }
@@ -2325,78 +2960,74 @@ func (m *VarMocker34[T1, T2, T3, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, 
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker34[T1, T2, T3, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker34[T1, T2, T3, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// VarInvoker34 is an Invoker implementation for VarMocker34.
+// VarInvoker34 implements Invoker for VarMocker34.
 type VarInvoker34[T1, T2, T3 any, R1, R2, R3, R4 any] struct {
 	*VarMocker34[T1, T2, T3, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker34[T1, T2, T3, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker34[T1, T2, T3, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker34[T1, T2, T3, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].([]T3))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker34[T1, T2, T3, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].([]T3))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker34[T1, T2, T3, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// VarMock34 creates a new VarMocker34 instance.
-func VarMock34[T1, T2, T3 any, R1, R2, R3, R4 any](f func(T1, T2, ...T3) (R1, R2, R3, R4), r *Manager) *VarMocker34[T1, T2, T3, R1, R2, R3, R4] {
+// VarFunc34 creates a new VarMocker34 and registers it with the Manager.
+func VarFunc34[T1, T2, T3 any, R1, R2, R3, R4 any](f func(T1, T2, ...T3) (R1, R2, R3, R4), r *Manager) *VarMocker34[T1, T2, T3, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &VarMocker34[T1, T2, T3, R1, R2, R3, R4]{}
 	i := &VarInvoker34[T1, T2, T3, R1, R2, R3, R4]{VarMocker34: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod34 creates a new VarMocker34 for mocking a method on a receiver.
+func VarMethod34[T1, T2, T3 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, ...T3) (R1, R2, R3, R4), r *Manager) *VarMocker34[T1, T2, T3, R1, R2, R3, R4] {
+	m := &VarMocker34[T1, T2, T3, R1, R2, R3, R4]{}
+	i := &VarInvoker34[T1, T2, T3, R1, R2, R3, R4]{VarMocker34: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker40 ***********************************/
 
+// Mocker40 provides a configurable mock for the target function.
 type Mocker40[T1, T2, T3, T4 any] struct {
 	fnHandle func(T1, T2, T3, T4)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker40[T1, T2, T3, T4]) Handle(fn func(T1, T2, T3, T4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker40[T1, T2, T3, T4]) When(fn func(T1, T2, T3, T4) bool) *Mocker40[T1, T2, T3, T4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker40[T1, T2, T3, T4]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4) bool { return true }
@@ -2404,78 +3035,74 @@ func (m *Mocker40[T1, T2, T3, T4]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker40[T1, T2, T3, T4]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker40[T1, T2, T3, T4]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// Invoker40 is an Invoker implementation for Mocker40.
+// Invoker40 implements Invoker for Mocker40.
 type Invoker40[T1, T2, T3, T4 any] struct {
 	*Mocker40[T1, T2, T3, T4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker40[T1, T2, T3, T4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker40[T1, T2, T3, T4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker40[T1, T2, T3, T4]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker40[T1, T2, T3, T4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker40[T1, T2, T3, T4]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// Mock40 creates a new Mocker40 instance.
-func Mock40[T1, T2, T3, T4 any](f func(T1, T2, T3, T4), r *Manager) *Mocker40[T1, T2, T3, T4] {
+// Func40 creates a new Mocker40 and registers it with the Manager.
+func Func40[T1, T2, T3, T4 any](f func(T1, T2, T3, T4), r *Manager) *Mocker40[T1, T2, T3, T4] {
 	PatchOnce(f)
 	m := &Mocker40[T1, T2, T3, T4]{}
 	i := &Invoker40[T1, T2, T3, T4]{Mocker40: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method40 creates a new Mocker40 for mocking a method on a receiver.
+func Method40[T1, T2, T3, T4 any](receiver any, f func(T1, T2, T3, T4), r *Manager) *Mocker40[T1, T2, T3, T4] {
+	m := &Mocker40[T1, T2, T3, T4]{}
+	i := &Invoker40[T1, T2, T3, T4]{Mocker40: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker40 ***********************************/
 
+// VarMocker40 provides a configurable mock for the target function.
 type VarMocker40[T1, T2, T3, T4 any] struct {
 	fnHandle func(T1, T2, T3, []T4)
 	fnWhen   func(T1, T2, T3, []T4) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker40[T1, T2, T3, T4]) Handle(fn func(T1, T2, T3, []T4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker40[T1, T2, T3, T4]) When(fn func(T1, T2, T3, []T4) bool) *VarMocker40[T1, T2, T3, T4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker40[T1, T2, T3, T4]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, []T4) bool { return true }
@@ -2483,78 +3110,74 @@ func (m *VarMocker40[T1, T2, T3, T4]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker40[T1, T2, T3, T4]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker40[T1, T2, T3, T4]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// VarInvoker40 is an Invoker implementation for VarMocker40.
+// VarInvoker40 implements Invoker for VarMocker40.
 type VarInvoker40[T1, T2, T3, T4 any] struct {
 	*VarMocker40[T1, T2, T3, T4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker40[T1, T2, T3, T4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker40[T1, T2, T3, T4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker40[T1, T2, T3, T4]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker40[T1, T2, T3, T4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker40[T1, T2, T3, T4]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// VarMock40 creates a new VarMocker40 instance.
-func VarMock40[T1, T2, T3, T4 any](f func(T1, T2, T3, ...T4), r *Manager) *VarMocker40[T1, T2, T3, T4] {
+// VarFunc40 creates a new VarMocker40 and registers it with the Manager.
+func VarFunc40[T1, T2, T3, T4 any](f func(T1, T2, T3, ...T4), r *Manager) *VarMocker40[T1, T2, T3, T4] {
 	PatchOnce(f)
 	m := &VarMocker40[T1, T2, T3, T4]{}
 	i := &VarInvoker40[T1, T2, T3, T4]{VarMocker40: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod40 creates a new VarMocker40 for mocking a method on a receiver.
+func VarMethod40[T1, T2, T3, T4 any](receiver any, f func(T1, T2, T3, ...T4), r *Manager) *VarMocker40[T1, T2, T3, T4] {
+	m := &VarMocker40[T1, T2, T3, T4]{}
+	i := &VarInvoker40[T1, T2, T3, T4]{VarMocker40: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker41 ***********************************/
 
+// Mocker41 provides a configurable mock for the target function.
 type Mocker41[T1, T2, T3, T4 any, R1 any] struct {
 	fnHandle func(T1, T2, T3, T4) R1
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker41[T1, T2, T3, T4, R1]) Handle(fn func(T1, T2, T3, T4) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker41[T1, T2, T3, T4, R1]) When(fn func(T1, T2, T3, T4) bool) *Mocker41[T1, T2, T3, T4, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker41[T1, T2, T3, T4, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4) bool { return true }
@@ -2562,78 +3185,74 @@ func (m *Mocker41[T1, T2, T3, T4, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker41[T1, T2, T3, T4, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker41[T1, T2, T3, T4, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// Invoker41 is an Invoker implementation for Mocker41.
+// Invoker41 implements Invoker for Mocker41.
 type Invoker41[T1, T2, T3, T4 any, R1 any] struct {
 	*Mocker41[T1, T2, T3, T4, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker41[T1, T2, T3, T4, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker41[T1, T2, T3, T4, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker41[T1, T2, T3, T4, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker41[T1, T2, T3, T4, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker41[T1, T2, T3, T4, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// Mock41 creates a new Mocker41 instance.
-func Mock41[T1, T2, T3, T4 any, R1 any](f func(T1, T2, T3, T4) R1, r *Manager) *Mocker41[T1, T2, T3, T4, R1] {
+// Func41 creates a new Mocker41 and registers it with the Manager.
+func Func41[T1, T2, T3, T4 any, R1 any](f func(T1, T2, T3, T4) R1, r *Manager) *Mocker41[T1, T2, T3, T4, R1] {
 	PatchOnce(f)
 	m := &Mocker41[T1, T2, T3, T4, R1]{}
 	i := &Invoker41[T1, T2, T3, T4, R1]{Mocker41: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method41 creates a new Mocker41 for mocking a method on a receiver.
+func Method41[T1, T2, T3, T4 any, R1 any](receiver any, f func(T1, T2, T3, T4) R1, r *Manager) *Mocker41[T1, T2, T3, T4, R1] {
+	m := &Mocker41[T1, T2, T3, T4, R1]{}
+	i := &Invoker41[T1, T2, T3, T4, R1]{Mocker41: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker41 ***********************************/
 
+// VarMocker41 provides a configurable mock for the target function.
 type VarMocker41[T1, T2, T3, T4 any, R1 any] struct {
 	fnHandle func(T1, T2, T3, []T4) R1
 	fnWhen   func(T1, T2, T3, []T4) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker41[T1, T2, T3, T4, R1]) Handle(fn func(T1, T2, T3, []T4) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker41[T1, T2, T3, T4, R1]) When(fn func(T1, T2, T3, []T4) bool) *VarMocker41[T1, T2, T3, T4, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker41[T1, T2, T3, T4, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, []T4) bool { return true }
@@ -2641,78 +3260,74 @@ func (m *VarMocker41[T1, T2, T3, T4, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker41[T1, T2, T3, T4, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker41[T1, T2, T3, T4, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// VarInvoker41 is an Invoker implementation for VarMocker41.
+// VarInvoker41 implements Invoker for VarMocker41.
 type VarInvoker41[T1, T2, T3, T4 any, R1 any] struct {
 	*VarMocker41[T1, T2, T3, T4, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker41[T1, T2, T3, T4, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker41[T1, T2, T3, T4, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker41[T1, T2, T3, T4, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker41[T1, T2, T3, T4, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker41[T1, T2, T3, T4, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// VarMock41 creates a new VarMocker41 instance.
-func VarMock41[T1, T2, T3, T4 any, R1 any](f func(T1, T2, T3, ...T4) R1, r *Manager) *VarMocker41[T1, T2, T3, T4, R1] {
+// VarFunc41 creates a new VarMocker41 and registers it with the Manager.
+func VarFunc41[T1, T2, T3, T4 any, R1 any](f func(T1, T2, T3, ...T4) R1, r *Manager) *VarMocker41[T1, T2, T3, T4, R1] {
 	PatchOnce(f)
 	m := &VarMocker41[T1, T2, T3, T4, R1]{}
 	i := &VarInvoker41[T1, T2, T3, T4, R1]{VarMocker41: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod41 creates a new VarMocker41 for mocking a method on a receiver.
+func VarMethod41[T1, T2, T3, T4 any, R1 any](receiver any, f func(T1, T2, T3, ...T4) R1, r *Manager) *VarMocker41[T1, T2, T3, T4, R1] {
+	m := &VarMocker41[T1, T2, T3, T4, R1]{}
+	i := &VarInvoker41[T1, T2, T3, T4, R1]{VarMocker41: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker42 ***********************************/
 
+// Mocker42 provides a configurable mock for the target function.
 type Mocker42[T1, T2, T3, T4 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, T3, T4) (R1, R2)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Handle(fn func(T1, T2, T3, T4) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker42[T1, T2, T3, T4, R1, R2]) When(fn func(T1, T2, T3, T4) bool) *Mocker42[T1, T2, T3, T4, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4) bool { return true }
@@ -2720,78 +3335,74 @@ func (m *Mocker42[T1, T2, T3, T4, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker42[T1, T2, T3, T4, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker42[T1, T2, T3, T4, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// Invoker42 is an Invoker implementation for Mocker42.
+// Invoker42 implements Invoker for Mocker42.
 type Invoker42[T1, T2, T3, T4 any, R1, R2 any] struct {
 	*Mocker42[T1, T2, T3, T4, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker42[T1, T2, T3, T4, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker42[T1, T2, T3, T4, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// Mock42 creates a new Mocker42 instance.
-func Mock42[T1, T2, T3, T4 any, R1, R2 any](f func(T1, T2, T3, T4) (R1, R2), r *Manager) *Mocker42[T1, T2, T3, T4, R1, R2] {
+// Func42 creates a new Mocker42 and registers it with the Manager.
+func Func42[T1, T2, T3, T4 any, R1, R2 any](f func(T1, T2, T3, T4) (R1, R2), r *Manager) *Mocker42[T1, T2, T3, T4, R1, R2] {
 	PatchOnce(f)
 	m := &Mocker42[T1, T2, T3, T4, R1, R2]{}
 	i := &Invoker42[T1, T2, T3, T4, R1, R2]{Mocker42: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method42 creates a new Mocker42 for mocking a method on a receiver.
+func Method42[T1, T2, T3, T4 any, R1, R2 any](receiver any, f func(T1, T2, T3, T4) (R1, R2), r *Manager) *Mocker42[T1, T2, T3, T4, R1, R2] {
+	m := &Mocker42[T1, T2, T3, T4, R1, R2]{}
+	i := &Invoker42[T1, T2, T3, T4, R1, R2]{Mocker42: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker42 ***********************************/
 
+// VarMocker42 provides a configurable mock for the target function.
 type VarMocker42[T1, T2, T3, T4 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, T3, []T4) (R1, R2)
 	fnWhen   func(T1, T2, T3, []T4) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker42[T1, T2, T3, T4, R1, R2]) Handle(fn func(T1, T2, T3, []T4) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker42[T1, T2, T3, T4, R1, R2]) When(fn func(T1, T2, T3, []T4) bool) *VarMocker42[T1, T2, T3, T4, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker42[T1, T2, T3, T4, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, []T4) bool { return true }
@@ -2799,78 +3410,74 @@ func (m *VarMocker42[T1, T2, T3, T4, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker42[T1, T2, T3, T4, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker42[T1, T2, T3, T4, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// VarInvoker42 is an Invoker implementation for VarMocker42.
+// VarInvoker42 implements Invoker for VarMocker42.
 type VarInvoker42[T1, T2, T3, T4 any, R1, R2 any] struct {
 	*VarMocker42[T1, T2, T3, T4, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker42[T1, T2, T3, T4, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker42[T1, T2, T3, T4, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker42[T1, T2, T3, T4, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker42[T1, T2, T3, T4, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker42[T1, T2, T3, T4, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// VarMock42 creates a new VarMocker42 instance.
-func VarMock42[T1, T2, T3, T4 any, R1, R2 any](f func(T1, T2, T3, ...T4) (R1, R2), r *Manager) *VarMocker42[T1, T2, T3, T4, R1, R2] {
+// VarFunc42 creates a new VarMocker42 and registers it with the Manager.
+func VarFunc42[T1, T2, T3, T4 any, R1, R2 any](f func(T1, T2, T3, ...T4) (R1, R2), r *Manager) *VarMocker42[T1, T2, T3, T4, R1, R2] {
 	PatchOnce(f)
 	m := &VarMocker42[T1, T2, T3, T4, R1, R2]{}
 	i := &VarInvoker42[T1, T2, T3, T4, R1, R2]{VarMocker42: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod42 creates a new VarMocker42 for mocking a method on a receiver.
+func VarMethod42[T1, T2, T3, T4 any, R1, R2 any](receiver any, f func(T1, T2, T3, ...T4) (R1, R2), r *Manager) *VarMocker42[T1, T2, T3, T4, R1, R2] {
+	m := &VarMocker42[T1, T2, T3, T4, R1, R2]{}
+	i := &VarInvoker42[T1, T2, T3, T4, R1, R2]{VarMocker42: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker43 ***********************************/
 
+// Mocker43 provides a configurable mock for the target function.
 type Mocker43[T1, T2, T3, T4 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, T3, T4) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) When(fn func(T1, T2, T3, T4) bool) *Mocker43[T1, T2, T3, T4, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4) bool { return true }
@@ -2878,78 +3485,74 @@ func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker43[T1, T2, T3, T4, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// Invoker43 is an Invoker implementation for Mocker43.
+// Invoker43 implements Invoker for Mocker43.
 type Invoker43[T1, T2, T3, T4 any, R1, R2, R3 any] struct {
 	*Mocker43[T1, T2, T3, T4, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker43[T1, T2, T3, T4, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// Mock43 creates a new Mocker43 instance.
-func Mock43[T1, T2, T3, T4 any, R1, R2, R3 any](f func(T1, T2, T3, T4) (R1, R2, R3), r *Manager) *Mocker43[T1, T2, T3, T4, R1, R2, R3] {
+// Func43 creates a new Mocker43 and registers it with the Manager.
+func Func43[T1, T2, T3, T4 any, R1, R2, R3 any](f func(T1, T2, T3, T4) (R1, R2, R3), r *Manager) *Mocker43[T1, T2, T3, T4, R1, R2, R3] {
 	PatchOnce(f)
 	m := &Mocker43[T1, T2, T3, T4, R1, R2, R3]{}
 	i := &Invoker43[T1, T2, T3, T4, R1, R2, R3]{Mocker43: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method43 creates a new Mocker43 for mocking a method on a receiver.
+func Method43[T1, T2, T3, T4 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, T4) (R1, R2, R3), r *Manager) *Mocker43[T1, T2, T3, T4, R1, R2, R3] {
+	m := &Mocker43[T1, T2, T3, T4, R1, R2, R3]{}
+	i := &Invoker43[T1, T2, T3, T4, R1, R2, R3]{Mocker43: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker43 ***********************************/
 
+// VarMocker43 provides a configurable mock for the target function.
 type VarMocker43[T1, T2, T3, T4 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, T3, []T4) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, []T4) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker43[T1, T2, T3, T4, R1, R2, R3]) Handle(fn func(T1, T2, T3, []T4) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker43[T1, T2, T3, T4, R1, R2, R3]) When(fn func(T1, T2, T3, []T4) bool) *VarMocker43[T1, T2, T3, T4, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker43[T1, T2, T3, T4, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, []T4) bool { return true }
@@ -2957,78 +3560,74 @@ func (m *VarMocker43[T1, T2, T3, T4, R1, R2, R3]) Return(fn func() (R1, R2, R3))
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker43[T1, T2, T3, T4, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker43[T1, T2, T3, T4, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// VarInvoker43 is an Invoker implementation for VarMocker43.
+// VarInvoker43 implements Invoker for VarMocker43.
 type VarInvoker43[T1, T2, T3, T4 any, R1, R2, R3 any] struct {
 	*VarMocker43[T1, T2, T3, T4, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker43[T1, T2, T3, T4, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker43[T1, T2, T3, T4, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker43[T1, T2, T3, T4, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker43[T1, T2, T3, T4, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker43[T1, T2, T3, T4, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// VarMock43 creates a new VarMocker43 instance.
-func VarMock43[T1, T2, T3, T4 any, R1, R2, R3 any](f func(T1, T2, T3, ...T4) (R1, R2, R3), r *Manager) *VarMocker43[T1, T2, T3, T4, R1, R2, R3] {
+// VarFunc43 creates a new VarMocker43 and registers it with the Manager.
+func VarFunc43[T1, T2, T3, T4 any, R1, R2, R3 any](f func(T1, T2, T3, ...T4) (R1, R2, R3), r *Manager) *VarMocker43[T1, T2, T3, T4, R1, R2, R3] {
 	PatchOnce(f)
 	m := &VarMocker43[T1, T2, T3, T4, R1, R2, R3]{}
 	i := &VarInvoker43[T1, T2, T3, T4, R1, R2, R3]{VarMocker43: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod43 creates a new VarMocker43 for mocking a method on a receiver.
+func VarMethod43[T1, T2, T3, T4 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, ...T4) (R1, R2, R3), r *Manager) *VarMocker43[T1, T2, T3, T4, R1, R2, R3] {
+	m := &VarMocker43[T1, T2, T3, T4, R1, R2, R3]{}
+	i := &VarInvoker43[T1, T2, T3, T4, R1, R2, R3]{VarMocker43: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker44 ***********************************/
 
+// Mocker44 provides a configurable mock for the target function.
 type Mocker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, T3, T4) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, T4) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) When(fn func(T1, T2, T3, T4) bool) *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4) bool { return true }
@@ -3036,78 +3635,74 @@ func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3,
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// Invoker44 is an Invoker implementation for Mocker44.
+// Invoker44 implements Invoker for Mocker44.
 type Invoker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any] struct {
 	*Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// Mock44 creates a new Mocker44 instance.
-func Mock44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4) (R1, R2, R3, R4), r *Manager) *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
+// Func44 creates a new Mocker44 and registers it with the Manager.
+func Func44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4) (R1, R2, R3, R4), r *Manager) *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]{}
 	i := &Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]{Mocker44: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method44 creates a new Mocker44 for mocking a method on a receiver.
+func Method44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, T4) (R1, R2, R3, R4), r *Manager) *Mocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
+	m := &Mocker44[T1, T2, T3, T4, R1, R2, R3, R4]{}
+	i := &Invoker44[T1, T2, T3, T4, R1, R2, R3, R4]{Mocker44: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker44 ***********************************/
 
+// VarMocker44 provides a configurable mock for the target function.
 type VarMocker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, T3, []T4) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, []T4) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, []T4) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]) When(fn func(T1, T2, T3, []T4) bool) *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, []T4) bool { return true }
@@ -3115,78 +3710,74 @@ func (m *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return(fn func() (R1, R2, 
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// VarInvoker44 is an Invoker implementation for VarMocker44.
+// VarInvoker44 implements Invoker for VarMocker44.
 type VarInvoker44[T1, T2, T3, T4 any, R1, R2, R3, R4 any] struct {
 	*VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker44[T1, T2, T3, T4, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].([]T4))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker44[T1, T2, T3, T4, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// VarMock44 creates a new VarMocker44 instance.
-func VarMock44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](f func(T1, T2, T3, ...T4) (R1, R2, R3, R4), r *Manager) *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
+// VarFunc44 creates a new VarMocker44 and registers it with the Manager.
+func VarFunc44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](f func(T1, T2, T3, ...T4) (R1, R2, R3, R4), r *Manager) *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]{}
 	i := &VarInvoker44[T1, T2, T3, T4, R1, R2, R3, R4]{VarMocker44: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod44 creates a new VarMocker44 for mocking a method on a receiver.
+func VarMethod44[T1, T2, T3, T4 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, ...T4) (R1, R2, R3, R4), r *Manager) *VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4] {
+	m := &VarMocker44[T1, T2, T3, T4, R1, R2, R3, R4]{}
+	i := &VarInvoker44[T1, T2, T3, T4, R1, R2, R3, R4]{VarMocker44: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker50 ***********************************/
 
+// Mocker50 provides a configurable mock for the target function.
 type Mocker50[T1, T2, T3, T4, T5 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker50[T1, T2, T3, T4, T5]) Handle(fn func(T1, T2, T3, T4, T5)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker50[T1, T2, T3, T4, T5]) When(fn func(T1, T2, T3, T4, T5) bool) *Mocker50[T1, T2, T3, T4, T5] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker50[T1, T2, T3, T4, T5]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5) bool { return true }
@@ -3194,78 +3785,74 @@ func (m *Mocker50[T1, T2, T3, T4, T5]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker50[T1, T2, T3, T4, T5]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker50[T1, T2, T3, T4, T5]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// Invoker50 is an Invoker implementation for Mocker50.
+// Invoker50 implements Invoker for Mocker50.
 type Invoker50[T1, T2, T3, T4, T5 any] struct {
 	*Mocker50[T1, T2, T3, T4, T5]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker50[T1, T2, T3, T4, T5]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker50[T1, T2, T3, T4, T5]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker50[T1, T2, T3, T4, T5]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker50[T1, T2, T3, T4, T5]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker50[T1, T2, T3, T4, T5]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// Mock50 creates a new Mocker50 instance.
-func Mock50[T1, T2, T3, T4, T5 any](f func(T1, T2, T3, T4, T5), r *Manager) *Mocker50[T1, T2, T3, T4, T5] {
+// Func50 creates a new Mocker50 and registers it with the Manager.
+func Func50[T1, T2, T3, T4, T5 any](f func(T1, T2, T3, T4, T5), r *Manager) *Mocker50[T1, T2, T3, T4, T5] {
 	PatchOnce(f)
 	m := &Mocker50[T1, T2, T3, T4, T5]{}
 	i := &Invoker50[T1, T2, T3, T4, T5]{Mocker50: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method50 creates a new Mocker50 for mocking a method on a receiver.
+func Method50[T1, T2, T3, T4, T5 any](receiver any, f func(T1, T2, T3, T4, T5), r *Manager) *Mocker50[T1, T2, T3, T4, T5] {
+	m := &Mocker50[T1, T2, T3, T4, T5]{}
+	i := &Invoker50[T1, T2, T3, T4, T5]{Mocker50: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker50 ***********************************/
 
+// VarMocker50 provides a configurable mock for the target function.
 type VarMocker50[T1, T2, T3, T4, T5 any] struct {
 	fnHandle func(T1, T2, T3, T4, []T5)
 	fnWhen   func(T1, T2, T3, T4, []T5) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker50[T1, T2, T3, T4, T5]) Handle(fn func(T1, T2, T3, T4, []T5)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker50[T1, T2, T3, T4, T5]) When(fn func(T1, T2, T3, T4, []T5) bool) *VarMocker50[T1, T2, T3, T4, T5] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker50[T1, T2, T3, T4, T5]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, []T5) bool { return true }
@@ -3273,78 +3860,74 @@ func (m *VarMocker50[T1, T2, T3, T4, T5]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker50[T1, T2, T3, T4, T5]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker50[T1, T2, T3, T4, T5]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// VarInvoker50 is an Invoker implementation for VarMocker50.
+// VarInvoker50 implements Invoker for VarMocker50.
 type VarInvoker50[T1, T2, T3, T4, T5 any] struct {
 	*VarMocker50[T1, T2, T3, T4, T5]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker50[T1, T2, T3, T4, T5]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker50[T1, T2, T3, T4, T5]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker50[T1, T2, T3, T4, T5]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker50[T1, T2, T3, T4, T5]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker50[T1, T2, T3, T4, T5]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// VarMock50 creates a new VarMocker50 instance.
-func VarMock50[T1, T2, T3, T4, T5 any](f func(T1, T2, T3, T4, ...T5), r *Manager) *VarMocker50[T1, T2, T3, T4, T5] {
+// VarFunc50 creates a new VarMocker50 and registers it with the Manager.
+func VarFunc50[T1, T2, T3, T4, T5 any](f func(T1, T2, T3, T4, ...T5), r *Manager) *VarMocker50[T1, T2, T3, T4, T5] {
 	PatchOnce(f)
 	m := &VarMocker50[T1, T2, T3, T4, T5]{}
 	i := &VarInvoker50[T1, T2, T3, T4, T5]{VarMocker50: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod50 creates a new VarMocker50 for mocking a method on a receiver.
+func VarMethod50[T1, T2, T3, T4, T5 any](receiver any, f func(T1, T2, T3, T4, ...T5), r *Manager) *VarMocker50[T1, T2, T3, T4, T5] {
+	m := &VarMocker50[T1, T2, T3, T4, T5]{}
+	i := &VarInvoker50[T1, T2, T3, T4, T5]{VarMocker50: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker51 ***********************************/
 
+// Mocker51 provides a configurable mock for the target function.
 type Mocker51[T1, T2, T3, T4, T5 any, R1 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5) R1
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Handle(fn func(T1, T2, T3, T4, T5) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) When(fn func(T1, T2, T3, T4, T5) bool) *Mocker51[T1, T2, T3, T4, T5, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5) bool { return true }
@@ -3352,78 +3935,74 @@ func (m *Mocker51[T1, T2, T3, T4, T5, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker51[T1, T2, T3, T4, T5, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// Invoker51 is an Invoker implementation for Mocker51.
+// Invoker51 implements Invoker for Mocker51.
 type Invoker51[T1, T2, T3, T4, T5 any, R1 any] struct {
 	*Mocker51[T1, T2, T3, T4, T5, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker51[T1, T2, T3, T4, T5, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker51[T1, T2, T3, T4, T5, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// Mock51 creates a new Mocker51 instance.
-func Mock51[T1, T2, T3, T4, T5 any, R1 any](f func(T1, T2, T3, T4, T5) R1, r *Manager) *Mocker51[T1, T2, T3, T4, T5, R1] {
+// Func51 creates a new Mocker51 and registers it with the Manager.
+func Func51[T1, T2, T3, T4, T5 any, R1 any](f func(T1, T2, T3, T4, T5) R1, r *Manager) *Mocker51[T1, T2, T3, T4, T5, R1] {
 	PatchOnce(f)
 	m := &Mocker51[T1, T2, T3, T4, T5, R1]{}
 	i := &Invoker51[T1, T2, T3, T4, T5, R1]{Mocker51: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method51 creates a new Mocker51 for mocking a method on a receiver.
+func Method51[T1, T2, T3, T4, T5 any, R1 any](receiver any, f func(T1, T2, T3, T4, T5) R1, r *Manager) *Mocker51[T1, T2, T3, T4, T5, R1] {
+	m := &Mocker51[T1, T2, T3, T4, T5, R1]{}
+	i := &Invoker51[T1, T2, T3, T4, T5, R1]{Mocker51: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker51 ***********************************/
 
+// VarMocker51 provides a configurable mock for the target function.
 type VarMocker51[T1, T2, T3, T4, T5 any, R1 any] struct {
 	fnHandle func(T1, T2, T3, T4, []T5) R1
 	fnWhen   func(T1, T2, T3, T4, []T5) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker51[T1, T2, T3, T4, T5, R1]) Handle(fn func(T1, T2, T3, T4, []T5) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker51[T1, T2, T3, T4, T5, R1]) When(fn func(T1, T2, T3, T4, []T5) bool) *VarMocker51[T1, T2, T3, T4, T5, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker51[T1, T2, T3, T4, T5, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, []T5) bool { return true }
@@ -3431,78 +4010,74 @@ func (m *VarMocker51[T1, T2, T3, T4, T5, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker51[T1, T2, T3, T4, T5, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker51[T1, T2, T3, T4, T5, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// VarInvoker51 is an Invoker implementation for VarMocker51.
+// VarInvoker51 implements Invoker for VarMocker51.
 type VarInvoker51[T1, T2, T3, T4, T5 any, R1 any] struct {
 	*VarMocker51[T1, T2, T3, T4, T5, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker51[T1, T2, T3, T4, T5, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker51[T1, T2, T3, T4, T5, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker51[T1, T2, T3, T4, T5, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker51[T1, T2, T3, T4, T5, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker51[T1, T2, T3, T4, T5, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// VarMock51 creates a new VarMocker51 instance.
-func VarMock51[T1, T2, T3, T4, T5 any, R1 any](f func(T1, T2, T3, T4, ...T5) R1, r *Manager) *VarMocker51[T1, T2, T3, T4, T5, R1] {
+// VarFunc51 creates a new VarMocker51 and registers it with the Manager.
+func VarFunc51[T1, T2, T3, T4, T5 any, R1 any](f func(T1, T2, T3, T4, ...T5) R1, r *Manager) *VarMocker51[T1, T2, T3, T4, T5, R1] {
 	PatchOnce(f)
 	m := &VarMocker51[T1, T2, T3, T4, T5, R1]{}
 	i := &VarInvoker51[T1, T2, T3, T4, T5, R1]{VarMocker51: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod51 creates a new VarMocker51 for mocking a method on a receiver.
+func VarMethod51[T1, T2, T3, T4, T5 any, R1 any](receiver any, f func(T1, T2, T3, T4, ...T5) R1, r *Manager) *VarMocker51[T1, T2, T3, T4, T5, R1] {
+	m := &VarMocker51[T1, T2, T3, T4, T5, R1]{}
+	i := &VarInvoker51[T1, T2, T3, T4, T5, R1]{VarMocker51: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker52 ***********************************/
 
+// Mocker52 provides a configurable mock for the target function.
 type Mocker52[T1, T2, T3, T4, T5 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5) (R1, R2)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) When(fn func(T1, T2, T3, T4, T5) bool) *Mocker52[T1, T2, T3, T4, T5, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5) bool { return true }
@@ -3510,78 +4085,74 @@ func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker52[T1, T2, T3, T4, T5, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// Invoker52 is an Invoker implementation for Mocker52.
+// Invoker52 implements Invoker for Mocker52.
 type Invoker52[T1, T2, T3, T4, T5 any, R1, R2 any] struct {
 	*Mocker52[T1, T2, T3, T4, T5, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker52[T1, T2, T3, T4, T5, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// Mock52 creates a new Mocker52 instance.
-func Mock52[T1, T2, T3, T4, T5 any, R1, R2 any](f func(T1, T2, T3, T4, T5) (R1, R2), r *Manager) *Mocker52[T1, T2, T3, T4, T5, R1, R2] {
+// Func52 creates a new Mocker52 and registers it with the Manager.
+func Func52[T1, T2, T3, T4, T5 any, R1, R2 any](f func(T1, T2, T3, T4, T5) (R1, R2), r *Manager) *Mocker52[T1, T2, T3, T4, T5, R1, R2] {
 	PatchOnce(f)
 	m := &Mocker52[T1, T2, T3, T4, T5, R1, R2]{}
 	i := &Invoker52[T1, T2, T3, T4, T5, R1, R2]{Mocker52: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method52 creates a new Mocker52 for mocking a method on a receiver.
+func Method52[T1, T2, T3, T4, T5 any, R1, R2 any](receiver any, f func(T1, T2, T3, T4, T5) (R1, R2), r *Manager) *Mocker52[T1, T2, T3, T4, T5, R1, R2] {
+	m := &Mocker52[T1, T2, T3, T4, T5, R1, R2]{}
+	i := &Invoker52[T1, T2, T3, T4, T5, R1, R2]{Mocker52: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker52 ***********************************/
 
+// VarMocker52 provides a configurable mock for the target function.
 type VarMocker52[T1, T2, T3, T4, T5 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, T3, T4, []T5) (R1, R2)
 	fnWhen   func(T1, T2, T3, T4, []T5) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker52[T1, T2, T3, T4, T5, R1, R2]) Handle(fn func(T1, T2, T3, T4, []T5) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker52[T1, T2, T3, T4, T5, R1, R2]) When(fn func(T1, T2, T3, T4, []T5) bool) *VarMocker52[T1, T2, T3, T4, T5, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker52[T1, T2, T3, T4, T5, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, []T5) bool { return true }
@@ -3589,78 +4160,74 @@ func (m *VarMocker52[T1, T2, T3, T4, T5, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker52[T1, T2, T3, T4, T5, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker52[T1, T2, T3, T4, T5, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// VarInvoker52 is an Invoker implementation for VarMocker52.
+// VarInvoker52 implements Invoker for VarMocker52.
 type VarInvoker52[T1, T2, T3, T4, T5 any, R1, R2 any] struct {
 	*VarMocker52[T1, T2, T3, T4, T5, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker52[T1, T2, T3, T4, T5, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker52[T1, T2, T3, T4, T5, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker52[T1, T2, T3, T4, T5, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker52[T1, T2, T3, T4, T5, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker52[T1, T2, T3, T4, T5, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// VarMock52 creates a new VarMocker52 instance.
-func VarMock52[T1, T2, T3, T4, T5 any, R1, R2 any](f func(T1, T2, T3, T4, ...T5) (R1, R2), r *Manager) *VarMocker52[T1, T2, T3, T4, T5, R1, R2] {
+// VarFunc52 creates a new VarMocker52 and registers it with the Manager.
+func VarFunc52[T1, T2, T3, T4, T5 any, R1, R2 any](f func(T1, T2, T3, T4, ...T5) (R1, R2), r *Manager) *VarMocker52[T1, T2, T3, T4, T5, R1, R2] {
 	PatchOnce(f)
 	m := &VarMocker52[T1, T2, T3, T4, T5, R1, R2]{}
 	i := &VarInvoker52[T1, T2, T3, T4, T5, R1, R2]{VarMocker52: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod52 creates a new VarMocker52 for mocking a method on a receiver.
+func VarMethod52[T1, T2, T3, T4, T5 any, R1, R2 any](receiver any, f func(T1, T2, T3, T4, ...T5) (R1, R2), r *Manager) *VarMocker52[T1, T2, T3, T4, T5, R1, R2] {
+	m := &VarMocker52[T1, T2, T3, T4, T5, R1, R2]{}
+	i := &VarInvoker52[T1, T2, T3, T4, T5, R1, R2]{VarMocker52: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker53 ***********************************/
 
+// Mocker53 provides a configurable mock for the target function.
 type Mocker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) When(fn func(T1, T2, T3, T4, T5) bool) *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5) bool { return true }
@@ -3668,78 +4235,74 @@ func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return(fn func() (R1, R2, R3)
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// Invoker53 is an Invoker implementation for Mocker53.
+// Invoker53 implements Invoker for Mocker53.
 type Invoker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any] struct {
 	*Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// Mock53 creates a new Mocker53 instance.
-func Mock53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5) (R1, R2, R3), r *Manager) *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
+// Func53 creates a new Mocker53 and registers it with the Manager.
+func Func53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5) (R1, R2, R3), r *Manager) *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
 	PatchOnce(f)
 	m := &Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]{}
 	i := &Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]{Mocker53: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method53 creates a new Mocker53 for mocking a method on a receiver.
+func Method53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, T4, T5) (R1, R2, R3), r *Manager) *Mocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
+	m := &Mocker53[T1, T2, T3, T4, T5, R1, R2, R3]{}
+	i := &Invoker53[T1, T2, T3, T4, T5, R1, R2, R3]{Mocker53: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker53 ***********************************/
 
+// VarMocker53 provides a configurable mock for the target function.
 type VarMocker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, T3, T4, []T5) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, T4, []T5) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, []T5) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]) When(fn func(T1, T2, T3, T4, []T5) bool) *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, []T5) bool { return true }
@@ -3747,78 +4310,74 @@ func (m *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return(fn func() (R1, R2, 
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// VarInvoker53 is an Invoker implementation for VarMocker53.
+// VarInvoker53 implements Invoker for VarMocker53.
 type VarInvoker53[T1, T2, T3, T4, T5 any, R1, R2, R3 any] struct {
 	*VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker53[T1, T2, T3, T4, T5, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker53[T1, T2, T3, T4, T5, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// VarMock53 creates a new VarMocker53 instance.
-func VarMock53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](f func(T1, T2, T3, T4, ...T5) (R1, R2, R3), r *Manager) *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
+// VarFunc53 creates a new VarMocker53 and registers it with the Manager.
+func VarFunc53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](f func(T1, T2, T3, T4, ...T5) (R1, R2, R3), r *Manager) *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
 	PatchOnce(f)
 	m := &VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]{}
 	i := &VarInvoker53[T1, T2, T3, T4, T5, R1, R2, R3]{VarMocker53: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod53 creates a new VarMocker53 for mocking a method on a receiver.
+func VarMethod53[T1, T2, T3, T4, T5 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, T4, ...T5) (R1, R2, R3), r *Manager) *VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3] {
+	m := &VarMocker53[T1, T2, T3, T4, T5, R1, R2, R3]{}
+	i := &VarInvoker53[T1, T2, T3, T4, T5, R1, R2, R3]{VarMocker53: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker54 ***********************************/
 
+// Mocker54 provides a configurable mock for the target function.
 type Mocker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, T4, T5) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) When(fn func(T1, T2, T3, T4, T5) bool) *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5) bool { return true }
@@ -3826,78 +4385,74 @@ func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return(fn func() (R1, R2,
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// Invoker54 is an Invoker implementation for Mocker54.
+// Invoker54 implements Invoker for Mocker54.
 type Invoker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any] struct {
 	*Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// Mock54 creates a new Mocker54 instance.
-func Mock54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5) (R1, R2, R3, R4), r *Manager) *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
+// Func54 creates a new Mocker54 and registers it with the Manager.
+func Func54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5) (R1, R2, R3, R4), r *Manager) *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{}
 	i := &Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{Mocker54: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method54 creates a new Mocker54 for mocking a method on a receiver.
+func Method54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, T4, T5) (R1, R2, R3, R4), r *Manager) *Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
+	m := &Mocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{}
+	i := &Invoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{Mocker54: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker54 ***********************************/
 
+// VarMocker54 provides a configurable mock for the target function.
 type VarMocker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, T3, T4, []T5) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, T4, []T5) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, []T5) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) When(fn func(T1, T2, T3, T4, []T5) bool) *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, []T5) bool { return true }
@@ -3905,78 +4460,74 @@ func (m *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return(fn func() (R1, 
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// VarInvoker54 is an Invoker implementation for VarMocker54.
+// VarInvoker54 implements Invoker for VarMocker54.
 type VarInvoker54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any] struct {
 	*VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].([]T5))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// VarMock54 creates a new VarMocker54 instance.
-func VarMock54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, ...T5) (R1, R2, R3, R4), r *Manager) *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
+// VarFunc54 creates a new VarMocker54 and registers it with the Manager.
+func VarFunc54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, ...T5) (R1, R2, R3, R4), r *Manager) *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{}
 	i := &VarInvoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{VarMocker54: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod54 creates a new VarMocker54 for mocking a method on a receiver.
+func VarMethod54[T1, T2, T3, T4, T5 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, T4, ...T5) (R1, R2, R3, R4), r *Manager) *VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4] {
+	m := &VarMocker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{}
+	i := &VarInvoker54[T1, T2, T3, T4, T5, R1, R2, R3, R4]{VarMocker54: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker60 ***********************************/
 
+// Mocker60 provides a configurable mock for the target function.
 type Mocker60[T1, T2, T3, T4, T5, T6 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, T6)
 	fnWhen   func(T1, T2, T3, T4, T5, T6) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker60[T1, T2, T3, T4, T5, T6]) Handle(fn func(T1, T2, T3, T4, T5, T6)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker60[T1, T2, T3, T4, T5, T6]) When(fn func(T1, T2, T3, T4, T5, T6) bool) *Mocker60[T1, T2, T3, T4, T5, T6] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker60[T1, T2, T3, T4, T5, T6]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, T6) bool { return true }
@@ -3984,78 +4535,74 @@ func (m *Mocker60[T1, T2, T3, T4, T5, T6]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker60[T1, T2, T3, T4, T5, T6]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker60[T1, T2, T3, T4, T5, T6]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// Invoker60 is an Invoker implementation for Mocker60.
+// Invoker60 implements Invoker for Mocker60.
 type Invoker60[T1, T2, T3, T4, T5, T6 any] struct {
 	*Mocker60[T1, T2, T3, T4, T5, T6]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker60[T1, T2, T3, T4, T5, T6]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker60[T1, T2, T3, T4, T5, T6]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker60[T1, T2, T3, T4, T5, T6]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker60[T1, T2, T3, T4, T5, T6]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker60[T1, T2, T3, T4, T5, T6]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// Mock60 creates a new Mocker60 instance.
-func Mock60[T1, T2, T3, T4, T5, T6 any](f func(T1, T2, T3, T4, T5, T6), r *Manager) *Mocker60[T1, T2, T3, T4, T5, T6] {
+// Func60 creates a new Mocker60 and registers it with the Manager.
+func Func60[T1, T2, T3, T4, T5, T6 any](f func(T1, T2, T3, T4, T5, T6), r *Manager) *Mocker60[T1, T2, T3, T4, T5, T6] {
 	PatchOnce(f)
 	m := &Mocker60[T1, T2, T3, T4, T5, T6]{}
 	i := &Invoker60[T1, T2, T3, T4, T5, T6]{Mocker60: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method60 creates a new Mocker60 for mocking a method on a receiver.
+func Method60[T1, T2, T3, T4, T5, T6 any](receiver any, f func(T1, T2, T3, T4, T5, T6), r *Manager) *Mocker60[T1, T2, T3, T4, T5, T6] {
+	m := &Mocker60[T1, T2, T3, T4, T5, T6]{}
+	i := &Invoker60[T1, T2, T3, T4, T5, T6]{Mocker60: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker60 ***********************************/
 
+// VarMocker60 provides a configurable mock for the target function.
 type VarMocker60[T1, T2, T3, T4, T5, T6 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, []T6)
 	fnWhen   func(T1, T2, T3, T4, T5, []T6) bool
 	fnReturn func()
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker60[T1, T2, T3, T4, T5, T6]) Handle(fn func(T1, T2, T3, T4, T5, []T6)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker60[T1, T2, T3, T4, T5, T6]) When(fn func(T1, T2, T3, T4, T5, []T6) bool) *VarMocker60[T1, T2, T3, T4, T5, T6] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker60[T1, T2, T3, T4, T5, T6]) Return(fn func()) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, []T6) bool { return true }
@@ -4063,78 +4610,74 @@ func (m *VarMocker60[T1, T2, T3, T4, T5, T6]) Return(fn func()) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker60[T1, T2, T3, T4, T5, T6]) ReturnValue() {
 	m.Return(func() {})
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker60[T1, T2, T3, T4, T5, T6]) ReturnDefault() {
 	m.Return(func() {})
 }
 
-// VarInvoker60 is an Invoker implementation for VarMocker60.
+// VarInvoker60 implements Invoker for VarMocker60.
 type VarInvoker60[T1, T2, T3, T4, T5, T6 any] struct {
 	*VarMocker60[T1, T2, T3, T4, T5, T6]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker60[T1, T2, T3, T4, T5, T6]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker60[T1, T2, T3, T4, T5, T6]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+		return []any{}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker60[T1, T2, T3, T4, T5, T6]) Handle(params []any) []any {
-	m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker60[T1, T2, T3, T4, T5, T6]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker60[T1, T2, T3, T4, T5, T6]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// VarMock60 creates a new VarMocker60 instance.
-func VarMock60[T1, T2, T3, T4, T5, T6 any](f func(T1, T2, T3, T4, T5, ...T6), r *Manager) *VarMocker60[T1, T2, T3, T4, T5, T6] {
+// VarFunc60 creates a new VarMocker60 and registers it with the Manager.
+func VarFunc60[T1, T2, T3, T4, T5, T6 any](f func(T1, T2, T3, T4, T5, ...T6), r *Manager) *VarMocker60[T1, T2, T3, T4, T5, T6] {
 	PatchOnce(f)
 	m := &VarMocker60[T1, T2, T3, T4, T5, T6]{}
 	i := &VarInvoker60[T1, T2, T3, T4, T5, T6]{VarMocker60: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod60 creates a new VarMocker60 for mocking a method on a receiver.
+func VarMethod60[T1, T2, T3, T4, T5, T6 any](receiver any, f func(T1, T2, T3, T4, T5, ...T6), r *Manager) *VarMocker60[T1, T2, T3, T4, T5, T6] {
+	m := &VarMocker60[T1, T2, T3, T4, T5, T6]{}
+	i := &VarInvoker60[T1, T2, T3, T4, T5, T6]{VarMocker60: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker61 ***********************************/
 
+// Mocker61 provides a configurable mock for the target function.
 type Mocker61[T1, T2, T3, T4, T5, T6 any, R1 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, T6) R1
 	fnWhen   func(T1, T2, T3, T4, T5, T6) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker61[T1, T2, T3, T4, T5, T6, R1]) Handle(fn func(T1, T2, T3, T4, T5, T6) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker61[T1, T2, T3, T4, T5, T6, R1]) When(fn func(T1, T2, T3, T4, T5, T6) bool) *Mocker61[T1, T2, T3, T4, T5, T6, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker61[T1, T2, T3, T4, T5, T6, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, T6) bool { return true }
@@ -4142,78 +4685,74 @@ func (m *Mocker61[T1, T2, T3, T4, T5, T6, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker61[T1, T2, T3, T4, T5, T6, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker61[T1, T2, T3, T4, T5, T6, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// Invoker61 is an Invoker implementation for Mocker61.
+// Invoker61 implements Invoker for Mocker61.
 type Invoker61[T1, T2, T3, T4, T5, T6 any, R1 any] struct {
 	*Mocker61[T1, T2, T3, T4, T5, T6, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker61[T1, T2, T3, T4, T5, T6, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker61[T1, T2, T3, T4, T5, T6, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker61[T1, T2, T3, T4, T5, T6, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker61[T1, T2, T3, T4, T5, T6, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker61[T1, T2, T3, T4, T5, T6, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// Mock61 creates a new Mocker61 instance.
-func Mock61[T1, T2, T3, T4, T5, T6 any, R1 any](f func(T1, T2, T3, T4, T5, T6) R1, r *Manager) *Mocker61[T1, T2, T3, T4, T5, T6, R1] {
+// Func61 creates a new Mocker61 and registers it with the Manager.
+func Func61[T1, T2, T3, T4, T5, T6 any, R1 any](f func(T1, T2, T3, T4, T5, T6) R1, r *Manager) *Mocker61[T1, T2, T3, T4, T5, T6, R1] {
 	PatchOnce(f)
 	m := &Mocker61[T1, T2, T3, T4, T5, T6, R1]{}
 	i := &Invoker61[T1, T2, T3, T4, T5, T6, R1]{Mocker61: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method61 creates a new Mocker61 for mocking a method on a receiver.
+func Method61[T1, T2, T3, T4, T5, T6 any, R1 any](receiver any, f func(T1, T2, T3, T4, T5, T6) R1, r *Manager) *Mocker61[T1, T2, T3, T4, T5, T6, R1] {
+	m := &Mocker61[T1, T2, T3, T4, T5, T6, R1]{}
+	i := &Invoker61[T1, T2, T3, T4, T5, T6, R1]{Mocker61: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker61 ***********************************/
 
+// VarMocker61 provides a configurable mock for the target function.
 type VarMocker61[T1, T2, T3, T4, T5, T6 any, R1 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, []T6) R1
 	fnWhen   func(T1, T2, T3, T4, T5, []T6) bool
 	fnReturn func() R1
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker61[T1, T2, T3, T4, T5, T6, R1]) Handle(fn func(T1, T2, T3, T4, T5, []T6) R1) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker61[T1, T2, T3, T4, T5, T6, R1]) When(fn func(T1, T2, T3, T4, T5, []T6) bool) *VarMocker61[T1, T2, T3, T4, T5, T6, R1] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker61[T1, T2, T3, T4, T5, T6, R1]) Return(fn func() R1) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, []T6) bool { return true }
@@ -4221,78 +4760,74 @@ func (m *VarMocker61[T1, T2, T3, T4, T5, T6, R1]) Return(fn func() R1) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker61[T1, T2, T3, T4, T5, T6, R1]) ReturnValue(r1 R1) {
 	m.Return(func() R1 { return r1 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker61[T1, T2, T3, T4, T5, T6, R1]) ReturnDefault() {
 	m.Return(func() (r1 R1) { return r1 })
 }
 
-// VarInvoker61 is an Invoker implementation for VarMocker61.
+// VarInvoker61 implements Invoker for VarMocker61.
 type VarInvoker61[T1, T2, T3, T4, T5, T6 any, R1 any] struct {
 	*VarMocker61[T1, T2, T3, T4, T5, T6, R1]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker61[T1, T2, T3, T4, T5, T6, R1]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker61[T1, T2, T3, T4, T5, T6, R1]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+		return []any{r1}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker61[T1, T2, T3, T4, T5, T6, R1]) Handle(params []any) []any {
-	r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
-	return []any{r1}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker61[T1, T2, T3, T4, T5, T6, R1]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker61[T1, T2, T3, T4, T5, T6, R1]) Return() []any {
-	r1 := m.fnReturn()
-	return []any{r1}
-}
-
-// VarMock61 creates a new VarMocker61 instance.
-func VarMock61[T1, T2, T3, T4, T5, T6 any, R1 any](f func(T1, T2, T3, T4, T5, ...T6) R1, r *Manager) *VarMocker61[T1, T2, T3, T4, T5, T6, R1] {
+// VarFunc61 creates a new VarMocker61 and registers it with the Manager.
+func VarFunc61[T1, T2, T3, T4, T5, T6 any, R1 any](f func(T1, T2, T3, T4, T5, ...T6) R1, r *Manager) *VarMocker61[T1, T2, T3, T4, T5, T6, R1] {
 	PatchOnce(f)
 	m := &VarMocker61[T1, T2, T3, T4, T5, T6, R1]{}
 	i := &VarInvoker61[T1, T2, T3, T4, T5, T6, R1]{VarMocker61: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod61 creates a new VarMocker61 for mocking a method on a receiver.
+func VarMethod61[T1, T2, T3, T4, T5, T6 any, R1 any](receiver any, f func(T1, T2, T3, T4, T5, ...T6) R1, r *Manager) *VarMocker61[T1, T2, T3, T4, T5, T6, R1] {
+	m := &VarMocker61[T1, T2, T3, T4, T5, T6, R1]{}
+	i := &VarInvoker61[T1, T2, T3, T4, T5, T6, R1]{VarMocker61: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker62 ***********************************/
 
+// Mocker62 provides a configurable mock for the target function.
 type Mocker62[T1, T2, T3, T4, T5, T6 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, T6) (R1, R2)
 	fnWhen   func(T1, T2, T3, T4, T5, T6) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5, T6) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]) When(fn func(T1, T2, T3, T4, T5, T6) bool) *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, T6) bool { return true }
@@ -4300,78 +4835,74 @@ func (m *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]) Return(fn func() (R1, R2)) {
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// Invoker62 is an Invoker implementation for Mocker62.
+// Invoker62 implements Invoker for Mocker62.
 type Invoker62[T1, T2, T3, T4, T5, T6 any, R1, R2 any] struct {
 	*Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker62[T1, T2, T3, T4, T5, T6, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// Mock62 creates a new Mocker62 instance.
-func Mock62[T1, T2, T3, T4, T5, T6 any, R1, R2 any](f func(T1, T2, T3, T4, T5, T6) (R1, R2), r *Manager) *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
+// Func62 creates a new Mocker62 and registers it with the Manager.
+func Func62[T1, T2, T3, T4, T5, T6 any, R1, R2 any](f func(T1, T2, T3, T4, T5, T6) (R1, R2), r *Manager) *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
 	PatchOnce(f)
 	m := &Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]{}
 	i := &Invoker62[T1, T2, T3, T4, T5, T6, R1, R2]{Mocker62: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method62 creates a new Mocker62 for mocking a method on a receiver.
+func Method62[T1, T2, T3, T4, T5, T6 any, R1, R2 any](receiver any, f func(T1, T2, T3, T4, T5, T6) (R1, R2), r *Manager) *Mocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
+	m := &Mocker62[T1, T2, T3, T4, T5, T6, R1, R2]{}
+	i := &Invoker62[T1, T2, T3, T4, T5, T6, R1, R2]{Mocker62: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker62 ***********************************/
 
+// VarMocker62 provides a configurable mock for the target function.
 type VarMocker62[T1, T2, T3, T4, T5, T6 any, R1, R2 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, []T6) (R1, R2)
 	fnWhen   func(T1, T2, T3, T4, T5, []T6) bool
 	fnReturn func() (R1, R2)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5, []T6) (R1, R2)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]) When(fn func(T1, T2, T3, T4, T5, []T6) bool) *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]) Return(fn func() (R1, R2)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, []T6) bool { return true }
@@ -4379,78 +4910,74 @@ func (m *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]) Return(fn func() (R1, R2))
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]) ReturnValue(r1 R1, r2 R2) {
 	m.Return(func() (R1, R2) { return r1, r2 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
 }
 
-// VarInvoker62 is an Invoker implementation for VarMocker62.
+// VarInvoker62 implements Invoker for VarMocker62.
 type VarInvoker62[T1, T2, T3, T4, T5, T6 any, R1, R2 any] struct {
 	*VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+		return []any{r1, r2}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Handle(params []any) []any {
-	r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
-	return []any{r1, r2}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker62[T1, T2, T3, T4, T5, T6, R1, R2]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker62[T1, T2, T3, T4, T5, T6, R1, R2]) Return() []any {
-	r1, r2 := m.fnReturn()
-	return []any{r1, r2}
-}
-
-// VarMock62 creates a new VarMocker62 instance.
-func VarMock62[T1, T2, T3, T4, T5, T6 any, R1, R2 any](f func(T1, T2, T3, T4, T5, ...T6) (R1, R2), r *Manager) *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
+// VarFunc62 creates a new VarMocker62 and registers it with the Manager.
+func VarFunc62[T1, T2, T3, T4, T5, T6 any, R1, R2 any](f func(T1, T2, T3, T4, T5, ...T6) (R1, R2), r *Manager) *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
 	PatchOnce(f)
 	m := &VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]{}
 	i := &VarInvoker62[T1, T2, T3, T4, T5, T6, R1, R2]{VarMocker62: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod62 creates a new VarMocker62 for mocking a method on a receiver.
+func VarMethod62[T1, T2, T3, T4, T5, T6 any, R1, R2 any](receiver any, f func(T1, T2, T3, T4, T5, ...T6) (R1, R2), r *Manager) *VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2] {
+	m := &VarMocker62[T1, T2, T3, T4, T5, T6, R1, R2]{}
+	i := &VarInvoker62[T1, T2, T3, T4, T5, T6, R1, R2]{VarMocker62: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker63 ***********************************/
 
+// Mocker63 provides a configurable mock for the target function.
 type Mocker63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, T6) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, T4, T5, T6) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5, T6) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) When(fn func(T1, T2, T3, T4, T5, T6) bool) *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, T6) bool { return true }
@@ -4458,78 +4985,74 @@ func (m *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Return(fn func() (R1, R2,
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// Invoker63 is an Invoker implementation for Mocker63.
+// Invoker63 implements Invoker for Mocker63.
 type Invoker63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any] struct {
 	*Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// Mock63 creates a new Mocker63 instance.
-func Mock63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5, T6) (R1, R2, R3), r *Manager) *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
+// Func63 creates a new Mocker63 and registers it with the Manager.
+func Func63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5, T6) (R1, R2, R3), r *Manager) *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
 	PatchOnce(f)
 	m := &Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{}
 	i := &Invoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{Mocker63: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method63 creates a new Mocker63 for mocking a method on a receiver.
+func Method63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, T4, T5, T6) (R1, R2, R3), r *Manager) *Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
+	m := &Mocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{}
+	i := &Invoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{Mocker63: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker63 ***********************************/
 
+// VarMocker63 provides a configurable mock for the target function.
 type VarMocker63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, []T6) (R1, R2, R3)
 	fnWhen   func(T1, T2, T3, T4, T5, []T6) bool
 	fnReturn func() (R1, R2, R3)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5, []T6) (R1, R2, R3)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) When(fn func(T1, T2, T3, T4, T5, []T6) bool) *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, []T6) bool { return true }
@@ -4537,78 +5060,74 @@ func (m *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Return(fn func() (R1, 
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
 	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
 }
 
-// VarInvoker63 is an Invoker implementation for VarMocker63.
+// VarInvoker63 implements Invoker for VarMocker63.
 type VarInvoker63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any] struct {
 	*VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+		return []any{r1, r2, r3}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Handle(params []any) []any {
-	r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
-	return []any{r1, r2, r3}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]) Return() []any {
-	r1, r2, r3 := m.fnReturn()
-	return []any{r1, r2, r3}
-}
-
-// VarMock63 creates a new VarMocker63 instance.
-func VarMock63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5, ...T6) (R1, R2, R3), r *Manager) *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
+// VarFunc63 creates a new VarMocker63 and registers it with the Manager.
+func VarFunc63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5, ...T6) (R1, R2, R3), r *Manager) *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
 	PatchOnce(f)
 	m := &VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{}
 	i := &VarInvoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{VarMocker63: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod63 creates a new VarMocker63 for mocking a method on a receiver.
+func VarMethod63[T1, T2, T3, T4, T5, T6 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, T4, T5, ...T6) (R1, R2, R3), r *Manager) *VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3] {
+	m := &VarMocker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{}
+	i := &VarInvoker63[T1, T2, T3, T4, T5, T6, R1, R2, R3]{VarMocker63: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** Mocker64 ***********************************/
 
+// Mocker64 provides a configurable mock for the target function.
 type Mocker64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, T6) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, T4, T5, T6) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5, T6) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) When(fn func(T1, T2, T3, T4, T5, T6) bool) *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, T6) bool { return true }
@@ -4616,78 +5135,74 @@ func (m *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Return(fn func() (R1,
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// Invoker64 is an Invoker implementation for Mocker64.
+// Invoker64 implements Invoker for Mocker64.
 type Invoker64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any] struct {
 	*Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *Invoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *Invoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *Invoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *Invoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// Mock64 creates a new Mocker64 instance.
-func Mock64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5, T6) (R1, R2, R3, R4), r *Manager) *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
+// Func64 creates a new Mocker64 and registers it with the Manager.
+func Func64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5, T6) (R1, R2, R3, R4), r *Manager) *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{}
 	i := &Invoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{Mocker64: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method64 creates a new Mocker64 for mocking a method on a receiver.
+func Method64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, T4, T5, T6) (R1, R2, R3, R4), r *Manager) *Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
+	m := &Mocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{}
+	i := &Invoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{Mocker64: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 
 /******************************** VarMocker64 ***********************************/
 
+// VarMocker64 provides a configurable mock for the target function.
 type VarMocker64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any] struct {
 	fnHandle func(T1, T2, T3, T4, T5, []T6) (R1, R2, R3, R4)
 	fnWhen   func(T1, T2, T3, T4, T5, []T6) bool
 	fnReturn func() (R1, R2, R3, R4)
 }
 
-// Handle sets a custom function to handle requests.
+// Handle sets a custom handler function for intercepted calls.
 func (m *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5, []T6) (R1, R2, R3, R4)) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
+// When sets a predicate function that determines whether the mock applies.
 func (m *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) When(fn func(T1, T2, T3, T4, T5, []T6) bool) *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
+// Return sets a function that produces return values when the mock is matched.
 func (m *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
 	if m.fnWhen == nil {
 		m.fnWhen = func(T1, T2, T3, T4, T5, []T6) bool { return true }
@@ -4695,54 +5210,799 @@ func (m *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Return(fn func() (
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
 func (m *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
 	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
+// ReturnDefault configures the mock to return zero values for all return types.
 func (m *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) ReturnDefault() {
 	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
 }
 
-// VarInvoker64 is an Invoker implementation for VarMocker64.
+// VarInvoker64 implements Invoker for VarMocker64.
 type VarInvoker64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any] struct {
 	*VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *VarInvoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+		return []any{r1, r2, r3, r4}, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *VarInvoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Handle(params []any) []any {
-	r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
-	return []any{r1, r2, r3, r4}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *VarInvoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
 	}
-	return m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].([]T6))
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *VarInvoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]) Return() []any {
-	r1, r2, r3, r4 := m.fnReturn()
-	return []any{r1, r2, r3, r4}
-}
-
-// VarMock64 creates a new VarMocker64 instance.
-func VarMock64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5, ...T6) (R1, R2, R3, R4), r *Manager) *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
+// VarFunc64 creates a new VarMocker64 and registers it with the Manager.
+func VarFunc64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5, ...T6) (R1, R2, R3, R4), r *Manager) *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
 	PatchOnce(f)
 	m := &VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{}
 	i := &VarInvoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{VarMocker64: m}
-	r.addMocker(f, i)
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod64 creates a new VarMocker64 for mocking a method on a receiver.
+func VarMethod64[T1, T2, T3, T4, T5, T6 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, T4, T5, ...T6) (R1, R2, R3, R4), r *Manager) *VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4] {
+	m := &VarMocker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{}
+	i := &VarInvoker64[T1, T2, T3, T4, T5, T6, R1, R2, R3, R4]{VarMocker64: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker70 ***********************************/
+
+// Mocker70 provides a configurable mock for the target function.
+type Mocker70[T1, T2, T3, T4, T5, T6, T7 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, T7)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, T7) bool
+	fnReturn func()
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker70[T1, T2, T3, T4, T5, T6, T7]) Handle(fn func(T1, T2, T3, T4, T5, T6, T7)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker70[T1, T2, T3, T4, T5, T6, T7]) When(fn func(T1, T2, T3, T4, T5, T6, T7) bool) *Mocker70[T1, T2, T3, T4, T5, T6, T7] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker70[T1, T2, T3, T4, T5, T6, T7]) Return(fn func()) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker70[T1, T2, T3, T4, T5, T6, T7]) ReturnValue() {
+	m.Return(func() {})
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker70[T1, T2, T3, T4, T5, T6, T7]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// Invoker70 implements Invoker for Mocker70.
+type Invoker70[T1, T2, T3, T4, T5, T6, T7 any] struct {
+	*Mocker70[T1, T2, T3, T4, T5, T6, T7]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker70[T1, T2, T3, T4, T5, T6, T7]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7))
+		return []any{}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
+	}
+	return nil, false
+}
+
+// Func70 creates a new Mocker70 and registers it with the Manager.
+func Func70[T1, T2, T3, T4, T5, T6, T7 any](f func(T1, T2, T3, T4, T5, T6, T7), r *Manager) *Mocker70[T1, T2, T3, T4, T5, T6, T7] {
+	PatchOnce(f)
+	m := &Mocker70[T1, T2, T3, T4, T5, T6, T7]{}
+	i := &Invoker70[T1, T2, T3, T4, T5, T6, T7]{Mocker70: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method70 creates a new Mocker70 for mocking a method on a receiver.
+func Method70[T1, T2, T3, T4, T5, T6, T7 any](receiver any, f func(T1, T2, T3, T4, T5, T6, T7), r *Manager) *Mocker70[T1, T2, T3, T4, T5, T6, T7] {
+	m := &Mocker70[T1, T2, T3, T4, T5, T6, T7]{}
+	i := &Invoker70[T1, T2, T3, T4, T5, T6, T7]{Mocker70: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker70 ***********************************/
+
+// VarMocker70 provides a configurable mock for the target function.
+type VarMocker70[T1, T2, T3, T4, T5, T6, T7 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, []T7)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, []T7) bool
+	fnReturn func()
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker70[T1, T2, T3, T4, T5, T6, T7]) Handle(fn func(T1, T2, T3, T4, T5, T6, []T7)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker70[T1, T2, T3, T4, T5, T6, T7]) When(fn func(T1, T2, T3, T4, T5, T6, []T7) bool) *VarMocker70[T1, T2, T3, T4, T5, T6, T7] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker70[T1, T2, T3, T4, T5, T6, T7]) Return(fn func()) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, []T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker70[T1, T2, T3, T4, T5, T6, T7]) ReturnValue() {
+	m.Return(func() {})
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker70[T1, T2, T3, T4, T5, T6, T7]) ReturnDefault() {
+	m.Return(func() {})
+}
+
+// VarInvoker70 implements Invoker for VarMocker70.
+type VarInvoker70[T1, T2, T3, T4, T5, T6, T7 any] struct {
+	*VarMocker70[T1, T2, T3, T4, T5, T6, T7]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker70[T1, T2, T3, T4, T5, T6, T7]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7))
+		return []any{}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7)); ok {
+			m.fnReturn()
+			return []any{}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc70 creates a new VarMocker70 and registers it with the Manager.
+func VarFunc70[T1, T2, T3, T4, T5, T6, T7 any](f func(T1, T2, T3, T4, T5, T6, ...T7), r *Manager) *VarMocker70[T1, T2, T3, T4, T5, T6, T7] {
+	PatchOnce(f)
+	m := &VarMocker70[T1, T2, T3, T4, T5, T6, T7]{}
+	i := &VarInvoker70[T1, T2, T3, T4, T5, T6, T7]{VarMocker70: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod70 creates a new VarMocker70 for mocking a method on a receiver.
+func VarMethod70[T1, T2, T3, T4, T5, T6, T7 any](receiver any, f func(T1, T2, T3, T4, T5, T6, ...T7), r *Manager) *VarMocker70[T1, T2, T3, T4, T5, T6, T7] {
+	m := &VarMocker70[T1, T2, T3, T4, T5, T6, T7]{}
+	i := &VarInvoker70[T1, T2, T3, T4, T5, T6, T7]{VarMocker70: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker71 ***********************************/
+
+// Mocker71 provides a configurable mock for the target function.
+type Mocker71[T1, T2, T3, T4, T5, T6, T7 any, R1 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, T7) R1
+	fnWhen   func(T1, T2, T3, T4, T5, T6, T7) bool
+	fnReturn func() R1
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]) Handle(fn func(T1, T2, T3, T4, T5, T6, T7) R1) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]) When(fn func(T1, T2, T3, T4, T5, T6, T7) bool) *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]) Return(fn func() R1) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]) ReturnValue(r1 R1) {
+	m.Return(func() R1 { return r1 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// Invoker71 implements Invoker for Mocker71.
+type Invoker71[T1, T2, T3, T4, T5, T6, T7 any, R1 any] struct {
+	*Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker71[T1, T2, T3, T4, T5, T6, T7, R1]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7))
+		return []any{r1}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
+	}
+	return nil, false
+}
+
+// Func71 creates a new Mocker71 and registers it with the Manager.
+func Func71[T1, T2, T3, T4, T5, T6, T7 any, R1 any](f func(T1, T2, T3, T4, T5, T6, T7) R1, r *Manager) *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1] {
+	PatchOnce(f)
+	m := &Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]{}
+	i := &Invoker71[T1, T2, T3, T4, T5, T6, T7, R1]{Mocker71: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method71 creates a new Mocker71 for mocking a method on a receiver.
+func Method71[T1, T2, T3, T4, T5, T6, T7 any, R1 any](receiver any, f func(T1, T2, T3, T4, T5, T6, T7) R1, r *Manager) *Mocker71[T1, T2, T3, T4, T5, T6, T7, R1] {
+	m := &Mocker71[T1, T2, T3, T4, T5, T6, T7, R1]{}
+	i := &Invoker71[T1, T2, T3, T4, T5, T6, T7, R1]{Mocker71: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker71 ***********************************/
+
+// VarMocker71 provides a configurable mock for the target function.
+type VarMocker71[T1, T2, T3, T4, T5, T6, T7 any, R1 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, []T7) R1
+	fnWhen   func(T1, T2, T3, T4, T5, T6, []T7) bool
+	fnReturn func() R1
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]) Handle(fn func(T1, T2, T3, T4, T5, T6, []T7) R1) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]) When(fn func(T1, T2, T3, T4, T5, T6, []T7) bool) *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]) Return(fn func() R1) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, []T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]) ReturnValue(r1 R1) {
+	m.Return(func() R1 { return r1 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]) ReturnDefault() {
+	m.Return(func() (r1 R1) { return r1 })
+}
+
+// VarInvoker71 implements Invoker for VarMocker71.
+type VarInvoker71[T1, T2, T3, T4, T5, T6, T7 any, R1 any] struct {
+	*VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker71[T1, T2, T3, T4, T5, T6, T7, R1]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7))
+		return []any{r1}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7)); ok {
+			r1 := m.fnReturn()
+			return []any{r1}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc71 creates a new VarMocker71 and registers it with the Manager.
+func VarFunc71[T1, T2, T3, T4, T5, T6, T7 any, R1 any](f func(T1, T2, T3, T4, T5, T6, ...T7) R1, r *Manager) *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1] {
+	PatchOnce(f)
+	m := &VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]{}
+	i := &VarInvoker71[T1, T2, T3, T4, T5, T6, T7, R1]{VarMocker71: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod71 creates a new VarMocker71 for mocking a method on a receiver.
+func VarMethod71[T1, T2, T3, T4, T5, T6, T7 any, R1 any](receiver any, f func(T1, T2, T3, T4, T5, T6, ...T7) R1, r *Manager) *VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1] {
+	m := &VarMocker71[T1, T2, T3, T4, T5, T6, T7, R1]{}
+	i := &VarInvoker71[T1, T2, T3, T4, T5, T6, T7, R1]{VarMocker71: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker72 ***********************************/
+
+// Mocker72 provides a configurable mock for the target function.
+type Mocker72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, T7) (R1, R2)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, T7) bool
+	fnReturn func() (R1, R2)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5, T6, T7) (R1, R2)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) When(fn func(T1, T2, T3, T4, T5, T6, T7) bool) *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) Return(fn func() (R1, R2)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.Return(func() (R1, R2) { return r1, r2 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// Invoker72 implements Invoker for Mocker72.
+type Invoker72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any] struct {
+	*Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7))
+		return []any{r1, r2}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
+	}
+	return nil, false
+}
+
+// Func72 creates a new Mocker72 and registers it with the Manager.
+func Func72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any](f func(T1, T2, T3, T4, T5, T6, T7) (R1, R2), r *Manager) *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2] {
+	PatchOnce(f)
+	m := &Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{}
+	i := &Invoker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{Mocker72: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method72 creates a new Mocker72 for mocking a method on a receiver.
+func Method72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any](receiver any, f func(T1, T2, T3, T4, T5, T6, T7) (R1, R2), r *Manager) *Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2] {
+	m := &Mocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{}
+	i := &Invoker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{Mocker72: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker72 ***********************************/
+
+// VarMocker72 provides a configurable mock for the target function.
+type VarMocker72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, []T7) (R1, R2)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, []T7) bool
+	fnReturn func() (R1, R2)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) Handle(fn func(T1, T2, T3, T4, T5, T6, []T7) (R1, R2)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) When(fn func(T1, T2, T3, T4, T5, T6, []T7) bool) *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) Return(fn func() (R1, R2)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, []T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) ReturnValue(r1 R1, r2 R2) {
+	m.Return(func() (R1, R2) { return r1, r2 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2) { return r1, r2 })
+}
+
+// VarInvoker72 implements Invoker for VarMocker72.
+type VarInvoker72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any] struct {
+	*VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7))
+		return []any{r1, r2}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7)); ok {
+			r1, r2 := m.fnReturn()
+			return []any{r1, r2}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc72 creates a new VarMocker72 and registers it with the Manager.
+func VarFunc72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any](f func(T1, T2, T3, T4, T5, T6, ...T7) (R1, R2), r *Manager) *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2] {
+	PatchOnce(f)
+	m := &VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{}
+	i := &VarInvoker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{VarMocker72: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod72 creates a new VarMocker72 for mocking a method on a receiver.
+func VarMethod72[T1, T2, T3, T4, T5, T6, T7 any, R1, R2 any](receiver any, f func(T1, T2, T3, T4, T5, T6, ...T7) (R1, R2), r *Manager) *VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2] {
+	m := &VarMocker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{}
+	i := &VarInvoker72[T1, T2, T3, T4, T5, T6, T7, R1, R2]{VarMocker72: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker73 ***********************************/
+
+// Mocker73 provides a configurable mock for the target function.
+type Mocker73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, T7) bool
+	fnReturn func() (R1, R2, R3)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) When(fn func(T1, T2, T3, T4, T5, T6, T7) bool) *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// Invoker73 implements Invoker for Mocker73.
+type Invoker73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any] struct {
+	*Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7))
+		return []any{r1, r2, r3}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
+	}
+	return nil, false
+}
+
+// Func73 creates a new Mocker73 and registers it with the Manager.
+func Func73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3), r *Manager) *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3] {
+	PatchOnce(f)
+	m := &Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{}
+	i := &Invoker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{Mocker73: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method73 creates a new Mocker73 for mocking a method on a receiver.
+func Method73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3), r *Manager) *Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3] {
+	m := &Mocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{}
+	i := &Invoker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{Mocker73: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker73 ***********************************/
+
+// VarMocker73 provides a configurable mock for the target function.
+type VarMocker73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, []T7) (R1, R2, R3)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, []T7) bool
+	fnReturn func() (R1, R2, R3)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) Handle(fn func(T1, T2, T3, T4, T5, T6, []T7) (R1, R2, R3)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) When(fn func(T1, T2, T3, T4, T5, T6, []T7) bool) *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) Return(fn func() (R1, R2, R3)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, []T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) ReturnValue(r1 R1, r2 R2, r3 R3) {
+	m.Return(func() (R1, R2, R3) { return r1, r2, r3 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3) { return r1, r2, r3 })
+}
+
+// VarInvoker73 implements Invoker for VarMocker73.
+type VarInvoker73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any] struct {
+	*VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7))
+		return []any{r1, r2, r3}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7)); ok {
+			r1, r2, r3 := m.fnReturn()
+			return []any{r1, r2, r3}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc73 creates a new VarMocker73 and registers it with the Manager.
+func VarFunc73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any](f func(T1, T2, T3, T4, T5, T6, ...T7) (R1, R2, R3), r *Manager) *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3] {
+	PatchOnce(f)
+	m := &VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{}
+	i := &VarInvoker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{VarMocker73: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod73 creates a new VarMocker73 for mocking a method on a receiver.
+func VarMethod73[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3 any](receiver any, f func(T1, T2, T3, T4, T5, T6, ...T7) (R1, R2, R3), r *Manager) *VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3] {
+	m := &VarMocker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{}
+	i := &VarInvoker73[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3]{VarMocker73: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** Mocker74 ***********************************/
+
+// Mocker74 provides a configurable mock for the target function.
+type Mocker74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3, R4)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, T7) bool
+	fnReturn func() (R1, R2, R3, R4)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3, R4)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) When(fn func(T1, T2, T3, T4, T5, T6, T7) bool) *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// Invoker74 implements Invoker for Mocker74.
+type Invoker74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any] struct {
+	*Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *Invoker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7))
+		return []any{r1, r2, r3, r4}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].(T7)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
+	}
+	return nil, false
+}
+
+// Func74 creates a new Mocker74 and registers it with the Manager.
+func Func74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3, R4), r *Manager) *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4] {
+	PatchOnce(f)
+	m := &Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{}
+	i := &Invoker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{Mocker74: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// Method74 creates a new Mocker74 for mocking a method on a receiver.
+func Method74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, T4, T5, T6, T7) (R1, R2, R3, R4), r *Manager) *Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4] {
+	m := &Mocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{}
+	i := &Invoker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{Mocker74: m}
+	r.addInvoker(receiver, f, i)
+	return m
+}
+
+/******************************** VarMocker74 ***********************************/
+
+// VarMocker74 provides a configurable mock for the target function.
+type VarMocker74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any] struct {
+	fnHandle func(T1, T2, T3, T4, T5, T6, []T7) (R1, R2, R3, R4)
+	fnWhen   func(T1, T2, T3, T4, T5, T6, []T7) bool
+	fnReturn func() (R1, R2, R3, R4)
+}
+
+// Handle sets a custom handler function for intercepted calls.
+func (m *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) Handle(fn func(T1, T2, T3, T4, T5, T6, []T7) (R1, R2, R3, R4)) {
+	m.fnHandle = fn
+}
+
+// When sets a predicate function that determines whether the mock applies.
+func (m *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) When(fn func(T1, T2, T3, T4, T5, T6, []T7) bool) *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4] {
+	m.fnWhen = fn
+	return m
+}
+
+// Return sets a function that produces return values when the mock is matched.
+func (m *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) Return(fn func() (R1, R2, R3, R4)) {
+	if m.fnWhen == nil {
+		m.fnWhen = func(T1, T2, T3, T4, T5, T6, []T7) bool { return true }
+	}
+	m.fnReturn = fn
+}
+
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) ReturnValue(r1 R1, r2 R2, r3 R3, r4 R4) {
+	m.Return(func() (R1, R2, R3, R4) { return r1, r2, r3, r4 })
+}
+
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) ReturnDefault() {
+	m.Return(func() (r1 R1, r2 R2, r3 R3, r4 R4) { return r1, r2, r3, r4 })
+}
+
+// VarInvoker74 implements Invoker for VarMocker74.
+type VarInvoker74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any] struct {
+	*VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]
+}
+
+// Invoke dispatches the call to the configured handler or return function.
+func (m *VarInvoker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]) Invoke(params []any) ([]any, bool) {
+	if m.fnHandle != nil {
+		r1, r2, r3, r4 := m.fnHandle(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7))
+		return []any{r1, r2, r3, r4}, true
+	}
+	if m.fnWhen != nil {
+		if ok := m.fnWhen(params[0].(T1), params[1].(T2), params[2].(T3), params[3].(T4), params[4].(T5), params[5].(T6), params[6].([]T7)); ok {
+			r1, r2, r3, r4 := m.fnReturn()
+			return []any{r1, r2, r3, r4}, true
+		}
+	}
+	return nil, false
+}
+
+// VarFunc74 creates a new VarMocker74 and registers it with the Manager.
+func VarFunc74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any](f func(T1, T2, T3, T4, T5, T6, ...T7) (R1, R2, R3, R4), r *Manager) *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4] {
+	PatchOnce(f)
+	m := &VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{}
+	i := &VarInvoker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{VarMocker74: m}
+	r.addInvoker(nil, f, i)
+	return m
+}
+
+// VarMethod74 creates a new VarMocker74 for mocking a method on a receiver.
+func VarMethod74[T1, T2, T3, T4, T5, T6, T7 any, R1, R2, R3, R4 any](receiver any, f func(T1, T2, T3, T4, T5, T6, ...T7) (R1, R2, R3, R4), r *Manager) *VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4] {
+	m := &VarMocker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{}
+	i := &VarInvoker74[T1, T2, T3, T4, T5, T6, T7, R1, R2, R3, R4]{VarMocker74: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }

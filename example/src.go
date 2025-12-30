@@ -32,26 +32,26 @@ type Response struct {
 	Value int
 }
 
-type GenericService[T any, R any] interface {
+type GenericService[R any, S any] interface {
 	io.Writer
-	M00()
-	M01() R
-	M10(T)
-	M11(T) R
-	M02() (R, bool)
-	M12(T) (R, bool)
-	M22(ctx context.Context, req map[string]T) (*Response, bool)
+	Init()
+	Default() S
+	TryDefault() (S, bool)
+	Accept(R)
+	Convert(R) S
+	TryConvert(R) (S, bool)
+	Process(context.Context, map[string]R) (S, error)
 	Printf(format string, args ...any)
 }
 
 type Service interface {
 	io.Writer
-	M00()
-	M01() *Response
-	M10(*exp.Request)
-	M11(*exp.Request) *Response
-	M02() (*Response, bool)
-	M12(*exp.Request) (*Response, bool)
-	M22(ctx context.Context, req map[string]*exp.Request) (*Response, bool)
+	Init()
+	Default() *Response
+	TryDefault() (*Response, bool)
+	Accept(*exp.Request)
+	Convert(*exp.Request) *Response
+	TryConvert(*exp.Request) (*Response, bool)
+	Process(context.Context, map[string]*exp.Request) (*Response, error)
 	Printf(format string, args ...any)
 }

@@ -20,11 +20,11 @@ import (
 	"net/http"
 )
 
-type Repository[T ~int | ~uint, M *http.Request] interface {
+type Repository[T ~int | ~uint, Req *http.Request] interface {
 	FindByID(id string) (T, error)
 	Save(item T) error
 }
 
-type RepositoryV2[T ~int | ~uint, M *http.Request] interface {
-	Repository[T, M]
+type RepositoryV2[T ~int | ~uint, Req *http.Request] interface {
+	Repository[T, Req]
 }

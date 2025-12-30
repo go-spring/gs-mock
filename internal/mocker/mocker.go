@@ -30,11 +30,11 @@ import (
 // where this source file resides. This ensures that relative paths
 // used later in the program (e.g., for output) are resolved correctly.
 func init() {
-	var execDir string
 	_, filename, _, ok := runtime.Caller(0)
-	if ok {
-		execDir = filepath.Dir(filename)
+	if !ok {
+		panic("cannot determine caller directory")
 	}
+	execDir := filepath.Dir(filename)
 	err := os.Chdir(execDir)
 	if err != nil {
 		panic(err)
@@ -43,7 +43,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(workDir)
+	fmt.Println("working directory:", workDir)
 }
 
 func main() {
@@ -57,7 +57,7 @@ func main() {
 	`)
 
 	const (
-		MaxParamCount  = 6
+		MaxParamCount  = 7
 		MaxResultCount = 4
 	)
 
@@ -66,94 +66,130 @@ func main() {
 	const (
 		MaxParamCount  = %d
 		MaxResultCount = %d
-	)`, MaxParamCount, MaxResultCount))
+	)
+	`, MaxParamCount, MaxResultCount))
 
-	for i := 1; i <= MaxParamCount; i++ {
+	for i := 0; i <= MaxParamCount; i++ {
 		for j := 0; j <= MaxResultCount; j++ {
 			mockerName := fmt.Sprintf("Mocker%d%d", i, j)
 			invokerName := fmt.Sprintf("Invoker%d%d", i, j)
-			factoryName := fmt.Sprintf("Mock%d%d", i, j)
+			funcMockName := fmt.Sprintf("Func%d%d", i, j)
+			methodMockName := fmt.Sprintf("Method%d%d", i, j)
 
 			varMockerName := fmt.Sprintf("VarMocker%d%d", i, j)
 			varInvokerName := fmt.Sprintf("VarInvoker%d%d", i, j)
-			varFactoryName := fmt.Sprintf("VarMock%d%d", i, j)
+			varFuncMockName := fmt.Sprintf("VarFunc%d%d", i, j)
+			varMethodMockName := fmt.Sprintf("VarMethod%d%d", i, j)
 
-			// Build type parameter lists for request arguments.
-			req := make([]string, i)
-			funcReq := make([]string, i)
-			varReq := make([]string, i)
-			varFuncReq := make([]string, i)
-			tmplReq := make([]string, i)
+			reqArray := make([]string, i)
+			varReqArray := make([]string, i)
+			funcReqArray := make([]string, i)
+			varFuncReqArray := make([]string, i)
 			for k := 0; k < i; k++ {
-				v := "T" + fmt.Sprint(k+1)
-				req[k] = v
-				funcReq[k] = v
-				varReq[k] = v
-				varFuncReq[k] = v
+				reqArray[k] = fmt.Sprintf("T%d", k+1)
+				varReqArray[k] = fmt.Sprintf("T%d", k+1)
+				funcReqArray[k] = fmt.Sprintf("T%d", k+1)
+				varFuncReqArray[k] = fmt.Sprintf("T%d", k+1)
 				if k == i-1 {
-					varReq[k] = "[]" + varReq[k]
-					varFuncReq[k] = "..." + varFuncReq[k]
+					varReqArray[k] = "[]" + varReqArray[k]
+					varFuncReqArray[k] = "..." + varFuncReqArray[k]
 				}
-				tmplReq[k] = v
 			}
 
-			// Build type parameter lists and identifiers for return values.
-			resp := make([]string, j)
-			respOnlyArg := make([]string, j)
-			respWithArg := make([]string, j)
+			// Build type parameter lists for request and response types.
+			respArray := make([]string, j)
+			respVars := make([]string, j)
+			respParams := make([]string, j)
 			for k := 0; k < j; k++ {
-				resp[k] = "R" + fmt.Sprint(k+1)
-				respOnlyArg[k] = "r" + fmt.Sprint(k+1)
-				respWithArg[k] = respOnlyArg[k] + " " + resp[k]
+				respArray[k] = fmt.Sprintf("R%d", k+1)
+				respVars[k] = fmt.Sprintf("r%d", k+1)
+				respParams[k] = respVars[k] + " " + respArray[k]
+			}
+
+			typeArgs := ""
+			typeParams := ""
+			if len(reqArray) > 0 {
+				typeArgs += strings.Join(reqArray, ", ")
+				typeParams += strings.Join(reqArray, ", ") + " any"
+			}
+			if len(respArray) > 0 {
+				if typeArgs != "" {
+					typeArgs += ", "
+					typeParams += ", "
+				}
+				typeArgs += strings.Join(respArray, ", ")
+				typeParams += strings.Join(respArray, ", ") + " any"
+			}
+			if typeArgs != "" {
+				typeArgs = "[" + typeArgs + "]"
+			}
+			if typeParams != "" {
+				typeParams = "[" + typeParams + "]"
 			}
 
 			// Build type assertions for converting []any to typed arguments.
-			cvtParams := make([]string, i)
-			varCvtParams := make([]string, i)
+			invokerArgs := make([]string, i)
+			varInvokerArgs := make([]string, i)
 			for k := 0; k < i; k++ {
-				cvtParams[k] = "params[" + fmt.Sprint(k) + "].(T" + fmt.Sprint(k+1) + ")"
-				if k == i-1 {
-					varCvtParams[k] = "params[" + fmt.Sprint(k) + "].([]T" + fmt.Sprint(k+1) + ")"
+				invokerArgs[k] = fmt.Sprintf("params[%d].(T%d)", k, k+1)
+				if k < i-1 {
+					varInvokerArgs[k] = fmt.Sprintf("params[%d].(T%d)", k, k+1)
 				} else {
-					varCvtParams[k] = "params[" + fmt.Sprint(k) + "].(T" + fmt.Sprint(k+1) + ")"
+					varInvokerArgs[k] = fmt.Sprintf("params[%d].([]T%d)", k, k+1)
 				}
+			}
+
+			req := strings.Join(reqArray, ", ")
+			resp := strings.Join(respArray, ", ")
+			if resp != "" {
+				resp = "(" + resp + ")"
+			}
+
+			varReq := strings.Join(varReqArray, ", ")
+			varResp := strings.Join(respArray, ", ")
+			if varResp != "" {
+				varResp = "(" + varResp + ")"
 			}
 
 			// Prepare template data.
 			data := map[string]any{
-				"mockerName":  mockerName,
-				"invokerName": invokerName,
-				"factoryName": factoryName,
-				"tmplReq":     strings.Join(tmplReq, ", "),
-				"req":         strings.Join(req, ", "),
-				"funcReq":     strings.Join(funcReq, ", "),
-				"resp":        strings.Join(resp, ", "),
-				"respOnlyArg": strings.Join(respOnlyArg, ", "),
-				"respWithArg": strings.Join(respWithArg, ", "),
-				"cvtParams":   strings.Join(cvtParams, ", "),
+				"mockerName":     mockerName,
+				"invokerName":    invokerName,
+				"typeArgs":       typeArgs,
+				"typeParams":     typeParams,
+				"funcMockName":   funcMockName,
+				"methodMockName": methodMockName,
+				"req":            req,
+				"funcReq":        strings.Join(funcReqArray, ", "),
+				"resp":           resp,
+				"respVars":       strings.Join(respVars, ", "),
+				"respParams":     strings.Join(respParams, ", "),
+				"invokerArgs":    strings.Join(invokerArgs, ", "),
 			}
 
 			// Execute the appropriate template for this (i, j).
-			if err := getMockTemplate(j).Execute(s, data); err != nil {
+			if err := tmplMock.Execute(s, data); err != nil {
 				panic(fmt.Errorf("error executing template(%s): %w", mockerName, err))
 			}
 
 			// Prepare template data.
 			data = map[string]any{
-				"mockerName":  varMockerName,
-				"invokerName": varInvokerName,
-				"factoryName": varFactoryName,
-				"tmplReq":     strings.Join(tmplReq, ", "),
-				"req":         strings.Join(varReq, ", "),
-				"funcReq":     strings.Join(varFuncReq, ", "),
-				"resp":        strings.Join(resp, ", "),
-				"respOnlyArg": strings.Join(respOnlyArg, ", "),
-				"respWithArg": strings.Join(respWithArg, ", "),
-				"cvtParams":   strings.Join(varCvtParams, ", "),
+				"mockerName":     varMockerName,
+				"invokerName":    varInvokerName,
+				"typeArgs":       typeArgs,
+				"typeParams":     typeParams,
+				"funcMockName":   varFuncMockName,
+				"methodMockName": varMethodMockName,
+				"req":            varReq,
+				"funcReq":        strings.Join(varFuncReqArray, ", "),
+				"resp":           varResp,
+				"respVars":       strings.Join(respVars, ", "),
+				"respParams":     strings.Join(respParams, ", "),
+				"invokerArgs":    strings.Join(varInvokerArgs, ", "),
 			}
 
 			// Execute the appropriate template for this (i, j).
-			if err := getMockTemplate(j).Execute(s, data); err != nil {
+			if err := tmplMock.Execute(s, data); err != nil {
 				panic(fmt.Errorf("error executing template(%s): %w", varMockerName, err))
 			}
 		}

@@ -21,7 +21,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"testing"
 
 	exp "github.com/go-spring/gs-mock/example/inner"
@@ -32,13 +31,18 @@ import (
 type ItemType int
 
 func TestRepositoryMockImpl_FindByID(t *testing.T) {
-	s := NewRepositoryMockImpl[ItemType](gsmock.NewManager())
+	r := gsmock.NewManager()
+	s := NewRepositoryMockImpl[ItemType](r)
 
 	assert.Panic(t, func() {
 		_, _ = s.FindByID("1")
-	}, "no mock code matched")
+	}, "no mock code matched for RepositoryMockImpl.FindByID")
 
-	s.MockFindByID().Handle(func(r *RepositoryMockImpl[ItemType, *http.Request], s string) (ItemType, error) {
+	// Test parameter matching in handle and then return result
+	s.MockFindByID().Handle(func(id string) (ItemType, error) {
+		if id == "2" {
+			return ItemType(777), nil
+		}
 		return ItemType(666), nil
 	})
 
@@ -46,268 +50,326 @@ func TestRepositoryMockImpl_FindByID(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, v, ItemType(666))
 
-	s.MockFindByID().Handle(func(r *RepositoryMockImpl[ItemType, *http.Request], s string) (ItemType, error) {
-		return ItemType(666), nil
+	v, err = s.FindByID("2")
+	assert.Nil(t, err)
+	assert.Equal(t, v, ItemType(777))
+
+	v, err = s.FindByID("2")
+	assert.Nil(t, err)
+	assert.Equal(t, v, ItemType(777))
+
+	// This mock is not effective because there is already a mock
+	s.MockFindByID().Handle(func(s string) (ItemType, error) {
+		return ItemType(555), nil
 	})
 
-	assert.Panic(t, func() {
-		_, _ = s.FindByID("1")
-	}, "found multiple Handle functions for .*FindByID")
+	v, err = s.FindByID("2")
+	assert.Nil(t, err)
+	assert.Equal(t, v, ItemType(777))
 }
 
 func TestRepositoryMockImpl_Save(t *testing.T) {
-	s := NewRepositoryMockImpl[ItemType](gsmock.NewManager())
+	r := gsmock.NewManager()
+	s1 := NewRepositoryMockImpl[ItemType](r)
+	s2 := NewRepositoryMockImpl[ItemType](r)
 
 	assert.Panic(t, func() {
-		_ = s.Save(ItemType(666))
-	}, "no mock code matched")
+		_ = s2.Save(ItemType(666))
+	}, "no mock code matched for RepositoryMockImpl.Save")
 
-	s.MockSave().Handle(func(r *RepositoryMockImpl[ItemType, *http.Request], v ItemType) error {
+	s1.MockSave().Handle(func(v ItemType) error {
 		return errors.New("error")
 	})
 
-	err := s.Save(ItemType(666))
+	err := s1.Save(ItemType(666))
 	assert.Equal(t, err.Error(), "error")
-}
 
-func TestGenericServiceMockImpl_M00(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M00()
-	}, "no mock code matched")
-
-	s.MockM00().ReturnDefault()
-	s.M00()
-}
-
-func TestGenericServiceMockImpl_M01(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M01()
-	}, "no mock code matched")
-
-	s.MockM01().Handle(func(g *GenericServiceMockImpl[string, int]) int {
-		return 5
+	// Test that different interface instances return their own
+	// results when mocking the same method
+	s2.MockSave().Handle(func(v ItemType) error {
+		return nil
 	})
 
-	resp := s.M01()
-	assert.Equal(t, resp, 5)
+	err = s2.Save(ItemType(666))
+	assert.Nil(t, err)
 }
 
-func TestGenericServiceMockImpl_M10(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M10("")
-	}, "no mock code matched")
-
-	s.MockM10().ReturnDefault()
-	s.M10("abc")
-}
-
-func TestGenericServiceMockImpl_M11(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M11("")
-	}, "no mock code matched")
-
-	s.MockM11().Handle(func(g *GenericServiceMockImpl[string, int], s string) int {
-		return 5
-	})
-
-	resp := s.M11("abc")
-	assert.Equal(t, resp, 5)
-}
-
-func TestGenericServiceMockImpl_M02(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M02()
-	}, "no mock code matched")
-
-	s.MockM02().Handle(func(g *GenericServiceMockImpl[string, int]) (int, bool) {
-		return 5, false
-	})
-
-	resp, ok := s.M02()
-	assert.Equal(t, ok, false)
-	assert.Equal(t, resp, 5)
-}
-
-func TestGenericServiceMockImpl_M12(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M12("")
-	}, "no mock code matched")
-
-	s.MockM12().Handle(func(g *GenericServiceMockImpl[string, int], s string) (int, bool) {
-		return 5, false
-	})
-
-	resp, ok := s.M12("abc")
-	assert.Equal(t, ok, false)
-	assert.Equal(t, resp, 5)
-}
-
-func TestGenericServiceMockImpl_M22(t *testing.T) {
+func TestGenericServiceMockImpl_Init(t *testing.T) {
 	r := gsmock.NewManager()
 	s := NewGenericServiceMockImpl[string, int](r)
-	ctx := r.WithManager(t.Context())
 
 	assert.Panic(t, func() {
-		s.M22(ctx, map[string]string{})
-	}, "no mock code matched")
+		s.Init()
+	}, "no mock code matched for GenericServiceMockImpl.Init")
 
-	s.MockM22().Handle(func(g *GenericServiceMockImpl[string, int], ctx context.Context, m map[string]string) (*Response, bool) {
-		return &Response{Value: 5}, false
-	})
-
-	resp, ok := s.M22(ctx, map[string]string{})
-	assert.Equal(t, ok, false)
-	assert.Equal(t, resp.Value, 5)
+	// Test mocking methods after generic interface instantiation
+	s.MockInit().ReturnDefault()
+	s.Init()
 }
 
-func TestGenericServiceMockImpl_Print(t *testing.T) {
-	s := NewGenericServiceMockImpl[string, int](gsmock.NewManager())
+func TestGenericServiceMockImpl_Default(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewGenericServiceMockImpl[string, int](r)
+
+	assert.Panic(t, func() {
+		s.Default()
+	}, "no mock code matched for GenericServiceMockImpl.Default")
+
+	// Test mocking methods after generic interface instantiation
+	s.MockDefault().ReturnValue(5)
+
+	resp := s.Default()
+	assert.Equal(t, resp, 5)
+}
+
+func TestGenericServiceMockImpl_TryDefault(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewGenericServiceMockImpl[string, int](r)
+
+	assert.Panic(t, func() {
+		s.TryDefault()
+	}, "no mock code matched for GenericServiceMockImpl.TryDefault")
+
+	s.MockTryDefault().Handle(func() (int, bool) {
+		return 5, true
+	})
+
+	resp, ok := s.TryDefault()
+	assert.Equal(t, ok, true)
+	assert.Equal(t, resp, 5)
+}
+
+func TestGenericServiceMockImpl_Accept(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewGenericServiceMockImpl[string, int](r)
+
+	assert.Panic(t, func() {
+		s.Accept("")
+	}, "no mock code matched for GenericServiceMockImpl.Accept")
+
+	// Test mocking methods after generic interface instantiation
+	s.MockAccept().Return(func() {})
+	s.Accept("abc")
+}
+
+func TestGenericServiceMockImpl_Convert(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewGenericServiceMockImpl[string, int](r)
+
+	assert.Panic(t, func() {
+		s.Convert("")
+	}, "no mock code matched for GenericServiceMockImpl.Convert")
+
+	s.MockConvert().When(func(s string) bool {
+		return s == "abc"
+	}).Return(func() int {
+		return 5
+	})
+
+	s.MockConvert().When(func(s string) bool {
+		return s == "123"
+	}).Return(func() int {
+		return 10
+	})
+
+	resp := s.Convert("abc")
+	assert.Equal(t, resp, 5)
+
+	resp = s.Convert("123")
+	assert.Equal(t, resp, 10)
+
+	// Test when/then combination, if the first match succeeds,
+	// return the result, otherwise return default result
+	assert.Panic(t, func() {
+		s.Convert("")
+	}, "no mock code matched for GenericServiceMockImpl.Convert")
+}
+
+func TestGenericServiceMockImpl_TryConvert(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewGenericServiceMockImpl[string, int](r)
+
+	assert.Panic(t, func() {
+		s.TryConvert("")
+	}, "no mock code matched for GenericServiceMockImpl.TryConvert")
+
+	s.MockTryConvert().Handle(func(s string) (int, bool) {
+		return 5, false
+	})
+
+	resp, ok := s.TryConvert("abc")
+	assert.Equal(t, ok, false)
+	assert.Equal(t, resp, 5)
+}
+
+func TestGenericServiceMockImpl_Process(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewGenericServiceMockImpl[string, int](r)
+
+	assert.Panic(t, func() {
+		_, _ = s.Process(context.Background(), map[string]string{})
+	}, "no mock code matched for GenericServiceMockImpl.Process")
+
+	s.MockProcess().Handle(func(ctx context.Context, m map[string]string) (int, error) {
+		return 5, nil
+	})
+
+	// Test interface implementation method mock that does not depend on ctx
+	resp, err := s.Process(context.Background(), map[string]string{})
+	assert.Nil(t, err)
+	assert.Equal(t, resp, 5)
+}
+
+func TestGenericServiceMockImpl_Printf(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewGenericServiceMockImpl[string, int](r)
 
 	assert.Panic(t, func() {
 		s.Printf("%s\n", "123")
-	}, "no mock code matched")
+	}, "no mock code matched for GenericServiceMockImpl.Printf")
 
 	var buf bytes.Buffer
-	s.MockPrintf().Handle(func(g *GenericServiceMockImpl[string, int], format string, args []any) {
+	s.MockPrintf().Handle(func(format string, args []any) {
 		buf.WriteString(fmt.Sprintf(format, args...))
 	})
 
-	s.Printf("%s\n", "123")
-	assert.Equal(t, buf.String(), "123\n")
+	// Test variadic parameter method mock
+	s.Printf("%s:%s\n", "123", "456")
+	assert.Equal(t, buf.String(), "123:456\n")
 }
 
-func TestServiceMockImpl_M00(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M00()
-	}, "no mock code matched")
-
-	s.MockM00().ReturnDefault()
-	s.M00()
-}
-
-func TestServiceMockImpl_M01(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M01()
-	}, "no mock code matched")
-
-	s.MockM01().Handle(func(impl *ServiceMockImpl) *Response {
-		return &Response{Value: 5}
-	})
-
-	resp := s.M01()
-	assert.Equal(t, resp.Value, 5)
-}
-
-func TestServiceMockImpl_M10(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M10(&exp.Request{})
-	}, "no mock code matched")
-
-	s.MockM10().ReturnDefault()
-	s.M10(&exp.Request{})
-}
-
-func TestServiceMockImpl_M11(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M11(&exp.Request{})
-	}, "no mock code matched")
-
-	s.MockM11().Handle(func(impl *ServiceMockImpl, req *exp.Request) *Response {
-		return &Response{Value: 5}
-	})
-
-	resp := s.M11(&exp.Request{})
-	assert.Equal(t, resp.Value, 5)
-}
-
-func TestServiceMockImpl_M02(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M02()
-	}, "no mock code matched")
-
-	s.MockM02().Handle(func(impl *ServiceMockImpl) (*Response, bool) {
-		return &Response{Value: 5}, false
-	})
-
-	resp, ok := s.M02()
-	assert.Equal(t, ok, false)
-	assert.Equal(t, resp.Value, 5)
-}
-
-func TestServiceMockImpl_M12(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
-
-	assert.Panic(t, func() {
-		s.M12(&exp.Request{})
-	}, "no mock code matched")
-
-	s.MockM12().Handle(func(impl *ServiceMockImpl, req *exp.Request) (*Response, bool) {
-		return &Response{Value: 5}, false
-	})
-
-	resp, ok := s.M12(&exp.Request{})
-	assert.Equal(t, ok, false)
-	assert.Equal(t, resp.Value, 5)
-}
-
-func TestServiceMockImpl_M22(t *testing.T) {
+func TestServiceMockImpl_Init(t *testing.T) {
 	r := gsmock.NewManager()
 	s := NewServiceMockImpl(r)
-	ctx := r.WithManager(t.Context())
 
 	assert.Panic(t, func() {
-		s.M22(ctx, map[string]*exp.Request{})
-	}, "no mock code matched")
+		s.Init()
+	}, "no mock code matched for ServiceMockImpl.Init")
 
-	s.MockM22().Handle(func(impl *ServiceMockImpl, ctx context.Context, m map[string]*exp.Request) (*Response, bool) {
+	s.MockInit().ReturnDefault()
+	s.Init()
+}
+
+func TestServiceMockImpl_Default(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewServiceMockImpl(r)
+
+	assert.Panic(t, func() {
+		s.Default()
+	}, "no mock code matched for ServiceMockImpl.Default")
+
+	s.MockDefault().Handle(func() *Response {
+		return &Response{Value: 5}
+	})
+
+	resp := s.Default()
+	assert.Equal(t, resp.Value, 5)
+}
+
+func TestServiceMockImpl_TryDefault(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewServiceMockImpl(r)
+
+	assert.Panic(t, func() {
+		s.TryDefault()
+	}, "no mock code matched for ServiceMockImpl.TryDefault")
+
+	s.MockTryDefault().Handle(func() (*Response, bool) {
 		return &Response{Value: 5}, false
 	})
 
-	resp, ok := s.M22(ctx, map[string]*exp.Request{})
+	resp, ok := s.TryDefault()
 	assert.Equal(t, ok, false)
 	assert.Equal(t, resp.Value, 5)
 }
 
-func TestServiceMockImpl_Print(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
+func TestServiceMockImpl_Accept(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewServiceMockImpl(r)
 
 	assert.Panic(t, func() {
-		s.Printf("%s\n", "123")
-	}, "no mock code matched")
+		s.Accept(&exp.Request{})
+	}, "no mock code matched for ServiceMockImpl.Accept")
 
-	var buf bytes.Buffer
-	s.MockPrintf().Handle(func(impl *ServiceMockImpl, format string, args []any) {
-		buf.WriteString(fmt.Sprintf(format, args...))
+	s.MockAccept().ReturnDefault()
+	s.Accept(&exp.Request{})
+}
+
+func TestServiceMockImpl_Convert(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewServiceMockImpl(r)
+
+	assert.Panic(t, func() {
+		s.Convert(&exp.Request{})
+	}, "no mock code matched for ServiceMockImpl.Convert")
+
+	s.MockConvert().Handle(func(req *exp.Request) *Response {
+		return &Response{Value: 5}
 	})
 
-	s.Printf("%s\n", "123")
-	assert.Equal(t, buf.String(), "123\n")
+	resp := s.Convert(&exp.Request{})
+	assert.Equal(t, resp.Value, 5)
+}
+
+func TestServiceMockImpl_TryConvert(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewServiceMockImpl(r)
+
+	assert.Panic(t, func() {
+		s.TryConvert(&exp.Request{})
+	}, "no mock code matched for ServiceMockImpl.TryConvert")
+
+	s.MockTryConvert().Handle(func(req *exp.Request) (*Response, bool) {
+		return &Response{Value: 5}, false
+	})
+
+	resp, ok := s.TryConvert(&exp.Request{})
+	assert.Equal(t, ok, false)
+	assert.Equal(t, resp.Value, 5)
+}
+
+func TestServiceMockImpl_Process(t *testing.T) {
+	r := gsmock.NewManager()
+	s := NewServiceMockImpl(r)
+
+	assert.Panic(t, func() {
+		_, _ = s.Process(context.Background(), map[string]*exp.Request{})
+	}, "no mock code matched for ServiceMockImpl.Process")
+
+	s.MockProcess().Handle(func(ctx context.Context, m map[string]*exp.Request) (*Response, error) {
+		return &Response{Value: 5}, nil
+	})
+
+	resp, err := s.Process(context.Background(), map[string]*exp.Request{})
+	assert.Nil(t, err)
+	assert.Equal(t, resp.Value, 5)
+}
+
+func TestServiceMockImpl_Printf(t *testing.T) {
+	r := gsmock.NewManager()
+	s1 := NewServiceMockImpl(r)
+	s2 := NewServiceMockImpl(r)
+
+	assert.Panic(t, func() {
+		s1.Printf("%s\n", "123")
+	}, "no mock code matched for ServiceMockImpl.Printf")
+
+	var buf bytes.Buffer
+	s1.MockPrintf().Handle(func(format string, args []any) {
+		buf.WriteString(fmt.Sprintf(format, args...))
+	})
+	s2.MockPrintf().Handle(func(format string, args []any) {
+		buf.WriteString("abc")
+	})
+
+	s1.Printf("%s:%s\n", "123", "456")
+	s2.Printf("%s\n", "123")
+	assert.Equal(t, buf.String(), "123:456\nabc")
 }
 
 func TestServiceMockImpl_Writer(t *testing.T) {
-	s := NewServiceMockImpl(gsmock.NewManager())
+	r := gsmock.NewManager()
+	s := NewServiceMockImpl(r)
 
 	assert.Panic(t, func() {
 		_, _ = s.Write([]byte("123"))

@@ -20,175 +20,79 @@ import (
 	"text/template"
 )
 
-// getMockTemplate returns the appropriate template
-// based on the number of return values.
-func getMockTemplate(j int) *template.Template {
-	if j == 0 {
-		return tmplMockN0
-	}
-	return tmplMockNN
-}
-
-// tmplMockN0 for N request parameters, returns nothing.
-var tmplMockN0 = template.Must(template.New("MockN0").Parse(`
+var tmplMock = template.Must(template.New("").Parse(`
 /******************************** {{.mockerName}} ***********************************/
 
-type {{.mockerName}}[{{.tmplReq}} any] struct {
-	fnHandle func({{.req}})
+// {{.mockerName}} provides a configurable mock for the target function.
+type {{.mockerName}}{{.typeParams}} struct {
+	fnHandle func({{.req}}) {{.resp}}
 	fnWhen   func({{.req}}) bool
-	fnReturn func()
+	fnReturn func() {{.resp}}
 }
 
-// Handle sets a custom function to handle requests.
-func (m *{{.mockerName}}[{{.tmplReq}}]) Handle(fn func({{.req}})) {
+// Handle sets a custom handler function for intercepted calls.
+func (m *{{.mockerName}}{{.typeArgs}}) Handle(fn func({{.req}}) {{.resp}}) {
 	m.fnHandle = fn
 }
 
-// When sets a condition function that determines if the mock should apply.
-func (m *{{.mockerName}}[{{.tmplReq}}]) When(fn func({{.req}}) bool) *{{.mockerName}}[{{.tmplReq}}] {
+// When sets a predicate function that determines whether the mock applies.
+func (m *{{.mockerName}}{{.typeArgs}}) When(fn func({{.req}}) bool) *{{.mockerName}}{{.typeArgs}} {
 	m.fnWhen = fn
 	return m
 }
 
-// Return sets a function that returns predefined values.
-func (m *{{.mockerName}}[{{.tmplReq}}]) Return(fn func()) {
+// Return sets a function that produces return values when the mock is matched.
+func (m *{{.mockerName}}{{.typeArgs}}) Return(fn func() {{.resp}}) {
 	if m.fnWhen == nil {
 		m.fnWhen = func({{.req}}) bool { return true }
 	}
 	m.fnReturn = fn
 }
 
-// ReturnValue sets a return function with predefined values.
-func (m *{{.mockerName}}[{{.tmplReq}}]) ReturnValue() {
-	m.Return(func() {})
+// ReturnValue is a convenience wrapper around Return that uses fixed values.
+func (m *{{.mockerName}}{{.typeArgs}}) ReturnValue({{.respParams}}) {
+	m.Return(func() {{.resp}} { {{if .respVars}} return {{.respVars}} {{end}} })
 }
 
-// ReturnDefault sets a return function that returns zero values for all return types.
-func (m *{{.mockerName}}[{{.tmplReq}}]) ReturnDefault() {
-	m.Return(func() {})
+// ReturnDefault configures the mock to return zero values for all return types.
+func (m *{{.mockerName}}{{.typeArgs}}) ReturnDefault() {
+	m.Return(func() ({{.respParams}}) { {{if .respVars}} return {{.respVars}} {{end}} })
 }
 
-// {{.invokerName}} is an Invoker implementation for {{.mockerName}}.
-type {{.invokerName}}[{{.tmplReq}} any] struct {
-	*{{.mockerName}}[{{.tmplReq}}]
+// {{.invokerName}} implements Invoker for {{.mockerName}}.
+type {{.invokerName}}{{.typeParams}} struct {
+	*{{.mockerName}}{{.typeArgs}}
 }
 
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *{{.invokerName}}[{{.tmplReq}}]) Mode() Mode {
+// Invoke dispatches the call to the configured handler or return function.
+func (m *{{.invokerName}}{{.typeArgs}}) Invoke(params []any) ([]any, bool) {
 	if m.fnHandle != nil {
-		return ModeHandle
+		{{if .respVars}} {{.respVars}} := {{end}} m.fnHandle({{.invokerArgs}})
+		return []any{ {{if .respVars}} {{.respVars}} {{end}} }, true
 	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.tmplReq}}]) Handle(params []any) []any {
-	m.fnHandle({{.cvtParams}})
-	return []any{}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *{{.invokerName}}[{{.tmplReq}}]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
+	if m.fnWhen != nil {
+		if ok := m.fnWhen({{.invokerArgs}}); ok {
+			{{if .respVars}} {{.respVars}} := {{end}} m.fnReturn()
+			return []any{ {{if .respVars}} {{.respVars}} {{end}} }, true
+		}
 	}
-	return m.fnWhen({{.cvtParams}})
+	return nil, false
 }
 
-// Return provides predefined response and error values.
-func (m *{{.invokerName}}[{{.tmplReq}}]) Return() []any {
-	m.fnReturn()
-	return []any{}
-}
-
-// {{.factoryName}} creates a new {{.mockerName}} instance.
-func {{.factoryName}}[{{.tmplReq}} any](f func({{.funcReq}}), r *Manager) *{{.mockerName}}[{{.tmplReq}}] {
+// {{.funcMockName}} creates a new {{.mockerName}} and registers it with the Manager.
+func {{.funcMockName}}{{.typeParams}}(f func({{.funcReq}}) {{.resp}}, r *Manager) *{{.mockerName}}{{.typeArgs}} {
 	PatchOnce(f)
-	m := &{{.mockerName}}[{{.tmplReq}}]{}
-	i := &{{.invokerName}}[{{.tmplReq}}]{ {{.mockerName}}: m}
-	r.addMocker(f, i)
-	return m
-}
-`))
-
-// tmplMockNN for N request parameters, returns N values.
-var tmplMockNN = template.Must(template.New("MockNN").Parse(`
-/******************************** {{.mockerName}} ***********************************/
-
-type {{.mockerName}}[{{.tmplReq}} any, {{.resp}} any] struct {
-	fnHandle func({{.req}}) ({{.resp}})
-	fnWhen   func({{.req}}) bool
-	fnReturn func() ({{.resp}})
-}
-
-// Handle sets a custom function to handle requests.
-func (m *{{.mockerName}}[{{.tmplReq}}, {{.resp}}]) Handle(fn func({{.req}}) ({{.resp}})) {
-	m.fnHandle = fn
-}
-
-// When sets a condition function that determines if the mock should apply.
-func (m *{{.mockerName}}[{{.tmplReq}}, {{.resp}}]) When(fn func({{.req}}) bool) *{{.mockerName}}[{{.tmplReq}}, {{.resp}}] {
-	m.fnWhen = fn
+	m := &{{.mockerName}}{{.typeArgs}}{}
+	i := &{{.invokerName}}{{.typeArgs}}{ {{.mockerName}}: m}
+	r.addInvoker(nil, f, i)
 	return m
 }
 
-// Return sets a function that returns predefined values.
-func (m *{{.mockerName}}[{{.tmplReq}}, {{.resp}}]) Return(fn func() ({{.resp}})) {
-	if m.fnWhen == nil {
-		m.fnWhen = func({{.req}}) bool { return true }
-	}
-	m.fnReturn = fn
-}
-
-// ReturnValue sets a return function with predefined values.
-func (m *{{.mockerName}}[{{.tmplReq}}, {{.resp}}]) ReturnValue({{.respWithArg}}) {
-	m.Return(func() ({{.resp}}) { return {{.respOnlyArg}} })
-}
-
-// ReturnDefault sets a return function that returns zero values for all return types.
-func (m *{{.mockerName}}[{{.tmplReq}}, {{.resp}}]) ReturnDefault() {
-	m.Return(func() ({{.respWithArg}}) { return {{.respOnlyArg}} })
-}
-
-// {{.invokerName}} is an Invoker implementation for {{.mockerName}}.
-type {{.invokerName}}[{{.tmplReq}} any, {{.resp}} any] struct {
-	*{{.mockerName}}[{{.tmplReq}}, {{.resp}}]
-}
-
-// Mode determines whether the mock operates in Handle mode or WhenReturn mode.
-func (m *{{.invokerName}}[{{.tmplReq}}, {{.resp}}]) Mode() Mode {
-	if m.fnHandle != nil {
-		return ModeHandle
-	}
-	return ModeWhenReturn
-}
-
-// Handle executes the custom function if set.
-func (m *{{.invokerName}}[{{.tmplReq}}, {{.resp}}]) Handle(params []any) []any {
-	{{.respOnlyArg}} := m.fnHandle({{.cvtParams}})
-	return []any{ {{.respOnlyArg}}}
-}
-
-// When checks if the condition function evaluates to true.
-func (m *{{.invokerName}}[{{.tmplReq}}, {{.resp}}]) When(params []any) bool {
-	if m.fnWhen == nil {
-		return false
-	}
-	return m.fnWhen({{.cvtParams}})
-}
-
-// Return provides predefined response and error values.
-func (m *{{.invokerName}}[{{.tmplReq}}, {{.resp}}]) Return() []any {
-	{{.respOnlyArg}} := m.fnReturn()
-	return []any{ {{.respOnlyArg}}}
-}
-
-// {{.factoryName}} creates a new {{.mockerName}} instance.
-func {{.factoryName}}[{{.tmplReq}} any, {{.resp}} any](f func({{.funcReq}})({{.resp}}), r *Manager) *{{.mockerName}}[{{.tmplReq}}, {{.resp}}] {
-	PatchOnce(f)
-	m := &{{.mockerName}}[{{.tmplReq}}, {{.resp}}]{}
-	i := &{{.invokerName}}[{{.tmplReq}}, {{.resp}}]{ {{.mockerName}}: m}
-	r.addMocker(f, i)
+// {{.methodMockName}} creates a new {{.mockerName}} for mocking a method on a receiver.
+func {{.methodMockName}}{{.typeParams}}(receiver any, f func({{.funcReq}}) {{.resp}}, r *Manager) *{{.mockerName}}{{.typeArgs}} {
+	m := &{{.mockerName}}{{.typeArgs}}{}
+	i := &{{.invokerName}}{{.typeArgs}}{ {{.mockerName}}: m}
+	r.addInvoker(receiver, f, i)
 	return m
 }
 `))

@@ -32,8 +32,8 @@ func TestMockgen(t *testing.T) {
 		stdOut = bytes.NewBuffer(nil)
 		defer func() { stdOut = old }()
 
-		run(runParam{
-			sourceDir: "./testdata/all_default",
+		run(runConfig{
+			SourceDir: "./testdata/all_default",
 		})
 
 		b, err := os.ReadFile("./testdata/all_default/output.txt")
@@ -44,8 +44,8 @@ func TestMockgen(t *testing.T) {
 	// Test package name conflict scenario
 	t.Run("conflict_pkg_name", func(t *testing.T) {
 		assert.Panic(t, func() {
-			run(runParam{
-				sourceDir: "./testdata/conflict_pkg_name",
+			run(runConfig{
+				SourceDir: "./testdata/conflict_pkg_name",
 			})
 		}, "import package name conflict: stdio, io")
 	})
@@ -53,27 +53,27 @@ func TestMockgen(t *testing.T) {
 	// Test exceeding maximum allowed input parameters
 	t.Run("error_input_params", func(t *testing.T) {
 		assert.Panic(t, func() {
-			run(runParam{
-				sourceDir: "./testdata/error_input_params",
+			run(runConfig{
+				SourceDir: "./testdata/error_input_params",
 			})
-		}, "have more than 5 parameters")
+		}, "have more than 6 parameters")
 	})
 
 	// Test exceeding maximum allowed return values
 	t.Run("error_return_params", func(t *testing.T) {
 		assert.Panic(t, func() {
-			run(runParam{
-				sourceDir: "./testdata/error_return_params",
+			run(runConfig{
+				SourceDir: "./testdata/error_return_params",
 			})
 		}, "have more than 4 results")
 	})
 
 	// Test successful generation with interface filtering
 	t.Run("success", func(t *testing.T) {
-		run(runParam{
-			sourceDir:      "example",
-			outputFile:     "src_mock.go",
-			mockInterfaces: "'!RepositoryV2,,GenericService,Service,,Repository'",
+		run(runConfig{
+			SourceDir:      "example",
+			OutputFile:     "src_mock.go",
+			MockInterfaces: "'!RepositoryV2,,GenericService,Service,,Repository'",
 		})
 	})
 }

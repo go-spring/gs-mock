@@ -37,23 +37,24 @@ import (
 )
 
 // stdOut is the writer used for outputting the generated code.
-// By default, it writes to os.Stdout.
+// By default, it writes to os.Stdout,
+// but can be overridden for testing or redirection.
 var stdOut io.Writer = os.Stdout
 
 // ToolVersion specifies the version of this mock generation tool.
-const ToolVersion = "v0.0.6"
+const ToolVersion = "v0.0.7"
 
-// flagVar holds the command-line flag values for output file and interface selection.
-var flagVar struct {
-	outputFile     string // Path to the output Go file for generated mocks.
-	mockInterfaces string // Comma-separated list of interface names to mock.
+// flags holds the command-line flag values for output file and interface selection.
+var flags struct {
+	OutputFile     string // Path to the output Go file for generated mocks.
+	MockInterfaces string // Comma-separated list of interface names to mock.
 }
 
 func init() {
-	flag.StringVar(&flagVar.outputFile, "o", "", "Path to the output Go file. Defaults to stdout if not specified.")
-	flag.StringVar(&flagVar.outputFile, "output", "", "Alias for -o. Specifies the output file path for generated mocks.")
-	flag.StringVar(&flagVar.mockInterfaces, "i", "", "Comma-separated list of interface names to mock (e.g., 'Reader,Writer'). Prefix with '!' to exclude specific interfaces (e.g., '!Logger'). Defaults to mocking all interfaces.")
-	flag.StringVar(&flagVar.mockInterfaces, "interfaces", "", "Alias for -i. Specifies interfaces to include or exclude for mocking. Use '!' prefix for exclusions.")
+	flag.StringVar(&flags.OutputFile, "o", "", "Path to the output Go file. Defaults to stdout if not specified.")
+	flag.StringVar(&flags.OutputFile, "output", "", "Alias for -o. Specifies the output file path for generated mocks.")
+	flag.StringVar(&flags.MockInterfaces, "i", "", "Comma-separated list of interface names to mock (e.g., 'Reader,Writer'). Prefix with '!' to exclude specific interfaces (e.g., '!Logger'). Defaults to mocking all interfaces.")
+	flag.StringVar(&flags.MockInterfaces, "interfaces", "", "Alias for -i. Specifies interfaces to include or exclude for mocking. Use '!' prefix for exclusions.")
 }
 
 func main() {
@@ -63,39 +64,39 @@ func main() {
 		return
 	}
 	flag.Parse()
-	run(runParam{
-		sourceDir:      ".",
-		outputFile:     flagVar.outputFile,
-		mockInterfaces: flagVar.mockInterfaces,
+	run(runConfig{
+		SourceDir:      ".",
+		OutputFile:     flags.OutputFile,
+		MockInterfaces: flags.MockInterfaces,
 	})
 }
 
-// runParam holds configuration parameters for the generator.
-type runParam struct {
-	sourceDir      string // Directory containing source files to scan
-	outputFile     string // Path to output Go file for mocks
-	mockInterfaces string // Interface filtering string
+// runConfig holds configuration parameters for the generator.
+type runConfig struct {
+	SourceDir      string // Directory containing source Go files to scan.
+	OutputFile     string // Path to output Go file for generated mocks.
+	MockInterfaces string // Comma-separated interface filter string.
 }
 
 // run executes the main logic of scanning interfaces and generating mocks.
-func run(param runParam) {
+func run(param runConfig) {
 	ctx := scanContext{
-		outputFile:        param.outputFile,
-		includeInterfaces: make(map[string]struct{}),
-		excludeInterfaces: make(map[string]struct{}),
+		OutputFile:        param.OutputFile,
+		IncludeInterfaces: make(map[string]struct{}),
+		ExcludeInterfaces: make(map[string]struct{}),
 	}
 
-	// Parse user-defined interface filters
-	if s := param.mockInterfaces; len(s) > 0 {
+	// Parse interface filters
+	if s := param.MockInterfaces; len(s) > 0 {
 		if s[0] == '\'' || s[0] == '"' {
-			param.mockInterfaces = s[1 : len(s)-1] // Remove surrounding quotes
+			param.MockInterfaces = s[1 : len(s)-1] // Remove surrounding quotes
 		}
-		ctx.parse(param.mockInterfaces)
+		ctx.parse(param.MockInterfaces)
 	}
 
 	// Map of import path => package name to detect conflicts
-	pkgs := make(map[string]string)
-	interfaces := scanDir(param.sourceDir, ctx, pkgs)
+	pkgMap := make(map[string]string)
+	interfaces := scanDir(param.SourceDir, ctx, pkgMap)
 
 	// Collect necessary imports for generated mocks
 	imports := make(map[string]string)
@@ -119,14 +120,14 @@ func run(param runParam) {
 
 	// Build the command string for documentation
 	var toolCommand string
-	if len(param.outputFile) > 0 {
-		toolCommand += "-o " + param.outputFile
+	if len(param.OutputFile) > 0 {
+		toolCommand += "-o " + param.OutputFile
 	}
-	if len(param.mockInterfaces) > 0 {
-		toolCommand += " -i '" + param.mockInterfaces + "'"
+	if len(param.MockInterfaces) > 0 {
+		toolCommand += " -i '" + param.MockInterfaces + "'"
 	}
 
-	packageName := interfaces[0].PackageName
+	packageName := interfaces[0].Package
 
 	// Execute file header template
 	if err := tmplFileHeader.Execute(s, map[string]any{
@@ -141,15 +142,14 @@ func run(param runParam) {
 	// Generate code for each interface and its methods
 	for _, i := range interfaces {
 		if err := tmplInterface.Execute(s, i); err != nil {
-			panic(fmt.Errorf("error executing template(interface): %w", err))
+			panic(fmt.Errorf("error executing template(interface#%s): %w", i.Name, err))
 		}
 		for _, m := range i.Methods {
-			tmpl := getMethodTemplate(m.ResultCount)
-			if err := tmpl.Execute(s, map[string]any{
+			if err := tmplMethod.Execute(s, map[string]any{
 				"i": i,
 				"m": m,
 			}); err != nil {
-				panic(fmt.Errorf("error executing template(method): %w", err))
+				panic(fmt.Errorf("error executing template(method#%s): %w", m.Name, err))
 			}
 		}
 	}
@@ -162,12 +162,12 @@ func run(param runParam) {
 
 	// Output generated code to file or stdout
 	switch {
-	case param.outputFile == "":
+	case param.OutputFile == "":
 		if _, err = stdOut.Write(b); err != nil {
 			panic(fmt.Errorf("error writing to stdout: %w", err))
 		}
 	default:
-		outputFile := filepath.Join(param.sourceDir, param.outputFile)
+		outputFile := filepath.Join(param.SourceDir, param.OutputFile)
 		if err = os.WriteFile(outputFile, b, os.ModePerm); err != nil {
 			panic(fmt.Errorf("error writing to file(%s): %w", outputFile, err))
 		}
@@ -176,9 +176,9 @@ func run(param runParam) {
 
 // scanContext holds state and filters during interface scanning.
 type scanContext struct {
-	outputFile        string              // Output file path to skip during scan
-	includeInterfaces map[string]struct{} // Interfaces to include
-	excludeInterfaces map[string]struct{} // Interfaces to exclude
+	OutputFile        string
+	IncludeInterfaces map[string]struct{}
+	ExcludeInterfaces map[string]struct{}
 }
 
 // parse converts the comma-separated interface filter string into inclusion/exclusion maps.
@@ -191,26 +191,26 @@ func (ctx *scanContext) parse(mockInterfaces string) {
 			continue
 		}
 		if s[0] == '!' {
-			ctx.excludeInterfaces[s[1:]] = struct{}{}
+			ctx.ExcludeInterfaces[s[1:]] = struct{}{}
 		} else {
-			ctx.includeInterfaces[s] = struct{}{}
+			ctx.IncludeInterfaces[s] = struct{}{}
 		}
 	}
 }
 
 // mock determines whether a given interface name should be mocked.
 func (ctx *scanContext) mock(name string) bool {
-	if len(ctx.includeInterfaces) > 0 {
-		_, ok := ctx.includeInterfaces[name]
+	if len(ctx.IncludeInterfaces) > 0 {
+		_, ok := ctx.IncludeInterfaces[name]
 		return ok
 	}
-	_, ok := ctx.excludeInterfaces[name]
+	_, ok := ctx.ExcludeInterfaces[name]
 	return !ok
 }
 
 // Interface describes a mockable interface.
 type Interface struct {
-	PackageName     string            // Package name where the interface resides
+	Package         string            // Package name where the interface resides
 	Name            string            // Interface name
 	TypeParams      string            // Generic type parameters (e.g., "T any")
 	TypeParamNames  string            // Generic type names only (e.g., "T")
@@ -222,14 +222,15 @@ type Interface struct {
 
 // Method describes a single method within an interface.
 type Method struct {
-	Name        string // Method name
-	Var         string // "Var" if the method has variadic parameters
-	Params      string // Method parameters as string (e.g., "a int, b string")
-	ParamNames  string // Comma-separated parameter names only
-	ParamTypes  string // Comma-separated parameter types only
-	ParamCount  int    // Number of parameters
-	ResultTypes string // Comma-separated return types
-	ResultCount int    // Number of return values
+	Name            string // Method name
+	VariadicFlag    string // "Var" if the method has variadic parameters
+	Params          string // Method parameters as string (e.g., "a int, b string")
+	ParamNames      string // Comma-separated parameter names only
+	ParamCount      int    // Number of parameters
+	ResultTypes     string // Return types as a string (e.g., "(int, error)")
+	ResultTmplTypes string // Return types for template generation (e.g., "[int, error]")
+	ResultCount     int    // Number of return values
+	MockerTmplTypes string // Full template type parameters for the mocker
 }
 
 // scanDir scans the given directory for Go files and returns all interfaces to be mocked.
@@ -246,7 +247,7 @@ func scanDir(dir string, ctx scanContext, pkgs map[string]string) []Interface {
 		if strings.HasSuffix(entry.Name(), "_test.go") {
 			continue
 		}
-		if entry.Name() == ctx.outputFile {
+		if entry.Name() == ctx.OutputFile {
 			continue
 		}
 		arr := scanFile(ctx, filepath.Join(dir, entry.Name()), pkgs)
@@ -281,9 +282,8 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 		// Detect import conflicts
 		if v, ok := pkgs[pkgPath]; ok && v != pkgName {
 			panic(fmt.Sprintf("import package name conflict: %s, %s", v, pkgName))
-		} else {
-			pkgs[pkgPath] = pkgName
 		}
+		pkgs[pkgPath] = pkgName
 		totalImports[pkgName] = pkgPath
 	}
 
@@ -317,15 +317,15 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 
 			// Collect type parameters
 			var (
-				typeParams     []string
-				typeParamNames []string
+				typeParamArray     []string
+				typeParamNameArray []string
 			)
 			if s.TypeParams != nil {
 				for _, f := range s.TypeParams.List {
 					fName := f.Names[0].Name
 					typeText, pkgNames := getTypeText(f.Type)
-					typeParams = append(typeParams, fName+" "+typeText)
-					typeParamNames = append(typeParamNames, fName)
+					typeParamArray = append(typeParamArray, fName+" "+typeText)
+					typeParamNameArray = append(typeParamNameArray, fName)
 					putImport(pkgNames)
 				}
 			}
@@ -391,7 +391,7 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 					panic(fmt.Sprintf("have more than %d parameters", N))
 				}
 
-				var resultTypes []string
+				var resultTypeArray []string
 				if ft.Results != nil {
 					for _, result := range ft.Results.List {
 						var tempNames []string
@@ -405,7 +405,7 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 
 						typeText, pkgNames := getTypeText(result.Type)
 						for range tempNames {
-							resultTypes = append(resultTypes, typeText)
+							resultTypeArray = append(resultTypeArray, typeText)
 						}
 						putImport(pkgNames)
 						resultCount += len(tempNames)
@@ -416,29 +416,51 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 					panic(fmt.Sprintf("have more than %d results", gsmock.MaxResultCount))
 				}
 
-				// To keep the template simple, optionally add a trailing comma
-				strParamTypes := strings.Join(paramTypes, ", ")
-				if strParamTypes != "" {
-					strParamTypes += ", "
+				mockerTmplTypes := ""
+				if len(paramTypes) > 0 || len(resultTypeArray) > 0 {
+					mockerTmplTypes += strings.Join(paramTypes, ", ")
+					if mockerTmplTypes != "" {
+						mockerTmplTypes += ", "
+					}
+					mockerTmplTypes += strings.Join(resultTypeArray, ", ")
+					mockerTmplTypes = "[" + mockerTmplTypes + "]"
+				}
+
+				resultTypes := ""
+				resultTmplTypes := ""
+				if len(resultTypeArray) > 0 {
+					resultTypes = "(" + strings.Join(resultTypeArray, ", ") + ")"
+					resultTmplTypes = "[" + strings.Join(resultTypeArray, ", ") + "]"
 				}
 
 				methods = append(methods, Method{
-					Name:        methodName,
-					Var:         varText,
-					Params:      strings.Join(params, ", "),
-					ParamNames:  strings.Join(paramNames, ", "),
-					ParamTypes:  strParamTypes,
-					ParamCount:  paramCount + 1, // Add 1 to include the receiver
-					ResultTypes: strings.Join(resultTypes, ", "),
-					ResultCount: resultCount,
+					Name:            methodName,
+					VariadicFlag:    varText,
+					Params:          strings.Join(params, ", "),
+					ParamNames:      strings.Join(paramNames, ", "),
+					ParamCount:      paramCount,
+					ResultTypes:     resultTypes,
+					ResultTmplTypes: resultTmplTypes,
+					ResultCount:     resultCount,
+					MockerTmplTypes: mockerTmplTypes,
 				})
 			}
 
+			typeParams := ""
+			if len(typeParamArray) > 0 {
+				typeParams = "[" + strings.Join(typeParamArray, ", ") + "]"
+			}
+
+			typeParamNames := ""
+			if len(typeParamNameArray) > 0 {
+				typeParamNames = "[" + strings.Join(typeParamNameArray, ", ") + "]"
+			}
+
 			ret = append(ret, Interface{
-				PackageName:     node.Name.String(),
+				Package:         node.Name.String(),
 				Name:            name,
-				TypeParams:      strings.Join(typeParams, ", "),
-				TypeParamNames:  strings.Join(typeParamNames, ", "),
+				TypeParams:      typeParams,
+				TypeParamNames:  typeParamNames,
 				EmbedInterfaces: embedInterfaces,
 				Methods:         methods,
 				File:            file,

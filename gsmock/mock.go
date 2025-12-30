@@ -14,119 +14,152 @@
  * limitations under the License.
  */
 
+// Package gsmock provides function-level mocking based on
+// runtime function identification and invocation interception.
 package gsmock
 
 import (
 	"context"
 	"fmt"
 	"reflect"
-	"runtime"
 )
 
-// Mode represents the mocking mode of an Invoker.
-type Mode int
+type managerKeyType struct{}
 
-const (
-	// ModeHandle indicates that the Invoker uses a custom Handle function.
-	ModeHandle = Mode(iota)
-	// ModeWhenReturn indicates that the Invoker uses a When + Return mechanism.
-	ModeWhenReturn
-)
+var managerKey managerKeyType
 
-// Invoker defines the interface that all mock implementations must satisfy.
-type Invoker interface {
-	// Mode returns the mocking mode of the Invoker.
-	Mode() Mode
-	// When determines if the current mock applies to the given parameters.
-	When(params []any) bool
-	// Return returns the mock values.
-	Return() []any
-	// Handle executes the custom handler function and returns its results.
-	Handle(params []any) []any
-}
-
-// Manager manages a collection of mockers for top-level functions,
-// using function identifiers as map keys.
-type Manager struct {
-	mockers map[string][]Invoker
-}
-
-// NewManager creates and returns a new Manager instance.
-func NewManager() *Manager {
-	return &Manager{
-		mockers: make(map[string][]Invoker),
-	}
-}
-
-// Reset clears all mockers in the Manager.
-func (r *Manager) Reset() {
-	r.mockers = make(map[string][]Invoker)
-}
-
-var managerKey int
-
-// WithManager returns a new context with the Manager attached.
-func (r *Manager) WithManager(ctx context.Context) context.Context {
+// WithManager returns a new context with the given Manager attached.
+//
+// The Manager can later be retrieved by InvokeContext to dispatch mock calls.
+// The returned context should typically be passed through the call chain
+// where function interception is expected.
+func WithManager(ctx context.Context, r *Manager) context.Context {
 	return context.WithValue(ctx, &managerKey, r)
 }
 
-// GetFuncID returns a unique identifier string for a function.
-func GetFuncID(f any) string {
-	v := reflect.ValueOf(f)
-	e := runtime.FuncForPC(v.Pointer())
-	return e.Name() + ":" + v.Type().String()
+// Invoker defines the interface that all mock implementations must satisfy.
+//
+// Invoke receives the original function parameters and returns:
+//   - ret: the mocked return values
+//   - ok:  whether this Invoker matches the given parameters
+//
+// The first Invoker that returns ok == true will be used.
+type Invoker interface {
+	Invoke(params []any) ([]any, bool)
 }
 
-// addMocker registers a new Invoker for a specific function.
-func (r *Manager) addMocker(f any, i Invoker) {
-	k := GetFuncID(f)
+// funcKey is the composite key used to index mockers.
+//
+// fnPC identifies the function or method expression by its program counter (PC).
+// receiver is only used when mocking interface methods via generated code.
+//
+// receiver must be a pointer to a concrete struct type.
+// It is non-nil only in interface mocking scenarios.
+type funcKey struct {
+	receiver any
+	fnPC     uintptr
+}
+
+// newFuncKey creates a funcKey from a receiver and a function.
+// Passing a non-function value will cause a panic.
+func newFuncKey(receiver any, fn any) funcKey {
+	v := reflect.ValueOf(fn)
+	if v.Kind() != reflect.Func {
+		panic("mock target must be a function or method expression")
+	}
+	return funcKey{
+		receiver: receiver,
+		fnPC:     v.Pointer(),
+	}
+}
+
+// Manager manages a collection of mock Invokers keyed by function identity.
+//
+// Manager is NOT goroutine-safe.
+// All mock registrations must be completed before any concurrent logic starts.
+type Manager struct {
+	mockers map[funcKey][]Invoker
+}
+
+// NewManager creates and initializes a new Manager.
+func NewManager() *Manager {
+	m := &Manager{}
+	m.Reset()
+	return m
+}
+
+// Reset removes all registered mockers from the Manager.
+func (r *Manager) Reset() {
+	r.mockers = make(map[funcKey][]Invoker)
+}
+
+// addInvoker registers an Invoker for a specific function.
+//
+// receiver semantics:
+//
+//   - receiver == nil:
+//     fn is a top-level function or a method expression
+//     (e.g. Get, (*Client).Get)
+//
+//   - receiver != nil:
+//     fn represents an instance method and is only used by
+//     generated code for interface mocking.
+//
+// This method does not perform any deduplication; Invokers are
+// evaluated in registration order.
+func (r *Manager) addInvoker(receiver any, fn any, i Invoker) {
+	k := newFuncKey(receiver, fn)
 	r.mockers[k] = append(r.mockers[k], i)
 }
 
-// Invoke searches for a matching Invoker for the given function and parameters,
-// executes it based on its mocking mode, and returns the result slice along with
-// a boolean indicating whether a mock was applied.
-// The function `f` is usually a top-level function or a method with a receiver.
-// It cannot be an instance method.
-// If `f` is a method with a receiver, the first element of `params` must be the receiver.
-func Invoke(r *Manager, f any, params ...any) ([]any, bool) {
-	k := GetFuncID(f)
-	var defaultHandler Invoker
+// Invoke looks up and executes a mock Invoker for the given function call.
+//
+// Matching rules:
+//   - The function is identified by its program counter (PC)
+//   - receiver must match exactly (nil or the same instance)
+//
+// The Invokers are evaluated in registration order.
+// The first Invoker whose Invoke method returns ok == true is selected.
+// Its return values are returned immediately.
+func Invoke(r *Manager, receiver any, fn any, params ...any) ([]any, bool) {
+	k := newFuncKey(receiver, fn)
 	for _, m := range r.mockers[k] {
-		switch m.Mode() {
-		case ModeHandle:
-			// Panic if multiple Handle mocks exist for the same function.
-			if defaultHandler != nil {
-				panic(fmt.Sprintf("found multiple Handle functions for %s", k))
-			}
-			defaultHandler = m
-		case ModeWhenReturn:
-			if m.When(params) {
-				ret := m.Return()
-				return ret, true
-			}
-		default: // for linter
+		if ret, ok := m.Invoke(params); ok {
+			return ret, true
 		}
 	}
-	// Execute the Handle function if available.
-	if defaultHandler != nil {
-		return defaultHandler.Handle(params), true
-	}
 	return nil, false
 }
 
-// InvokeContext retrieves the Manager from the context and invokes the mock.
-// The function `f` is usually a top-level function or a method with a receiver.
-// It cannot be an instance method.
-// If `f` is a method with a receiver, the first element of `params` must be the receiver.
-func InvokeContext(ctx context.Context, f any, params ...any) ([]any, bool) {
+// InvokeContext retrieves the Manager from the context and invokes a mock.
+//
+// fn must be:
+//   - a top-level function, or
+//   - a method expression with receiver type (e.g. (*Client).Get)
+//
+// It must NOT be an instance method value (e.g. c.Get).
+//
+// Examples:
+//
+//	func Get(ctx context.Context, req *Request) (*Response, error)
+//	→ fn is Get
+//
+//	func (c *Client) Get(ctx context.Context, req *Request) (*Response, error)
+//	→ fn is (*Client).Get
+//
+// InvokeContext is not used for interface mocking.
+// It only supports ordinary functions or methods with explicit receivers.
+func InvokeContext(ctx context.Context, fn any, params ...any) ([]any, bool) {
 	if r, ok := ctx.Value(&managerKey).(*Manager); ok {
-		return Invoke(r, f, params...)
+		return Invoke(r, nil, fn, params...)
 	}
 	return nil, false
 }
 
-// Unbox1 extracts a single return value from a slice of interfaces.
+// Unbox1 extracts a single return value from a mock result slice.
+//
+// It panics if the number of return values is not exactly 1.
+// Type assertion failures result in the zero value of the target type.
 func Unbox1[R1 any](ret []any) (r1 R1) {
 	if len(ret) == 1 {
 		r1, _ = ret[0].(R1)
@@ -136,7 +169,10 @@ func Unbox1[R1 any](ret []any) (r1 R1) {
 	return
 }
 
-// Unbox2 extracts two return values from a slice of interfaces.
+// Unbox2 extracts two return values from a mock result slice.
+//
+// It panics if the number of return values is not exactly 2.
+// Type assertion failures result in the zero value of the target type.
 func Unbox2[R1, R2 any](ret []any) (r1 R1, r2 R2) {
 	if len(ret) == 2 {
 		r1, _ = ret[0].(R1)
@@ -147,7 +183,10 @@ func Unbox2[R1, R2 any](ret []any) (r1 R1, r2 R2) {
 	return
 }
 
-// Unbox3 extracts three return values from a slice of interfaces.
+// Unbox3 extracts three return values from a mock result slice.
+//
+// It panics if the number of return values is not exactly 3.
+// Type assertion failures result in the zero value of the target type.
 func Unbox3[R1, R2, R3 any](ret []any) (r1 R1, r2 R2, r3 R3) {
 	if len(ret) == 3 {
 		r1, _ = ret[0].(R1)
@@ -159,7 +198,10 @@ func Unbox3[R1, R2, R3 any](ret []any) (r1 R1, r2 R2, r3 R3) {
 	return
 }
 
-// Unbox4 extracts four return values from a slice of interfaces.
+// Unbox4 extracts four return values from a mock result slice.
+//
+// It panics if the number of return values is not exactly 4.
+// Type assertion failures result in the zero value of the target type.
 func Unbox4[R1, R2, R3, R4 any](ret []any) (r1 R1, r2 R2, r3 R3, r4 R4) {
 	if len(ret) == 4 {
 		r1, _ = ret[0].(R1)
@@ -172,7 +214,10 @@ func Unbox4[R1, R2, R3, R4 any](ret []any) (r1 R1, r2 R2, r3 R3, r4 R4) {
 	return
 }
 
-// Unbox5 extracts five return values from a slice of interfaces.
+// Unbox5 extracts five return values from a mock result slice.
+//
+// It panics if the number of return values is not exactly 5.
+// Type assertion failures result in the zero value of the target type.
 func Unbox5[R1, R2, R3, R4, R5 any](ret []any) (r1 R1, r2 R2, r3 R3, r4 R4, r5 R5) {
 	if len(ret) == 5 {
 		r1, _ = ret[0].(R1)

@@ -17,5 +17,5 @@
 package error_input_params
 
 type Service interface {
-	Save(r1, r2, r3, r4, r5, r6 int)
+	Save(r1, r2, r3, r4, r5, r6, r7 int)
 }
