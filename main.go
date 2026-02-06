@@ -187,13 +187,13 @@ func (ctx *scanContext) parse(mockInterfaces string) {
 		return
 	}
 	for s := range strings.SplitSeq(mockInterfaces, ",") {
-		if len(s) == 0 {
+		if s = strings.TrimSpace(s); len(s) == 0 {
 			continue
 		}
 		if s[0] == '!' {
-			ctx.ExcludeInterfaces[s[1:]] = struct{}{}
+			ctx.ExcludeInterfaces[strings.TrimSpace(s[1:])] = struct{}{}
 		} else {
-			ctx.IncludeInterfaces[s] = struct{}{}
+			ctx.IncludeInterfaces[strings.TrimSpace(s)] = struct{}{}
 		}
 	}
 }

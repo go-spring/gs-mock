@@ -56,6 +56,7 @@
 * **接口 Mock**
 
     * 通过代码生成自动生成 Mock 实现
+    * 不依赖 `context.Context` 参数
 
 * **普通函数 & 结构体方法 Mock**
 
@@ -73,13 +74,13 @@
 
 ### 单独安装
 
-```bash
+```
 go install github.com/go-spring/gs-mock@latest
 ```
 
 ### 通过 gs 工具集安装
 
-```bash
+```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/go-spring/gs/HEAD/install.sh)"
 ```
 
@@ -89,7 +90,7 @@ go install github.com/go-spring/gs-mock@latest
 
 #### 1. 定义接口
 
-```go
+```
 type Service interface {
     Do(n int, s string) (int, error)
     Format(s string, args ...any) string
@@ -98,7 +99,7 @@ type Service interface {
 
 #### 2. 生成 Mock 代码
 
-```go
+```
 //go:generate gs mock -o src_mock.go
 ```
 
@@ -107,7 +108,7 @@ type Service interface {
 在接口文件顶部添加上述指令后，即可为当前包内的**所有接口**生成 Mock 代码。
 如果只需要为特定接口生成 Mock，可以使用 `-i` 参数：
 
-```go
+```
 //go:generate gs-mock -o src_mock.go -i '!RepositoryV2,Repository'
 ```
 
@@ -124,7 +125,7 @@ type Service interface {
 
 #### 3. 使用 Mock（Handle 模式）
 
-```go
+```
 r := gsmock.NewManager()
 s := NewServiceMockImpl(r)
 
@@ -142,7 +143,7 @@ fmt.Println(s.Do(2, "abc")) // 4 <nil>
 
 #### 4. 使用 Mock（When / Return 模式）
 
-```go
+```
 r := gsmock.NewManager()
 s := NewServiceMockImpl(r)
 
@@ -170,14 +171,14 @@ fmt.Println(s.Format("", "xyz", "abc")) // panic：没有找到匹配的 mock
 
 #### 1. 定义普通函数
 
-```go
+```
 //go:noinline // 防止函数被内联
 func Do(ctx context.Context, n int) int { return n }
 ```
 
 #### 2. Mock 普通函数
 
-```go
+```
 r := gsmock.NewManager()
 ctx := gsmock.WithManager(context.TODO(), r)
 
@@ -205,7 +206,7 @@ fmt.Println(Do(ctx, 1)) // 2
 
 #### 1. 定义结构体方法
 
-```go
+```
 type Service struct{ m int }
 
 func (s *Service) Do(ctx context.Context, n int) int {
@@ -215,7 +216,7 @@ func (s *Service) Do(ctx context.Context, n int) int {
 
 #### 2. Mock 结构体方法
 
-```go
+```
 r := gsmock.NewManager()
 ctx := gsmock.WithManager(context.TODO(), r)
 
@@ -246,7 +247,7 @@ fmt.Println((&Service{m: 2}).Do(ctx, 1)) // 3
 * **解决方案**：
   在运行测试时显式禁用编译器优化：
 
-  ```bash
+  ```
   go test -gcflags="all=-N -l" ./...
   ```
 

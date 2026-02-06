@@ -56,6 +56,7 @@ It is especially suitable for **unit testing** and **component testing** in micr
 * **Interface Mocking**
 
     * Automatically generates mock implementations via code generation
+    * No reliance on `context.Context` parameter
 
 * **Plain Function & Struct Method Mocking**
 
@@ -73,13 +74,13 @@ It is especially suitable for **unit testing** and **component testing** in micr
 
 ### Standalone Installation
 
-```bash
+```
 go install github.com/go-spring/gs-mock@latest
 ```
 
 ### Installation via the gs Toolchain
 
-```bash
+```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/go-spring/gs/HEAD/install.sh)"
 ```
 
@@ -89,7 +90,7 @@ go install github.com/go-spring/gs-mock@latest
 
 #### 1. Define an Interface
 
-```go
+```
 type Service interface {
     Do(n int, s string) (int, error)
     Format(s string, args ...any) string
@@ -98,7 +99,7 @@ type Service interface {
 
 #### 2. Generate Mock Code
 
-```go
+```
 //go:generate gs mock -o src_mock.go
 ```
 
@@ -108,7 +109,7 @@ type Service interface {
 After adding the directive at the top of the interface file, mock code will be generated for **all interfaces in the
 current package**. If you only want to generate mocks for specific interfaces, use the `-i` option:
 
-```go
+```
 //go:generate gs-mock -o src_mock.go -i '!RepositoryV2,Repository'
 ```
 
@@ -125,7 +126,7 @@ current package**. If you only want to generate mocks for specific interfaces, u
 
 #### 3. Using Mocks (Handle Mode)
 
-```go
+```
 r := gsmock.NewManager()
 s := NewServiceMockImpl(r)
 
@@ -143,7 +144,7 @@ fmt.Println(s.Do(2, "abc")) // 4 <nil>
 
 #### 4. Using Mocks (When / Return Mode)
 
-```go
+```
 r := gsmock.NewManager()
 s := NewServiceMockImpl(r)
 
@@ -172,14 +173,14 @@ fmt.Println(s.Format("", "xyz", "abc")) // panic: no matching mock found
 
 #### 1. Define a Plain Function
 
-```go
+```
 //go:noinline // Prevent the function from being inlined
 func Do(ctx context.Context, n int) int { return n }
 ```
 
 #### 2. Mock the Function
 
-```go
+```
 r := gsmock.NewManager()
 ctx := gsmock.WithManager(context.TODO(), r)
 
@@ -207,7 +208,7 @@ fmt.Println(Do(ctx, 1)) // 2
 
 #### 1. Define a Struct Method
 
-```go
+```
 type Service struct{ m int }
 
 func (s *Service) Do(ctx context.Context, n int) int {
@@ -217,7 +218,7 @@ func (s *Service) Do(ctx context.Context, n int) int {
 
 #### 2. Mock the Struct Method
 
-```go
+```
 r := gsmock.NewManager()
 ctx := gsmock.WithManager(context.TODO(), r)
 
@@ -248,7 +249,7 @@ fmt.Println((&Service{m: 2}).Do(ctx, 1)) // 3
 * **Solution**:
   Explicitly disable compiler optimizations when running tests:
 
-  ```bash
+  ```
   go test -gcflags="all=-N -l" ./...
   ```
 
