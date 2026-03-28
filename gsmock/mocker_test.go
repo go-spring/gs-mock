@@ -331,7 +331,7 @@ func TestConcurrentMock(t *testing.T) {
 	var wg sync.WaitGroup
 	errs := make(chan error, 10)
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		wg.Add(1)
 		go func(val int) {
 			defer wg.Done()
@@ -363,7 +363,7 @@ func TestConcurrentMock(t *testing.T) {
 func TestConcurrentDifferentManagers(t *testing.T) {
 	var wg sync.WaitGroup
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		wg.Add(1)
 		go func(k int) {
 			defer wg.Done()

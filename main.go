@@ -42,7 +42,7 @@ import (
 var stdOut io.Writer = os.Stdout
 
 // ToolVersion specifies the version of this mock generation tool.
-const ToolVersion = "v0.0.7"
+const ToolVersion = "v0.0.8"
 
 // flags holds the command-line flag values for output file and interface selection.
 var flags struct {
@@ -331,13 +331,13 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 			}
 
 			// Collect embedded interfaces
-			var embedInterfaces string
+			var embedInterfaces strings.Builder
 			for _, method := range t.Methods.List {
 				if len(method.Names) == 0 {
-					embedInterfaces += "\t"
+					embedInterfaces.WriteString("\t")
 					typeText, pkgNames := getTypeText(method.Type)
-					embedInterfaces += typeText
-					embedInterfaces += "\n"
+					embedInterfaces.WriteString(typeText)
+					embedInterfaces.WriteString("\n")
 					putImport(pkgNames)
 				}
 			}
@@ -461,7 +461,7 @@ func scanFile(ctx scanContext, file string, pkgs map[string]string) []Interface 
 				Name:            name,
 				TypeParams:      typeParams,
 				TypeParamNames:  typeParamNames,
-				EmbedInterfaces: embedInterfaces,
+				EmbedInterfaces: embedInterfaces.String(),
 				Methods:         methods,
 				File:            file,
 				Imports:         needImports,

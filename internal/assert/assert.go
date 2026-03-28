@@ -35,7 +35,7 @@ func isNil(v reflect.Value) bool {
 		reflect.Func,
 		reflect.Interface,
 		reflect.Map,
-		reflect.Ptr,
+		reflect.Pointer,
 		reflect.Slice,
 		reflect.UnsafePointer:
 		return v.IsNil()

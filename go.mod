@@ -1,8 +1,8 @@
 module github.com/go-spring/gs-mock
 
-go 1.24
+go 1.26
 
-require github.com/bytedance/mockey v1.3.2
+require github.com/bytedance/mockey v1.4.5
 
 require (
 	github.com/gopherjs/gopherjs v1.12.80 // indirect
